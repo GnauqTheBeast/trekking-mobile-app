@@ -1,2 +1,5 @@
 .idea
 .env
+postgres-data
+redis-data
+docker-compose.override.yaml
