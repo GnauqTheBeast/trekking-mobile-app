@@ -2,11 +2,11 @@ package api
 
 import (
 	"fmt"
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/trekking-mobile-app/internal/dependencies"
+	"github.com/trekking-mobile-app/middleware"
 	"github.com/urfave/cli/v2"
 	"strings"
-	"time"
 )
 
 const (
@@ -34,7 +34,8 @@ func NewCommand() *cli.Command {
 }
 
 func beforeCommand() error {
-	return nil
+	dependencies.Register()
+	return dependencies.Init()
 }
 
 func start(c *cli.Context) error {
@@ -42,13 +43,7 @@ func start(c *cli.Context) error {
 	router.RedirectTrailingSlash = true
 	gin.SetMode(gin.DebugMode)
 
-	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
-		AllowHeaders:     []string{"*"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
+	router.Use(middleware.Cors())
 
 	addr := strings.ToLower(c.String(argsAddr))
 	if addr == "" {

@@ -69,9 +69,7 @@ func start(c *cli.Context) error {
 		}
 	}
 
-	m.Run()
-
-	return nil
+	return m.Run()
 }
 
 func beforeCommand(c *cli.Context) error {
