@@ -2,9 +2,11 @@ package sqlc
 
 import (
 	"database/sql"
+	_ "github.com/lib/pq"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const (
@@ -34,11 +36,21 @@ func (r *SQLRepository) init() error {
 }
 
 func (r *SQLRepository) initFromConfig(config *SQLConfig) error {
+	maxOpenConnections := config.MaxOpenConnections
+	if maxOpenConnections < 1 {
+		maxOpenConnections = defaultMaxOpenConnections
+	}
+
 	var err error
 	r.Client, err = sql.Open(config.Driver, config.DSN)
 	if err != nil {
 		return err
 	}
+
+	r.Client.SetConnMaxLifetime(time.Hour * 3)
+	r.Client.SetMaxOpenConns(maxOpenConnections)
+	r.Client.SetMaxIdleConns(maxOpenConnections)
+
 	return nil
 }
 

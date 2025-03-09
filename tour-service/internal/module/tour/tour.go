@@ -8,7 +8,7 @@ import (
 )
 
 type Repository interface {
-	InsertNewTask(ctx context.Context, data *entity.TourCreationData) error
+	InsertNewTour(ctx context.Context, data *entity.Tour) error
 	GetTourByID(ctx context.Context, tourID int64) (*entity.Tour, error)
 	FindTour(ctx context.Context, paging *model.Paging) ([]*entity.Tour, error)
 	UpdateTour(ctx context.Context, tourID int64, data *entity.TourPatchData) error
@@ -16,14 +16,16 @@ type Repository interface {
 }
 
 type Business interface {
-	CreateNewTour(ctx context.Context, data *entity.TourCreationData) error
-	ListTasks(ctx context.Context, paging *model.Paging) ([]*entity.Tour, error)
+	CreateNewTour(ctx context.Context, data *entity.Tour) error
+	ListTours(ctx context.Context, paging *model.Paging) ([]*entity.Tour, error)
 	GetTourDetails(ctx context.Context, tourID string) (*entity.Tour, error)
 	UpdateTour(ctx context.Context, tourID string, data *entity.TourPatchData) error
 	DeleteTour(ctx context.Context, tourID string) error
 }
 
 type API interface {
+	Ping() gin.HandlerFunc
+	CreateTourHdl() gin.HandlerFunc
 	GetTourNameHdl() gin.HandlerFunc
 	ListTourHdl() gin.HandlerFunc
 	GetTourHdl() gin.HandlerFunc

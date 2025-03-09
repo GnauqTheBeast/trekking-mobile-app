@@ -1,14 +1,11 @@
 package entity
 
-type Tour struct {
-	Id          string `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Status      string `json:"status"`
+func (*Tour) TableName() string {
+	return "tour"
 }
 
-type TourCreationData struct {
-	Id          string `json:"-"` // just carry inserted id, so json tag is omitted
+type Tour struct {
+	Id          string `json:"id"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Status      string `json:"status"`

@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/trekking-mobile-app/internal/context"
 	"github.com/trekking-mobile-app/internal/dependencies"
 	"github.com/trekking-mobile-app/middleware"
 	"github.com/urfave/cli/v2"
@@ -34,7 +35,7 @@ func NewCommand() *cli.Command {
 }
 
 func beforeCommand() error {
-	dependencies.Register()
+	dependencies.Register(context.SetContextSQL)
 	return dependencies.Init()
 }
 
@@ -42,15 +43,14 @@ func start(c *cli.Context) error {
 	router := gin.Default()
 	router.RedirectTrailingSlash = true
 	gin.SetMode(gin.DebugMode)
-
 	router.Use(middleware.Cors())
 
 	addr := strings.ToLower(c.String(argsAddr))
 	if addr == "" {
 		return fmt.Errorf("[API Server] start error: addr is empty")
 	}
-	fmt.Printf("ListenAndServe: %s\n", addr)
 
+	fmt.Printf("ListenAndServe: %s\n", addr)
 	startRouteV1(router.Group("/api/v1"))
 
 	return router.Run(addr)

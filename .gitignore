@@ -1,5 +1,6 @@
 .idea
 .env
+.env.local
 postgres-data
 redis-data
 docker-compose.override.yaml
