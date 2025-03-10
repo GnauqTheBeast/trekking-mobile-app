@@ -2,19 +2,29 @@ package migrate
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq"
+	"github.com/trekking-mobile-app/migration/internal/util/env"
 	"github.com/urfave/cli/v2"
+	"os"
 )
 
 const (
-	argsMigrateUp   = "migrate-up"
-	argsMigrateDown = "migrate-down"
-	migrationsDir   = "file://migrate/migrations"
+	envDBConnection     = "DB_CONNECTION"
+	envDBDataSourceName = "DB_DSN"
+	dbName              = "trekking-app"
+	argsMigrateUp       = "migrate-up"
+	argsMigrateDown     = "migrate-down"
+	migrationsDir       = "file://cmd/migrate/migrations"
 )
+
+func init() {
+	env.LoadOnce()
+}
 
 func NewCommand() *cli.Command {
 	return &cli.Command{
@@ -45,7 +55,7 @@ func NewCommand() *cli.Command {
 }
 
 func start(c *cli.Context) error {
-	db, err := sql.Open("postgres", "postgres://postgres:postgres@localhost:5432/trekking_app?sslmode=disable")
+	db, err := sql.Open(os.Getenv(envDBConnection), os.Getenv(envDBDataSourceName))
 	if err != nil {
 		return err
 	}
@@ -55,7 +65,20 @@ func start(c *cli.Context) error {
 		return err
 	}
 
-	m, err := migrate.NewWithDatabaseInstance(migrationsDir, "trekking_app", driver)
+	m, err := migrate.NewWithDatabaseInstance(migrationsDir, dbName, driver)
+	if err != nil {
+		return err
+	}
+
+	version, dirty, err := m.Version()
+	if err != nil {
+		fmt.Println(err)
+	}
+	if dirty {
+		if err := m.Force(int(version)); err != nil {
+			return fmt.Errorf("failed to force migration version %d: %w", version, err)
+		}
+	}
 
 	if c.Bool(argsMigrateUp) {
 		if err := m.Up(); err != nil {

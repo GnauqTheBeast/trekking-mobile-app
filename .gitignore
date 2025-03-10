@@ -4,3 +4,4 @@
 postgres-data
 redis-data
 docker-compose.override.yaml
+tmp

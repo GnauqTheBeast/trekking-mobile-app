@@ -4,6 +4,7 @@ go 1.23.5
 
 require (
 	github.com/golang-migrate/migrate/v4 v4.18.2
+	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
 	github.com/urfave/cli/v2 v2.27.6
 )

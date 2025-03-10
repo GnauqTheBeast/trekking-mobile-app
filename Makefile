@@ -1,15 +1,15 @@
 postgres:
-	docker run --name postgres_trekking_app -e POSTGRES_USER=root -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres
+	docker run --name postgres_trekking-app -e POSTGRES_USER=root -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres
 createdb:
-	docker exec -it app_postgres createdb --username=postgres --owner=postgres trekking_app
+	docker exec -it app_postgres createdb --username=postgres --owner=postgres trekking-app
 dropdb:
-	docker exec -it app_postgres dropdb trekking_app
+	docker exec -it app_postgres dropdb trekking-app
 create-migration:
-	migrate create -ext sql -dir ./core/cmd/migrate/migrations -seq schema_2
+	migrate create -ext sql -dir ./migration/cmd/migrate/migrations -seq schema_1
 migrateup:
-	migrate -path core/app/database/migration -database "postgres://postgres:postgres@localhost:5432/trekking_app?sslmode=disable" -verbose up
+	migrate -path core/app/database/migration -database "postgres://postgres:postgres@localhost:5432/trekking-app?sslmode=disable" -verbose up
 migratedown:
-	migrate -path core/app/database/migration -database "postgres://postgres:postgres@localhost:5432/trekking_app?sslmode=disable" -verbose down
+	migrate -path core/app/database/migration -database "postgres://postgres:postgres@localhost:5432/trekking-app?sslmode=disable" -verbose down
 sqlc:
 	sqlc generate
 test:

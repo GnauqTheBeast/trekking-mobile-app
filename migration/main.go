@@ -10,16 +10,13 @@ import (
 func main() {
 	app := &cli.App{
 		Name:  "Trekking App",
-		Usage: "App tool",
+		Usage: "Migration tool",
 		Action: func(*cli.Context) error {
 			fmt.Println("use --help")
 			return nil
 		},
 		Commands: []*cli.Command{
 			migrate.NewCommand(),
-		},
-		Metadata: map[string]interface{}{
-			"version": "1.0.0",
 		},
 	}
 
