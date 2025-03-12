@@ -4,7 +4,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/trekking-mobile-app/internal/util/env"
+	"github.com/trekking-mobile-app/internal/pkg/env"
 	"os"
 	"strconv"
 	"strings"

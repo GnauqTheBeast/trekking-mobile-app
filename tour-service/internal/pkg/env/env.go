@@ -6,7 +6,7 @@ import (
 	"sync"
 )
 
-const envPath = ".env,.env.local"
+const envPath = "cmd/.env,cmd/.env.local"
 
 var once = new(sync.Once)
 

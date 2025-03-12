@@ -1,7 +1,9 @@
+// Package tour provides functionality for managing tour-related operations
 package tour
 
 import (
 	"context"
+
 	"github.com/gin-gonic/gin"
 	"github.com/trekking-mobile-app/app/model"
 	"github.com/trekking-mobile-app/internal/module/tour/entity"
@@ -9,10 +11,10 @@ import (
 
 type Repository interface {
 	InsertNewTour(ctx context.Context, data *entity.Tour) error
-	GetTourByID(ctx context.Context, tourID int64) (*entity.Tour, error)
+	GetTourByID(ctx context.Context, tourID string) (*entity.Tour, error)
 	FindTour(ctx context.Context, paging *model.Paging) ([]*entity.Tour, error)
-	UpdateTour(ctx context.Context, tourID int64, data *entity.TourPatchData) error
-	DeleteTour(ctx context.Context, tourID int64) error
+	UpdateTour(ctx context.Context, tourID string, data *entity.TourPatchData) error
+	DeleteTour(ctx context.Context, tourID string) error
 }
 
 type Business interface {
