@@ -16,7 +16,7 @@ import (
 const (
 	envDBConnection     = "DB_CONNECTION"
 	envDBDataSourceName = "DB_DSN"
-	dbName              = "trekking-app"
+	dbName              = "trekking_app"
 	argsMigrateUp       = "migrate-up"
 	argsMigrateDown     = "migrate-down"
 	migrationsDir       = "file://cmd/migrate/migrations"
@@ -70,11 +70,9 @@ func start(c *cli.Context) error {
 		return err
 	}
 
-	version, dirty, err := m.Version()
-	if err != nil {
-		fmt.Println(err)
-	}
+	version, dirty, _ := m.Version()
 	if dirty {
+		fmt.Println("dirty version", version)
 		if err := m.Force(int(version)); err != nil {
 			return fmt.Errorf("failed to force migration version %d: %w", version, err)
 		}
@@ -92,7 +90,7 @@ func start(c *cli.Context) error {
 		}
 	}
 
-	return m.Run()
+	return nil
 }
 
 func beforeCommand(c *cli.Context) error {

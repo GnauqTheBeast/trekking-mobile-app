@@ -1,0 +1,2 @@
+DROP TYPE IF EXISTS "VoucherStatus";
+DROP TYPE IF EXISTS "UserRole";
