@@ -2,13 +2,16 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/trekking-mobile-app/internal/context"
 	"github.com/trekking-mobile-app/internal/module/tour/business"
-	"github.com/trekking-mobile-app/internal/module/tour/repository/mock"
+	"github.com/trekking-mobile-app/internal/module/tour/repository"
 	"github.com/trekking-mobile-app/internal/module/tour/transport/rest"
 )
 
 func startRouteV1(group *gin.RouterGroup) {
-	tourService := rest.NewAPI(business.NewBusiness(mock.New()))
+	repo := repository.NewPostgresRepo(context.GetSQLClient())
+	biz := business.NewBusiness(repo)
+	tourService := rest.NewAPI(biz)
 
 	tours := group.Group("/tours")
 	{

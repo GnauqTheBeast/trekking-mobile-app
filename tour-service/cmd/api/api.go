@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/trekking-mobile-app/internal/context"
 	"github.com/trekking-mobile-app/internal/dependencies"
 	"github.com/trekking-mobile-app/middleware"
 	"github.com/urfave/cli/v2"
@@ -34,7 +35,7 @@ func NewCommand() *cli.Command {
 }
 
 func beforeCommand() error {
-	// dependencies.Register(context.SetContextSQL)
+	dependencies.Register(context.SetContextSQL)
 	return dependencies.Init()
 }
 
