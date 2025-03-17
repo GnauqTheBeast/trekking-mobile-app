@@ -33,7 +33,13 @@ func (a *api) CreateTourHdl() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"message": "CreateTourHdl called", "data": data})
+
+		err := a.biz.CreateNewTour(c, data)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		return
 	}
 }
 

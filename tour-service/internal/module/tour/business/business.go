@@ -3,6 +3,7 @@ package business
 import (
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"time"
 
 	"github.com/trekking-mobile-app/app/model"
@@ -47,6 +48,8 @@ func (b *business) CreateNewTour(ctx context.Context, data *entity.Tour) error {
 	now := time.Now()
 	data.CreatedAt = now
 	data.UpdatedAt = now
+
+	data.ID = uuid.New()
 
 	return b.repository.InsertNewTour(ctx, data)
 }
