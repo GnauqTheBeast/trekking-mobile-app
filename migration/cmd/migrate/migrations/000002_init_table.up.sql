@@ -1,36 +1,36 @@
 CREATE TABLE "user" (
-                        "id" bigserial PRIMARY KEY,
+                        "id" uuid PRIMARY KEY,
                         "name" varchar NOT NULL,
                         "email" varchar NOT NULL,
                         "password" varchar NOT NULL,
                         "phone_number" varchar,
-                        "role_id" int,
+                        "role_id" uuid,
                         "address" text,
                         "dob" date,
-                        "provider_id" int,
+                        "provider_id" uuid,
                         "created_at" timestamptz NOT NULL DEFAULT (now()),
                         "updated_at" timestamptz
 );
 
 CREATE TABLE "role" (
-                        "id" int PRIMARY KEY,
-                        "name" "UserRole" not null ,
+                        "id" uuid PRIMARY KEY,
+                        "name" "UserRole" not null,
                         "description" varchar
 );
 
 CREATE TABLE "role_permission" (
-                                   "role_id" int,
-                                   "permission_id" int
+                           "role_id" uuid,
+                           "permission_id" uuid
 );
 
 CREATE TABLE "auth_provider" (
-                                 "id" bigserial PRIMARY KEY,
-                                 "name" varchar NOT NULL,
-                                 "type" varchar
+                         "id" uuid PRIMARY KEY,
+                         "name" varchar NOT NULL,
+                         "type" varchar
 );
 
 CREATE TABLE "permission" (
-                              "id" bigserial PRIMARY KEY,
+                              "id" uuid PRIMARY KEY,
                               "name" varchar NOT NULL,
                               "code" varchar NOT NULL,
                               "description" text,
@@ -39,12 +39,12 @@ CREATE TABLE "permission" (
 );
 
 CREATE TABLE "tour" (
-                        "id" bigserial PRIMARY KEY,
+                        "id" uuid PRIMARY KEY,
                         "name" varchar NOT NULL,
                         "description" text,
-                        "host" bigint NOT NULL,
-                        "amount" bigint,
-                        "currency" varchar,
+                        "host" uuid NOT NULL,
+                        "slot" int NOT NULL,
+                        "status" varchar NOT NULL,
                         "start_at" timestamptz,
                         "end_at" timestamptz,
                         "created_at" timestamptz NOT NULL DEFAULT (now()),
@@ -52,11 +52,11 @@ CREATE TABLE "tour" (
 );
 
 CREATE TABLE "booking" (
-                           "id" bigserial PRIMARY KEY,
-                           "user_id" bigint NOT NULL,
-                           "tour_id" bigint NOT NULL,
-                           "voucher_id" bigint,
-                           "porter_id" bigint,
+                           "id" uuid PRIMARY KEY,
+                           "user_id" uuid NOT NULL,
+                           "tour_id" uuid NOT NULL,
+                           "voucher_id" uuid,
+                           "porter_id" uuid,
                            "quantity" int NOT NULL DEFAULT 1,
                            "total_price" bigint,
                            "created_at" timestamptz NOT NULL DEFAULT (now()),
@@ -64,8 +64,8 @@ CREATE TABLE "booking" (
 );
 
 CREATE TABLE "payment" (
-                           "id" bigserial PRIMARY KEY,
-                           "booking_id" bigint NOT NULL,
+                           "id" uuid PRIMARY KEY,
+                           "booking_id" uuid NOT NULL,
                            "total" bigint,
                            "method" varchar,
                            "type" varchar,
@@ -76,9 +76,9 @@ CREATE TABLE "payment" (
 );
 
 CREATE TABLE "rating" (
-                          "id" bigserial PRIMARY KEY,
-                          "user_id" bigint NOT NULL,
-                          "booking_id" bigint NOT NULL,
+                          "id" uuid PRIMARY KEY,
+                          "user_id" uuid NOT NULL,
+                          "booking_id" uuid NOT NULL,
                           "rate" int,
                           "review" text,
                           "created_at" timestamptz NOT NULL DEFAULT (now()),
@@ -86,7 +86,7 @@ CREATE TABLE "rating" (
 );
 
 CREATE TABLE "notification" (
-                                "id" bigserial PRIMARY KEY,
+                                "id" uuid PRIMARY KEY,
                                 "name" varchar,
                                 "description" text,
                                 "created_at" timestamptz NOT NULL DEFAULT (now()),
@@ -94,7 +94,7 @@ CREATE TABLE "notification" (
 );
 
 CREATE TABLE "voucher" (
-                           "id" bigserial PRIMARY KEY,
+                           "id" uuid PRIMARY KEY,
                            "name" varchar NOT NULL,
                            "description" text,
                            "amount" bigint,
@@ -102,16 +102,16 @@ CREATE TABLE "voucher" (
                            "discount_type" varchar,
                            "start_at" timestamptz,
                            "end_at" timestamptz,
-                           "created_by" int,
-                           "tour_id" int,
+                           "created_by" uuid,
+                           "tour_id" uuid,
                            "created_at" timestamptz NOT NULL DEFAULT (now()),
                            "updated_at" timestamptz
 );
 
 CREATE TABLE "voucher_user" (
-                                "id" bigserial PRIMARY KEY,
-                                "user_id" int,
-                                "voucher_id" int,
+                                "id" uuid PRIMARY KEY,
+                                "user_id" uuid,
+                                "voucher_id" uuid,
                                 "status" "VoucherStatus"
 );
 

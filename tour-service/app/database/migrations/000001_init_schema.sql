@@ -1,8 +1,12 @@
-CREATE TABLE IF NOT EXISTS tour (
-    id VARCHAR(255) PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT NOT NULL,
-    status VARCHAR(50) NOT NULL,
-    created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL
-); 
+CREATE TABLE "tour" (
+    "id" uuid PRIMARY KEY,
+    "name" varchar NOT NULL,
+    "description" text,
+    "host" uuid NOT NULL,
+    "slot" int NOT NULL,
+    "status" varchar NOT NULL,
+    "start_at" timestamptz,
+    "end_at" timestamptz,
+    "created_at" timestamptz NOT NULL DEFAULT (now()),
+    "updated_at" timestamptz
+);
