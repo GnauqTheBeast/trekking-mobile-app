@@ -34,17 +34,16 @@ func (b *business) CreateNewTour(ctx context.Context, data *entity.Tour) error {
 		return ErrInvalidTourData
 	}
 
-	if data.Title == "" || len(data.Title) < 3 {
+	if data.Name == "" || len(data.Name) < 3 {
 		return fmt.Errorf("%w: title must be at least 3 characters", ErrInvalidTourData)
 	}
 	if data.Description == "" || len(data.Description) < 10 {
 		return fmt.Errorf("%w: description must be at least 10 characters", ErrInvalidTourData)
 	}
 	if data.Status == "" {
-		data.Status = entity.TourStatusDraft // Default status
+		data.Status = entity.TourStatusDraft
 	}
 
-	// Set timestamps
 	now := time.Now()
 	data.CreatedAt = now
 	data.UpdatedAt = now
@@ -67,7 +66,7 @@ func (b *business) ListTours(ctx context.Context, paging *model.Paging) ([]*enti
 		paging.Offset = 0
 	}
 
-	return b.repository.FindTour(ctx, paging)
+	return b.repository.ListTours(ctx, paging)
 }
 
 func (b *business) GetTourDetails(ctx context.Context, tourID string) (*entity.Tour, error) {
@@ -95,16 +94,16 @@ func (b *business) UpdateTour(ctx context.Context, tourID string, data *entity.T
 		return fmt.Errorf("failed to get existing tour: %w", err)
 	}
 
-	if data.Status != nil {
-		if err := validateStatusTransition(existingTour.Status, *data.Status); err != nil {
+	if data.Status != "" {
+		if err := validateStatusTransition(existingTour.Status, data.Status); err != nil {
 			return err
 		}
 	}
 
-	if data.Title != nil && len(*data.Title) < 3 {
+	if data.Name != "" && len(data.Name) < 3 {
 		return fmt.Errorf("%w: title must be at least 3 characters", ErrInvalidTourData)
 	}
-	if data.Description != nil && len(*data.Description) < 10 {
+	if data.Description != "" && len(data.Description) < 10 {
 		return fmt.Errorf("%w: description must be at least 10 characters", ErrInvalidTourData)
 	}
 
@@ -113,16 +112,16 @@ func (b *business) UpdateTour(ctx context.Context, tourID string, data *entity.T
 
 func (b *business) DeleteTour(ctx context.Context, tourID string) error {
 	if tourID == "" {
-		return fmt.Errorf("%w: tour ID is required", ErrInvalidTourData)
+		return fmt.Errorf("%w: tourByID ID is required", ErrInvalidTourData)
 	}
 
-	tour, err := b.repository.GetTourByID(ctx, tourID)
+	tourByID, err := b.repository.GetTourByID(ctx, tourID)
 	if err != nil {
-		return fmt.Errorf("failed to get tour: %w", err)
+		return fmt.Errorf("failed to get tourByID: %w", err)
 	}
 
-	if tour.Status == entity.TourStatusPublished {
-		return fmt.Errorf("%w: cannot delete published tour", ErrInvalidStatusTransition)
+	if tourByID.Status == entity.TourStatusPublished {
+		return fmt.Errorf("%w: cannot delete published tourByID", ErrInvalidStatusTransition)
 	}
 
 	return b.repository.DeleteTour(ctx, tourID)

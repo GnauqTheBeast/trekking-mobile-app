@@ -12,7 +12,7 @@ import (
 type Repository interface {
 	InsertNewTour(ctx context.Context, data *entity.Tour) error
 	GetTourByID(ctx context.Context, tourID string) (*entity.Tour, error)
-	FindTour(ctx context.Context, paging *model.Paging) ([]*entity.Tour, error)
+	ListTours(ctx context.Context, paging *model.Paging) ([]*entity.Tour, error)
 	UpdateTour(ctx context.Context, tourID string, data *entity.TourPatchData) error
 	DeleteTour(ctx context.Context, tourID string) error
 }

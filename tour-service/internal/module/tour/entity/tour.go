@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"github.com/google/uuid"
 	"time"
 )
 
@@ -13,10 +14,14 @@ const (
 )
 
 type Tour struct {
-	Id          string     `json:"id" binding:"required"`
-	Title       string     `json:"title" binding:"required,min=3,max=255"`
+	ID          uuid.UUID  `json:"id" binding:"required"`
+	Name        string     `json:"name" binding:"required,min=3,max=255"`
 	Description string     `json:"description" binding:"required,min=10"`
+	HostID      uuid.UUID  `json:"host_id" binding:"required"`
+	Slot        int32      `json:"slot" binding:"required"`
 	Status      TourStatus `json:"status" binding:"required,oneof=draft published archived"`
+	TimeStart   time.Time  `json:"start" binding:"required"`
+	TimeEnd     time.Time  `json:"end" binding:"required"`
 	CreatedAt   time.Time  `json:"created_at"`
 	UpdatedAt   time.Time  `json:"updated_at"`
 }
@@ -26,7 +31,10 @@ func (*Tour) TableName() string {
 }
 
 type TourPatchData struct {
-	Title       *string     `json:"title,omitempty" binding:"omitempty,min=3,max=255"`
-	Description *string     `json:"description,omitempty" binding:"omitempty,min=10"`
-	Status      *TourStatus `json:"status,omitempty" binding:"omitempty,oneof=draft published archived"`
+	Name        string     `json:"title,omitempty" binding:"omitempty,min=3,max=255"`
+	Description string     `json:"description,omitempty" binding:"omitempty,min=10"`
+	Status      TourStatus `json:"status,omitempty" binding:"omitempty,oneof=draft published archived"`
+	Slot        int32      `json:"slot" binding:"required"`
+	TimeStart   time.Time  `json:"start" binding:"required"`
+	TimeEnd     time.Time  `json:"end" binding:"required"`
 }

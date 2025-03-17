@@ -24,11 +24,11 @@ func (r *Repository) InsertNewTour(ctx context.Context, data *entity.Tour) error
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	if _, exists := r.tours[data.Id]; exists {
+	if _, exists := r.tours[data.ID.String()]; exists {
 		return tour.ErrTourAlreadyExists
 	}
 
-	r.tours[data.Id] = data
+	r.tours[data.ID.String()] = data
 	return nil
 }
 
@@ -44,7 +44,7 @@ func (r *Repository) GetTourByID(ctx context.Context, tourID string) (*entity.To
 	return t, nil
 }
 
-func (r *Repository) FindTour(ctx context.Context, paging *model.Paging) ([]*entity.Tour, error) {
+func (r *Repository) ListTours(ctx context.Context, paging *model.Paging) ([]*entity.Tour, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
@@ -57,8 +57,8 @@ func (r *Repository) FindTour(ctx context.Context, paging *model.Paging) ([]*ent
 		result = append(result, t)
 	}
 
-	start := (paging.Page - 1) * paging.Limit
-	end := start + paging.Limit
+	start := (paging.Page - 1) * int(paging.Limit)
+	end := start + int(paging.Limit)
 	if start >= len(result) {
 		return []*entity.Tour{}, nil
 	}
@@ -79,9 +79,9 @@ func (r *Repository) UpdateTour(ctx context.Context, tourID string, data *entity
 	}
 
 	if data != nil {
-		t.Title = *data.Title
-		t.Description = *data.Description
-		t.Status = *data.Status
+		t.Name = data.Name
+		t.Description = data.Description
+		t.Status = data.Status
 	}
 
 	return nil
