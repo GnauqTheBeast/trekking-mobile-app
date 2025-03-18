@@ -12,7 +12,7 @@ import (
 	"github.com/google/uuid"
 )
 
-const createTour = `-- name: CreateTour :exec
+const createTour = `-- name: CreateTour :one
 INSERT INTO tour (
     id,
     name,
@@ -38,8 +38,8 @@ type CreateTourParams struct {
 	EndAt       sql.NullTime   `json:"end_at"`
 }
 
-func (q *Queries) CreateTour(ctx context.Context, arg *CreateTourParams) error {
-	_, err := q.db.ExecContext(ctx, createTour,
+func (q *Queries) CreateTour(ctx context.Context, arg *CreateTourParams) (*Tour, error) {
+	row := q.db.QueryRowContext(ctx, createTour,
 		arg.ID,
 		arg.Name,
 		arg.Description,
@@ -49,7 +49,20 @@ func (q *Queries) CreateTour(ctx context.Context, arg *CreateTourParams) error {
 		arg.StartAt,
 		arg.EndAt,
 	)
-	return err
+	var i Tour
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.Host,
+		&i.Slot,
+		&i.Status,
+		&i.StartAt,
+		&i.EndAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return &i, err
 }
 
 const deleteTour = `-- name: DeleteTour :exec

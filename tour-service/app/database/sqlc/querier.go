@@ -11,7 +11,7 @@ import (
 )
 
 type Querier interface {
-	CreateTour(ctx context.Context, arg *CreateTourParams) error
+	CreateTour(ctx context.Context, arg *CreateTourParams) (*Tour, error)
 	DeleteTour(ctx context.Context, id uuid.UUID) error
 	GetTourByID(ctx context.Context, id uuid.UUID) (*Tour, error)
 	GetTourForUpdate(ctx context.Context, id uuid.UUID) (*Tour, error)

@@ -17,35 +17,22 @@ func NewAPI(biz tour.Business) tour.API {
 	}
 }
 
-func (a *api) Ping() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-			"ping":    "plunk",
-		})
-	}
-}
-
 func (a *api) CreateTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		data := new(entity.Tour)
 		if err := c.ShouldBindJSON(&data); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			responseError(c, err)
 			return
 		}
 
-		err := a.biz.CreateNewTour(c, data)
+		createdTour, err := a.biz.CreateNewTour(c, data)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			responseError(c, err)
 			return
 		}
-		return
-	}
-}
 
-func (a *api) GetTourNameHdl() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "GetTourNameHdl called"})
+		responseSuccess(c, createdTour)
+		return
 	}
 }
 
@@ -57,7 +44,19 @@ func (a *api) ListTourHdl() gin.HandlerFunc {
 
 func (a *api) GetTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "GetTourHdl called"})
+		tourID := c.Param("id")
+		if tourID == "" {
+			responseErrorWithMessage(c, "tourID is required")
+			return
+		}
+
+		tourDetails, err := a.biz.GetTourDetails(c, tourID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": tourDetails.ID})
+		return
 	}
 }
 
@@ -69,6 +68,19 @@ func (a *api) UpdateTourHdl() gin.HandlerFunc {
 
 func (a *api) DeleteTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "DeleteTourHdl called"})
+		tourID := c.Param("id")
+		if tourID == "" {
+			responseErrorWithMessage(c, "tourID is required")
+			return
+		}
+
+		err := a.biz.DeleteTour(c, tourID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		responseSuccessWithMessage(c, "delete tour successful")
+		return
 	}
 }

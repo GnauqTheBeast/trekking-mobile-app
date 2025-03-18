@@ -1,4 +1,4 @@
--- name: CreateTour :exec
+-- name: CreateTour :one
 INSERT INTO tour (
     id,
     name,

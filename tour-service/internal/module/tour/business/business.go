@@ -30,16 +30,16 @@ func NewBusiness(repository tour.Repository) tour.Business {
 	}
 }
 
-func (b *business) CreateNewTour(ctx context.Context, data *entity.Tour) error {
+func (b *business) CreateNewTour(ctx context.Context, data *entity.Tour) (*entity.Tour, error) {
 	if data == nil {
-		return ErrInvalidTourData
+		return nil, ErrInvalidTourData
 	}
 
 	if data.Name == "" || len(data.Name) < 3 {
-		return fmt.Errorf("%w: title must be at least 3 characters", ErrInvalidTourData)
+		return nil, fmt.Errorf("%w: title must be at least 3 characters", ErrInvalidTourData)
 	}
 	if data.Description == "" || len(data.Description) < 10 {
-		return fmt.Errorf("%w: description must be at least 10 characters", ErrInvalidTourData)
+		return nil, fmt.Errorf("%w: description must be at least 10 characters", ErrInvalidTourData)
 	}
 	if data.Status == "" {
 		data.Status = entity.TourStatusDraft

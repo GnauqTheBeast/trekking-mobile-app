@@ -17,9 +17,9 @@ type MockQueries struct {
 	mock.Mock
 }
 
-func (m *MockQueries) InsertNewTour(ctx context.Context, data *entity.Tour) error {
+func (m *MockQueries) InsertNewTour(ctx context.Context, data *entity.Tour) (*entity.Tour, error) {
 	args := m.Called(ctx, data)
-	return args.Error(0)
+	return args.Get(0).(*entity.Tour), args.Error(1)
 }
 
 func (m *MockQueries) ListTours(ctx context.Context, paging *model.Paging) ([]*entity.Tour, error) {
@@ -46,7 +46,7 @@ func TestListTours(t *testing.T) {
 	mockQueries := new(MockQueries)
 	ctx := context.Background()
 
-	t.Run("success", func(t *testing.T) {
+	t.Run("list tours", func(t *testing.T) {
 		now := time.Now()
 		mockTours := []*entity.Tour{{
 			ID:          uuid.New(),
@@ -94,15 +94,16 @@ func TestInsertNewTour(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("insert new tour", func(t *testing.T) {
-		tour := &entity.Tour{
+		mockTour := &entity.Tour{
 			ID:   uuid.New(),
 			Name: "New Tour",
 		}
 
-		mockQueries.On("InsertNewTour", ctx, mock.Anything).Return(nil)
+		mockQueries.On("InsertNewTour", ctx, mock.Anything).Return(mockTour, nil)
 
-		err := mockQueries.InsertNewTour(ctx, tour)
+		createdTour, err := mockQueries.InsertNewTour(ctx, mockTour)
 		assert.NoError(t, err)
+		assert.Equal(t, mockTour.ID, createdTour.ID)
 	})
 }
 

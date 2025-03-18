@@ -10,7 +10,7 @@ import (
 )
 
 type Repository interface {
-	InsertNewTour(ctx context.Context, data *entity.Tour) error
+	InsertNewTour(ctx context.Context, data *entity.Tour) (*entity.Tour, error)
 	GetTourByID(ctx context.Context, tourID string) (*entity.Tour, error)
 	ListTours(ctx context.Context, paging *model.Paging) ([]*entity.Tour, error)
 	UpdateTour(ctx context.Context, tourID string, data *entity.TourPatchData) error
@@ -18,7 +18,7 @@ type Repository interface {
 }
 
 type Business interface {
-	CreateNewTour(ctx context.Context, data *entity.Tour) error
+	CreateNewTour(ctx context.Context, data *entity.Tour) (*entity.Tour, error)
 	ListTours(ctx context.Context, paging *model.Paging) ([]*entity.Tour, error)
 	GetTourDetails(ctx context.Context, tourID string) (*entity.Tour, error)
 	UpdateTour(ctx context.Context, tourID string, data *entity.TourPatchData) error
@@ -26,9 +26,7 @@ type Business interface {
 }
 
 type API interface {
-	Ping() gin.HandlerFunc
 	CreateTourHdl() gin.HandlerFunc
-	GetTourNameHdl() gin.HandlerFunc
 	ListTourHdl() gin.HandlerFunc
 	GetTourHdl() gin.HandlerFunc
 	UpdateTourHdl() gin.HandlerFunc

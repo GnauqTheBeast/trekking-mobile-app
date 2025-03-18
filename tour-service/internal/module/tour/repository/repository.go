@@ -13,8 +13,11 @@ import (
 )
 
 var (
-	ErrTourNotFound    = errors.New("tour not found")
-	ErrInvalidTourData = errors.New("invalid tour data")
+	ErrTourNotFound       = errors.New("tour not found")
+	ErrInvalidTourData    = errors.New("invalid tour data")
+	ErrTourAlreadyExists  = errors.New("tour already exists")
+	ErrUnauthorizedAccess = errors.New("unauthorized access to tour")
+	ErrInvalidPagination  = errors.New("invalid pagination parameters")
 )
 
 type postgresRepo struct {
@@ -105,12 +108,12 @@ func (repo *postgresRepo) DeleteTour(ctx context.Context, tourID string) error {
 	return nil
 }
 
-func (repo *postgresRepo) InsertNewTour(ctx context.Context, data *entity.Tour) error {
+func (repo *postgresRepo) InsertNewTour(ctx context.Context, data *entity.Tour) (*entity.Tour, error) {
 	if data == nil {
-		return ErrInvalidTourData
+		return nil, ErrInvalidTourData
 	}
 
-	return repo.queries.CreateTour(ctx, &sqlc.CreateTourParams{
+	createTour, err := repo.queries.CreateTour(ctx, &sqlc.CreateTourParams{
 		ID:   data.ID,
 		Name: data.Name,
 		Description: sql.NullString{
@@ -128,6 +131,18 @@ func (repo *postgresRepo) InsertNewTour(ctx context.Context, data *entity.Tour) 
 			Time:  data.TimeEnd,
 		},
 	})
+	return &entity.Tour{
+		ID:          createTour.ID,
+		Name:        createTour.Name,
+		HostID:      createTour.Host,
+		Description: createTour.Description.String,
+		Status:      entity.TourStatus(createTour.Status),
+		Slot:        createTour.Slot,
+		TimeStart:   createTour.StartAt.Time,
+		TimeEnd:     createTour.EndAt.Time,
+		CreatedAt:   createTour.CreatedAt,
+		UpdatedAt:   createTour.UpdatedAt.Time,
+	}, err
 }
 
 func (repo *postgresRepo) GetTourByID(ctx context.Context, tourID string) (*entity.Tour, error) {
