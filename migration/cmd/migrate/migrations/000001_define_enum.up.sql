@@ -12,3 +12,8 @@ CREATE TYPE "VoucherStatus" AS ENUM (
   'CANCELLED'
 );
 
+CREATE TYPE "TourStatus" AS ENUM (
+  'DRAFT',
+  'PUBLISHED',
+  'ARCHIVED'
+);

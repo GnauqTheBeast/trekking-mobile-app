@@ -3,13 +3,15 @@ INSERT INTO tour (
     id,
     name,
     description,
-    host,
+    host_id,
     slot,
     status,
     start_at,
-    end_at
+    end_at,
+    created_at,
+    updated_at
 ) VALUES (
-             $1, $2, $3, $4, $5, $6, $7, $8
+             $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
 ) RETURNING *;
 
 -- name: GetTourByID :one
@@ -22,7 +24,7 @@ WHERE id = $1 LIMIT 1 FOR NO KEY UPDATE;
 
 -- name: ListTours :many
 SELECT * FROM tour
-WHERE host = $1
+WHERE host_id = $1
 ORDER BY id
     LIMIT $2
 OFFSET $3;

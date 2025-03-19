@@ -33,22 +33,22 @@ CREATE TABLE "permission" (
                               "id" uuid PRIMARY KEY,
                               "name" varchar NOT NULL,
                               "code" varchar NOT NULL,
-                              "description" text,
+                              "description" text NOT NULL,
                               "created_at" timestamptz NOT NULL DEFAULT (now()),
-                              "updated_at" timestamptz
+                              "updated_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "tour" (
                         "id" uuid PRIMARY KEY,
                         "name" varchar NOT NULL,
-                        "description" text,
-                        "host" uuid NOT NULL,
+                        "description" text NOT NULL,
+                        "host_id" uuid NOT NULL,
                         "slot" int NOT NULL,
-                        "status" varchar NOT NULL,
-                        "start_at" timestamptz,
-                        "end_at" timestamptz,
+                        "status" "TourStatus" NOT NULL,
+                        "start_at" timestamptz NOT NULL,
+                        "end_at" timestamptz NOT NULL,
                         "created_at" timestamptz NOT NULL DEFAULT (now()),
-                        "updated_at" timestamptz
+                        "updated_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "booking" (
@@ -56,23 +56,24 @@ CREATE TABLE "booking" (
                            "user_id" uuid NOT NULL,
                            "tour_id" uuid NOT NULL,
                            "voucher_id" uuid,
+                           "host_id" uuid NOT NULL,
                            "porter_id" uuid,
                            "quantity" int NOT NULL DEFAULT 1,
-                           "total_price" bigint,
+                           "total_price" bigint NOT NULL,
                            "created_at" timestamptz NOT NULL DEFAULT (now()),
-                           "updated_at" timestamptz
+                           "updated_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "payment" (
                            "id" uuid PRIMARY KEY,
                            "booking_id" uuid NOT NULL,
-                           "total" bigint,
+                           "total" bigint NOT NULL,
                            "method" varchar,
                            "type" varchar,
                            "status" varchar,
                            "transaction_id" varchar,
                            "created_at" timestamptz NOT NULL DEFAULT (now()),
-                           "updated_at" timestamptz
+                           "updated_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "rating" (
@@ -82,15 +83,15 @@ CREATE TABLE "rating" (
                           "rate" int,
                           "review" text,
                           "created_at" timestamptz NOT NULL DEFAULT (now()),
-                          "updated_at" timestamptz
+                          "updated_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "notification" (
-                                "id" uuid PRIMARY KEY,
-                                "name" varchar,
-                                "description" text,
-                                "created_at" timestamptz NOT NULL DEFAULT (now()),
-                                "updated_at" timestamptz
+                            "id" uuid PRIMARY KEY,
+                            "name" varchar,
+                            "description" text,
+                            "created_at" timestamptz NOT NULL DEFAULT (now()),
+                            "updated_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "voucher" (
@@ -105,42 +106,42 @@ CREATE TABLE "voucher" (
                            "created_by" uuid,
                            "tour_id" uuid,
                            "created_at" timestamptz NOT NULL DEFAULT (now()),
-                           "updated_at" timestamptz
+                           "updated_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "voucher_user" (
-                                "id" uuid PRIMARY KEY,
-                                "user_id" uuid,
-                                "voucher_id" uuid,
-                                "status" "VoucherStatus"
+                            "id" uuid PRIMARY KEY,
+                            "user_id" uuid,
+                            "voucher_id" uuid,
+                            "status" "VoucherStatus"
 );
 
-ALTER TABLE "user" ADD FOREIGN KEY ("role_id") REFERENCES "role" ("id");
-
-ALTER TABLE "user" ADD FOREIGN KEY ("provider_id") REFERENCES "auth_provider" ("id");
-
-ALTER TABLE "role_permission" ADD FOREIGN KEY ("role_id") REFERENCES "role" ("id");
-
-ALTER TABLE "role_permission" ADD FOREIGN KEY ("permission_id") REFERENCES "permission" ("id");
-
-ALTER TABLE "tour" ADD FOREIGN KEY ("host") REFERENCES "user" ("id");
-
-ALTER TABLE "booking" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("id");
-
-ALTER TABLE "booking" ADD FOREIGN KEY ("tour_id") REFERENCES "tour" ("id");
-
-ALTER TABLE "booking" ADD FOREIGN KEY ("voucher_id") REFERENCES "voucher_user" ("id");
-
-ALTER TABLE "payment" ADD FOREIGN KEY ("booking_id") REFERENCES "booking" ("id");
-
-ALTER TABLE "rating" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("id");
-
-ALTER TABLE "rating" ADD FOREIGN KEY ("booking_id") REFERENCES "booking" ("id");
-
-ALTER TABLE "voucher" ADD FOREIGN KEY ("created_by") REFERENCES "user" ("id");
-
-ALTER TABLE "voucher" ADD FOREIGN KEY ("tour_id") REFERENCES "tour" ("id");
-
-ALTER TABLE "voucher_user" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("id");
-
-ALTER TABLE "voucher_user" ADD FOREIGN KEY ("voucher_id") REFERENCES "voucher" ("id");
+-- ALTER TABLE "user" ADD FOREIGN KEY ("role_id") REFERENCES "role" ("id");
+--
+-- ALTER TABLE "user" ADD FOREIGN KEY ("provider_id") REFERENCES "auth_provider" ("id");
+--
+-- ALTER TABLE "role_permission" ADD FOREIGN KEY ("role_id") REFERENCES "role" ("id");
+--
+-- ALTER TABLE "role_permission" ADD FOREIGN KEY ("permission_id") REFERENCES "permission" ("id");
+--
+-- ALTER TABLE "booking" ADD FOREIGN KEY ("host") REFERENCES "user" ("id");
+--
+-- ALTER TABLE "booking" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("id");
+--
+-- ALTER TABLE "booking" ADD FOREIGN KEY ("tour_id") REFERENCES "booking" ("id");
+--
+-- ALTER TABLE "booking" ADD FOREIGN KEY ("voucher_id") REFERENCES "voucher_user" ("id");
+--
+-- ALTER TABLE "payment" ADD FOREIGN KEY ("booking_id") REFERENCES "booking" ("id");
+--
+-- ALTER TABLE "rating" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("id");
+--
+-- ALTER TABLE "rating" ADD FOREIGN KEY ("booking_id") REFERENCES "booking" ("id");
+--
+-- ALTER TABLE "voucher" ADD FOREIGN KEY ("created_by") REFERENCES "user" ("id");
+--
+-- ALTER TABLE "voucher" ADD FOREIGN KEY ("tour_id") REFERENCES "booking" ("id");
+--
+-- ALTER TABLE "voucher_user" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("id");
+--
+-- ALTER TABLE "voucher_user" ADD FOREIGN KEY ("voucher_id") REFERENCES "voucher" ("id");

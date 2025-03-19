@@ -5,19 +5,17 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/google/uuid"
+	"github.com/trekking-mobile-app/internal/pkg/paging"
+	"time"
 
 	"github.com/trekking-mobile-app/app/database/sqlc"
-	"github.com/trekking-mobile-app/app/model"
 	"github.com/trekking-mobile-app/internal/module/tour"
 	"github.com/trekking-mobile-app/internal/module/tour/entity"
 )
 
 var (
-	ErrTourNotFound       = errors.New("tour not found")
-	ErrInvalidTourData    = errors.New("invalid tour data")
-	ErrTourAlreadyExists  = errors.New("tour already exists")
-	ErrUnauthorizedAccess = errors.New("unauthorized access to tour")
-	ErrInvalidPagination  = errors.New("invalid pagination parameters")
+	ErrTourNotFound    = errors.New("booking not found")
+	ErrInvalidTourData = errors.New("invalid booking data")
 )
 
 type postgresRepo struct {
@@ -33,10 +31,10 @@ func NewPostgresRepo(db *sqlc.SQLRepository) tour.Repository {
 	}
 }
 
-func (repo *postgresRepo) ListTours(ctx context.Context, paging *model.Paging) ([]*entity.Tour, error) {
+func (repo *postgresRepo) ListTours(ctx context.Context, paging *paging.Paging) ([]*entity.Tour, error) {
 	tours, err := repo.queries.ListTours(ctx, &sqlc.ListToursParams{
-		Limit:  paging.Limit,
-		Offset: paging.Offset,
+		Limit:  int32(paging.Limit),
+		Offset: int32(paging.Offset),
 	})
 	if err != nil {
 		return nil, err
@@ -47,7 +45,7 @@ func (repo *postgresRepo) ListTours(ctx context.Context, paging *model.Paging) (
 		result[i] = &entity.Tour{
 			ID:          t.ID,
 			Name:        t.Name,
-			Description: t.Description.String,
+			Description: t.Description,
 			Status:      entity.TourStatus(t.Status),
 			CreatedAt:   t.CreatedAt,
 		}
@@ -68,27 +66,21 @@ func (repo *postgresRepo) UpdateTour(ctx context.Context, tourID string, data *e
 
 	tourByID, err := repo.queries.GetTourByID(ctx, id)
 	if err != nil {
-		return ErrTourNotFound
+		if errors.Is(err, sql.ErrNoRows) {
+			return ErrTourNotFound
+		}
+		return err
 	}
 
 	return repo.queries.UpdateTour(ctx, &sqlc.UpdateTourParams{
-		ID:   id,
-		Name: data.Name,
-		Description: sql.NullString{
-			String: data.Description,
-			Valid:  true,
-		},
-		Slot:   data.Slot,
-		Status: string(data.Status),
-		StartAt: sql.NullTime{
-			Valid: true,
-			Time:  data.TimeStart,
-		},
-		EndAt: sql.NullTime{
-			Valid: true,
-			Time:  data.TimeEnd,
-		},
-		UpdatedAt: tourByID.UpdatedAt,
+		ID:          id,
+		Name:        data.Name,
+		Description: data.Description,
+		Slot:        data.Slot,
+		Status:      string(data.Status),
+		StartAt:     data.TimeStart,
+		EndAt:       data.TimeEnd,
+		UpdatedAt:   tourByID.UpdatedAt,
 	})
 }
 
@@ -108,40 +100,35 @@ func (repo *postgresRepo) DeleteTour(ctx context.Context, tourID string) error {
 	return nil
 }
 
-func (repo *postgresRepo) InsertNewTour(ctx context.Context, data *entity.Tour) (*entity.Tour, error) {
+func (repo *postgresRepo) InsertNewTour(ctx context.Context, data *entity.TourCreateData) (*entity.Tour, error) {
 	if data == nil {
 		return nil, ErrInvalidTourData
 	}
 
 	createTour, err := repo.queries.CreateTour(ctx, &sqlc.CreateTourParams{
-		ID:   data.ID,
-		Name: data.Name,
-		Description: sql.NullString{
-			String: data.Description,
-			Valid:  true,
-		},
-		Host: data.HostID,
-		Slot: data.Slot,
-		StartAt: sql.NullTime{
-			Valid: true,
-			Time:  data.TimeStart,
-		},
-		EndAt: sql.NullTime{
-			Valid: true,
-			Time:  data.TimeEnd,
-		},
+		ID:          uuid.New(),
+		Name:        data.Name,
+		Description: data.Description,
+		HostID:      data.HostID,
+		Slot:        data.Slot,
+		Status:      string(data.Status),
+		StartAt:     data.TimeStart,
+		EndAt:       data.TimeEnd,
+		UpdatedAt:   time.Now(),
+		CreatedAt:   time.Now(),
 	})
+
 	return &entity.Tour{
 		ID:          createTour.ID,
 		Name:        createTour.Name,
-		HostID:      createTour.Host,
-		Description: createTour.Description.String,
+		HostID:      createTour.HostID,
+		Description: createTour.Description,
 		Status:      entity.TourStatus(createTour.Status),
 		Slot:        createTour.Slot,
-		TimeStart:   createTour.StartAt.Time,
-		TimeEnd:     createTour.EndAt.Time,
+		TimeStart:   createTour.StartAt,
+		TimeEnd:     createTour.EndAt,
 		CreatedAt:   createTour.CreatedAt,
-		UpdatedAt:   createTour.UpdatedAt.Time,
+		UpdatedAt:   createTour.UpdatedAt,
 	}, err
 }
 
@@ -153,16 +140,19 @@ func (repo *postgresRepo) GetTourByID(ctx context.Context, tourID string) (*enti
 
 	tourByID, err := repo.queries.GetTourByID(ctx, ID)
 	if err != nil {
-		return nil, ErrTourNotFound
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrTourNotFound
+		}
+		return nil, err
 	}
 
 	return &entity.Tour{
 		ID:          tourByID.ID,
 		Name:        tourByID.Name,
-		Description: tourByID.Description.String,
+		Description: tourByID.Description,
 		Status:      entity.TourStatus(tourByID.Status),
 		Slot:        tourByID.Slot,
 		CreatedAt:   tourByID.CreatedAt,
-		UpdatedAt:   tourByID.UpdatedAt.Time,
+		UpdatedAt:   tourByID.UpdatedAt,
 	}, nil
 }

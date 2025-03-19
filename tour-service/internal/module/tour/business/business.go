@@ -3,17 +3,15 @@ package business
 import (
 	"context"
 	"fmt"
-	"github.com/google/uuid"
+	"github.com/trekking-mobile-app/internal/pkg/paging"
 	"time"
 
-	"github.com/trekking-mobile-app/app/model"
 	"github.com/trekking-mobile-app/internal/module/tour"
 	"github.com/trekking-mobile-app/internal/module/tour/entity"
 )
 
 var (
 	ErrInvalidTourData         = fmt.Errorf("invalid tour data")
-	ErrTourNotFound            = fmt.Errorf("tour not found")
 	ErrInvalidStatusTransition = fmt.Errorf("invalid status transition")
 )
 
@@ -30,7 +28,7 @@ func NewBusiness(repository tour.Repository) tour.Business {
 	}
 }
 
-func (b *business) CreateNewTour(ctx context.Context, data *entity.Tour) (*entity.Tour, error) {
+func (b *business) CreateNewTour(ctx context.Context, data *entity.TourCreateData) (*entity.Tour, error) {
 	if data == nil {
 		return nil, ErrInvalidTourData
 	}
@@ -47,46 +45,29 @@ func (b *business) CreateNewTour(ctx context.Context, data *entity.Tour) (*entit
 
 	now := time.Now()
 	data.CreatedAt = now
-	data.UpdatedAt = now
-
-	data.ID = uuid.New()
 
 	return b.repository.InsertNewTour(ctx, data)
 }
 
-func (b *business) ListTours(ctx context.Context, paging *model.Paging) ([]*entity.Tour, error) {
-	if paging == nil {
-		paging = &model.Paging{
-			Limit:  10,
-			Offset: 0,
-		}
-	}
-
-	if paging.Limit <= 0 || paging.Limit > 100 {
-		paging.Limit = 10
-	}
-	if paging.Offset < 0 {
-		paging.Offset = 0
-	}
-
+func (b *business) ListTours(ctx context.Context, paging *paging.Paging) ([]*entity.Tour, error) {
 	return b.repository.ListTours(ctx, paging)
 }
 
 func (b *business) GetTourDetails(ctx context.Context, tourID string) (*entity.Tour, error) {
 	if tourID == "" {
-		return nil, fmt.Errorf("%w: tour ID is required", ErrInvalidTourData)
+		return nil, fmt.Errorf("%w: booking ID is required", ErrInvalidTourData)
 	}
 
 	tour, err := b.repository.GetTourByID(ctx, tourID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get tour: %w", err)
+		return nil, fmt.Errorf("failed to get booking: %w", err)
 	}
 	return tour, nil
 }
 
 func (b *business) UpdateTour(ctx context.Context, tourID string, data *entity.TourPatchData) error {
 	if tourID == "" {
-		return fmt.Errorf("%w: tour ID is required", ErrInvalidTourData)
+		return fmt.Errorf("%w: booking ID is required", ErrInvalidTourData)
 	}
 	if data == nil {
 		return ErrInvalidTourData
@@ -94,7 +75,7 @@ func (b *business) UpdateTour(ctx context.Context, tourID string, data *entity.T
 
 	existingTour, err := b.repository.GetTourByID(ctx, tourID)
 	if err != nil {
-		return fmt.Errorf("failed to get existing tour: %w", err)
+		return fmt.Errorf("failed to get existing booking: %w", err)
 	}
 
 	if data.Status != "" {

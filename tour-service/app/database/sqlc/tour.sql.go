@@ -7,7 +7,7 @@ package sqlc
 
 import (
 	"context"
-	"database/sql"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -17,25 +17,29 @@ INSERT INTO tour (
     id,
     name,
     description,
-    host,
+    host_id,
     slot,
     status,
     start_at,
-    end_at
+    end_at,
+    created_at,
+    updated_at
 ) VALUES (
-             $1, $2, $3, $4, $5, $6, $7, $8
-) RETURNING id, name, description, host, slot, status, start_at, end_at, created_at, updated_at
+             $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
+) RETURNING id, name, description, host_id, slot, status, start_at, end_at, created_at, updated_at
 `
 
 type CreateTourParams struct {
-	ID          uuid.UUID      `json:"id"`
-	Name        string         `json:"name"`
-	Description sql.NullString `json:"description"`
-	Host        uuid.UUID      `json:"host"`
-	Slot        int32          `json:"slot"`
-	Status      string         `json:"status"`
-	StartAt     sql.NullTime   `json:"start_at"`
-	EndAt       sql.NullTime   `json:"end_at"`
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	HostID      uuid.UUID `json:"host_id"`
+	Slot        int32     `json:"slot"`
+	Status      string    `json:"status"`
+	StartAt     time.Time `json:"start_at"`
+	EndAt       time.Time `json:"end_at"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 func (q *Queries) CreateTour(ctx context.Context, arg *CreateTourParams) (*Tour, error) {
@@ -43,18 +47,20 @@ func (q *Queries) CreateTour(ctx context.Context, arg *CreateTourParams) (*Tour,
 		arg.ID,
 		arg.Name,
 		arg.Description,
-		arg.Host,
+		arg.HostID,
 		arg.Slot,
 		arg.Status,
 		arg.StartAt,
 		arg.EndAt,
+		arg.CreatedAt,
+		arg.UpdatedAt,
 	)
 	var i Tour
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
 		&i.Description,
-		&i.Host,
+		&i.HostID,
 		&i.Slot,
 		&i.Status,
 		&i.StartAt,
@@ -76,7 +82,7 @@ func (q *Queries) DeleteTour(ctx context.Context, id uuid.UUID) error {
 }
 
 const getTourByID = `-- name: GetTourByID :one
-SELECT id, name, description, host, slot, status, start_at, end_at, created_at, updated_at FROM tour
+SELECT id, name, description, host_id, slot, status, start_at, end_at, created_at, updated_at FROM tour
 WHERE id = $1 LIMIT 1
 `
 
@@ -87,7 +93,7 @@ func (q *Queries) GetTourByID(ctx context.Context, id uuid.UUID) (*Tour, error) 
 		&i.ID,
 		&i.Name,
 		&i.Description,
-		&i.Host,
+		&i.HostID,
 		&i.Slot,
 		&i.Status,
 		&i.StartAt,
@@ -99,7 +105,7 @@ func (q *Queries) GetTourByID(ctx context.Context, id uuid.UUID) (*Tour, error) 
 }
 
 const getTourForUpdate = `-- name: GetTourForUpdate :one
-SELECT id, name, description, host, slot, status, start_at, end_at, created_at, updated_at FROM tour
+SELECT id, name, description, host_id, slot, status, start_at, end_at, created_at, updated_at FROM tour
 WHERE id = $1 LIMIT 1 FOR NO KEY UPDATE
 `
 
@@ -110,7 +116,7 @@ func (q *Queries) GetTourForUpdate(ctx context.Context, id uuid.UUID) (*Tour, er
 		&i.ID,
 		&i.Name,
 		&i.Description,
-		&i.Host,
+		&i.HostID,
 		&i.Slot,
 		&i.Status,
 		&i.StartAt,
@@ -122,21 +128,21 @@ func (q *Queries) GetTourForUpdate(ctx context.Context, id uuid.UUID) (*Tour, er
 }
 
 const listTours = `-- name: ListTours :many
-SELECT id, name, description, host, slot, status, start_at, end_at, created_at, updated_at FROM tour
-WHERE host = $1
+SELECT id, name, description, host_id, slot, status, start_at, end_at, created_at, updated_at FROM tour
+WHERE host_id = $1
 ORDER BY id
     LIMIT $2
 OFFSET $3
 `
 
 type ListToursParams struct {
-	Host   uuid.UUID `json:"host"`
+	HostID uuid.UUID `json:"host_id"`
 	Limit  int32     `json:"limit"`
 	Offset int32     `json:"offset"`
 }
 
 func (q *Queries) ListTours(ctx context.Context, arg *ListToursParams) ([]*Tour, error) {
-	rows, err := q.db.QueryContext(ctx, listTours, arg.Host, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, listTours, arg.HostID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -148,7 +154,7 @@ func (q *Queries) ListTours(ctx context.Context, arg *ListToursParams) ([]*Tour,
 			&i.ID,
 			&i.Name,
 			&i.Description,
-			&i.Host,
+			&i.HostID,
 			&i.Slot,
 			&i.Status,
 			&i.StartAt,
@@ -183,14 +189,14 @@ WHERE id = $1 and updated_at = $8
 `
 
 type UpdateTourParams struct {
-	ID          uuid.UUID      `json:"id"`
-	Name        string         `json:"name"`
-	Description sql.NullString `json:"description"`
-	Slot        int32          `json:"slot"`
-	Status      string         `json:"status"`
-	StartAt     sql.NullTime   `json:"start_at"`
-	EndAt       sql.NullTime   `json:"end_at"`
-	UpdatedAt   sql.NullTime   `json:"updated_at"`
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Slot        int32     `json:"slot"`
+	Status      string    `json:"status"`
+	StartAt     time.Time `json:"start_at"`
+	EndAt       time.Time `json:"end_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 func (q *Queries) UpdateTour(ctx context.Context, arg *UpdateTourParams) error {

@@ -21,6 +21,4 @@ func startRouteV1(group *gin.RouterGroup) {
 		tours.PATCH("/:id", tourService.UpdateTourHdl())
 		tours.DELETE("/:id", tourService.DeleteTourHdl())
 	}
-
-	group.GET("/ping", tourService.Ping())
 }

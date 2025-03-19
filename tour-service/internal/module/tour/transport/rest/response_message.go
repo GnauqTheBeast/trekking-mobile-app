@@ -5,6 +5,12 @@ import (
 	"net/http"
 )
 
+type Response struct {
+	Message    string      `json:"message"`
+	StatusCode int         `json:"status_code"`
+	Data       interface{} `json:"data"`
+}
+
 func responseSuccess(c *gin.Context, data interface{}) {
 	c.JSON(http.StatusOK, gin.H{"data": data})
 }

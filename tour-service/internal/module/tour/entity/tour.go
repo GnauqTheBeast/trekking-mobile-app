@@ -8,9 +8,9 @@ import (
 type TourStatus string
 
 const (
-	TourStatusDraft     TourStatus = "draft"
-	TourStatusPublished TourStatus = "published"
-	TourStatusArchived  TourStatus = "archived"
+	TourStatusDraft     TourStatus = "DRAFT"
+	TourStatusPublished TourStatus = "PUBLISHED"
+	TourStatusArchived  TourStatus = "ARCHIVED"
 )
 
 type Tour struct {
@@ -19,15 +19,26 @@ type Tour struct {
 	Description string     `json:"description" binding:"required,min=10"`
 	HostID      uuid.UUID  `json:"host_id" binding:"required"`
 	Slot        int32      `json:"slot" binding:"required"`
-	Status      TourStatus `json:"status" binding:"required,oneof=draft published archived"`
+	Status      TourStatus `json:"status" binding:"required,oneof=DRAFT PUBLISHED ARCHIVED"`
 	TimeStart   time.Time  `json:"start" binding:"required"`
 	TimeEnd     time.Time  `json:"end" binding:"required"`
 	CreatedAt   time.Time  `json:"created_at"`
 	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
+type TourCreateData struct {
+	Name        string     `json:"name" binding:"required,min=3,max=255"`
+	Description string     `json:"description" binding:"required,min=10"`
+	HostID      uuid.UUID  `json:"host_id" binding:"required"`
+	Slot        int32      `json:"slot" binding:"required"`
+	Status      TourStatus `json:"status" binding:"required,oneof=DRAFT PUBLISHED ARCHIVED"`
+	TimeStart   time.Time  `json:"start" binding:"required"`
+	TimeEnd     time.Time  `json:"end" binding:"required"`
+	CreatedAt   time.Time  `json:"created_at"`
+}
+
 func (*Tour) TableName() string {
-	return "tour"
+	return "booking"
 }
 
 type TourPatchData struct {

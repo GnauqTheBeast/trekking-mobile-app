@@ -1,2 +1,3 @@
 DROP TYPE IF EXISTS "VoucherStatus";
 DROP TYPE IF EXISTS "UserRole";
+DROP TYPE IF EXISTS "TourStatus";

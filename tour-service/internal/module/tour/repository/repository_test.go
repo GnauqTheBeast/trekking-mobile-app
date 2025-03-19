@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"github.com/trekking-mobile-app/internal/pkg/paging"
 	"testing"
 	"time"
 
@@ -9,7 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	"github.com/trekking-mobile-app/app/model"
 	"github.com/trekking-mobile-app/internal/module/tour/entity"
 )
 
@@ -22,7 +22,7 @@ func (m *MockQueries) InsertNewTour(ctx context.Context, data *entity.Tour) (*en
 	return args.Get(0).(*entity.Tour), args.Error(1)
 }
 
-func (m *MockQueries) ListTours(ctx context.Context, paging *model.Paging) ([]*entity.Tour, error) {
+func (m *MockQueries) ListTours(ctx context.Context, paging *paging.Paging) ([]*entity.Tour, error) {
 	args := m.Called(ctx, paging)
 	return args.Get(0).([]*entity.Tour), args.Error(1)
 }
@@ -58,7 +58,7 @@ func TestListTours(t *testing.T) {
 
 		mockQueries.On("ListTours", ctx, mock.Anything).Return(mockTours, nil)
 
-		result, err := mockQueries.ListTours(ctx, &model.Paging{Limit: 10, Offset: 0})
+		result, err := mockQueries.ListTours(ctx, &paging.Paging{Limit: 8, Offset: 0})
 		assert.NoError(t, err)
 		assert.Len(t, result, 1)
 		assert.Equal(t, mockTours[0].ID, result[0].ID)
@@ -69,7 +69,7 @@ func TestGetTourByID(t *testing.T) {
 	mockQueries := new(MockQueries)
 	ctx := context.Background()
 
-	t.Run("get tour by id", func(t *testing.T) {
+	t.Run("get booking by id", func(t *testing.T) {
 		tourID := uuid.New()
 		mockTour := &entity.Tour{
 			ID:          tourID,
@@ -93,7 +93,7 @@ func TestInsertNewTour(t *testing.T) {
 	mockQueries := new(MockQueries)
 	ctx := context.Background()
 
-	t.Run("insert new tour", func(t *testing.T) {
+	t.Run("insert new booking", func(t *testing.T) {
 		mockTour := &entity.Tour{
 			ID:   uuid.New(),
 			Name: "New Tour",
@@ -111,7 +111,7 @@ func TestDeleteTour(t *testing.T) {
 	mockQueries := new(MockQueries)
 	ctx := context.Background()
 
-	t.Run("delete tour", func(t *testing.T) {
+	t.Run("delete booking", func(t *testing.T) {
 		tourID := uuid.New()
 		mockQueries.On("DeleteTour", ctx, tourID.String()).Return(nil)
 

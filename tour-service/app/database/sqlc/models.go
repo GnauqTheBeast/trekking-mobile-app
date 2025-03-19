@@ -5,21 +5,20 @@
 package sqlc
 
 import (
-	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
 )
 
 type Tour struct {
-	ID          uuid.UUID      `json:"id"`
-	Name        string         `json:"name"`
-	Description sql.NullString `json:"description"`
-	Host        uuid.UUID      `json:"host"`
-	Slot        int32          `json:"slot"`
-	Status      string         `json:"status"`
-	StartAt     sql.NullTime   `json:"start_at"`
-	EndAt       sql.NullTime   `json:"end_at"`
-	CreatedAt   time.Time      `json:"created_at"`
-	UpdatedAt   sql.NullTime   `json:"updated_at"`
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	HostID      uuid.UUID `json:"host_id"`
+	Slot        int32     `json:"slot"`
+	Status      string    `json:"status"`
+	StartAt     time.Time `json:"start_at"`
+	EndAt       time.Time `json:"end_at"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }

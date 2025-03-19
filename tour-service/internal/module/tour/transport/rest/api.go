@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/trekking-mobile-app/internal/module/tour"
 	"github.com/trekking-mobile-app/internal/module/tour/entity"
+	"github.com/trekking-mobile-app/internal/pkg/paging"
 	"net/http"
 )
 
@@ -19,7 +20,7 @@ func NewAPI(biz tour.Business) tour.API {
 
 func (a *api) CreateTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		data := new(entity.Tour)
+		data := new(entity.TourCreateData)
 		if err := c.ShouldBindJSON(&data); err != nil {
 			responseError(c, err)
 			return
@@ -38,7 +39,13 @@ func (a *api) CreateTourHdl() gin.HandlerFunc {
 
 func (a *api) ListTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "ListTourHdl called"})
+		listTours, err := a.biz.ListTours(c, paging.GetQueryPaging(c))
+		if err != nil {
+			responseError(c, err)
+		}
+
+		responseSuccess(c, listTours)
+		return
 	}
 }
 
@@ -80,7 +87,7 @@ func (a *api) DeleteTourHdl() gin.HandlerFunc {
 			return
 		}
 
-		responseSuccessWithMessage(c, "delete tour successful")
+		responseSuccessWithMessage(c, "delete booking successful")
 		return
 	}
 }
