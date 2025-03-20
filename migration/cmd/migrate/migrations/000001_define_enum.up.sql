@@ -5,13 +5,6 @@ CREATE TYPE "UserRole" AS ENUM (
   'PORTER'
 );
 
-CREATE TYPE "VoucherStatus" AS ENUM (
-  'ACTIVE',
-  'USED',
-  'EXPIRED',
-  'CANCELLED'
-);
-
 CREATE TYPE "TourStatus" AS ENUM (
   'DRAFT',
   'PUBLISHED',
