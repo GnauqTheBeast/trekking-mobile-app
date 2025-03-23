@@ -15,8 +15,6 @@ type Querier interface {
 	DeleteBooking(ctx context.Context, id uuid.UUID) error
 	GetBookingByID(ctx context.Context, id uuid.UUID) (*Booking, error)
 	GetBookingForUpdate(ctx context.Context, id uuid.UUID) (*Booking, error)
-	ListHostBookings(ctx context.Context, arg *ListHostBookingsParams) ([]*Booking, error)
-	ListUserBookings(ctx context.Context, arg *ListUserBookingsParams) ([]*Booking, error)
 	UpdateBooking(ctx context.Context, arg *UpdateBookingParams) error
 }
 

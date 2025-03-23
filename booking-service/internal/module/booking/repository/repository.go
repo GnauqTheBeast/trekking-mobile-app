@@ -56,13 +56,11 @@ func (repo *postgresRepo) InsertNewBooking(ctx context.Context, booking *entity.
 	newBooking, err := repo.queries.CreateBooking(ctx, &sqlc.CreateBookingParams{
 		ID:     booking.ID,
 		UserID: booking.UserID,
-		HostID: booking.HostID,
 		TourID: booking.TourID,
 		PorterID: uuid.NullUUID{
 			Valid: true,
-			UUID: *booking.PorterID,
+			UUID:  *booking.PorterID,
 		},
-
 	})
 	if err != nil {
 		return nil, err
@@ -71,7 +69,6 @@ func (repo *postgresRepo) InsertNewBooking(ctx context.Context, booking *entity.
 	return &entity.Booking{
 		ID:     newBooking.ID,
 		UserID: newBooking.UserID,
-		HostID: newBooking.HostID,
 		TourID: newBooking.TourID,
 	}, nil
 }

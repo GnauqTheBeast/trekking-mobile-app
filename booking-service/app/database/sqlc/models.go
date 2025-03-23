@@ -15,7 +15,6 @@ type Booking struct {
 	ID         uuid.UUID     `json:"id"`
 	UserID     uuid.UUID     `json:"user_id"`
 	TourID     uuid.UUID     `json:"tour_id"`
-	HostID     uuid.UUID     `json:"host_id"`
 	PorterID   uuid.NullUUID `json:"porter_id"`
 	Quantity   int32         `json:"quantity"`
 	TotalPrice sql.NullInt64 `json:"total_price"`

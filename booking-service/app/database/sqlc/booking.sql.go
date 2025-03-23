@@ -18,20 +18,18 @@ INSERT INTO booking (
     id,
     user_id,
     tour_id,
-    host_id,
     porter_id,
     quantity,
     total_price
 ) VALUES (
-     $1, $2, $3, $4, $5, $6, $7
-) RETURNING id, user_id, tour_id, host_id, porter_id, quantity, total_price, created_at, updated_at
+     $1, $2, $3, $4, $5, $6
+) RETURNING id, user_id, tour_id, porter_id, quantity, total_price, created_at, updated_at
 `
 
 type CreateBookingParams struct {
 	ID         uuid.UUID     `json:"id"`
 	UserID     uuid.UUID     `json:"user_id"`
 	TourID     uuid.UUID     `json:"tour_id"`
-	HostID     uuid.UUID     `json:"host_id"`
 	PorterID   uuid.NullUUID `json:"porter_id"`
 	Quantity   int32         `json:"quantity"`
 	TotalPrice sql.NullInt64 `json:"total_price"`
@@ -42,7 +40,6 @@ func (q *Queries) CreateBooking(ctx context.Context, arg *CreateBookingParams) (
 		arg.ID,
 		arg.UserID,
 		arg.TourID,
-		arg.HostID,
 		arg.PorterID,
 		arg.Quantity,
 		arg.TotalPrice,
@@ -52,7 +49,6 @@ func (q *Queries) CreateBooking(ctx context.Context, arg *CreateBookingParams) (
 		&i.ID,
 		&i.UserID,
 		&i.TourID,
-		&i.HostID,
 		&i.PorterID,
 		&i.Quantity,
 		&i.TotalPrice,
@@ -73,7 +69,7 @@ func (q *Queries) DeleteBooking(ctx context.Context, id uuid.UUID) error {
 }
 
 const getBookingByID = `-- name: GetBookingByID :one
-SELECT id, user_id, tour_id, host_id, porter_id, quantity, total_price, created_at, updated_at FROM booking
+SELECT id, user_id, tour_id, porter_id, quantity, total_price, created_at, updated_at FROM booking
 WHERE id = $1 LIMIT 1
 `
 
@@ -84,7 +80,6 @@ func (q *Queries) GetBookingByID(ctx context.Context, id uuid.UUID) (*Booking, e
 		&i.ID,
 		&i.UserID,
 		&i.TourID,
-		&i.HostID,
 		&i.PorterID,
 		&i.Quantity,
 		&i.TotalPrice,
@@ -95,7 +90,7 @@ func (q *Queries) GetBookingByID(ctx context.Context, id uuid.UUID) (*Booking, e
 }
 
 const getBookingForUpdate = `-- name: GetBookingForUpdate :one
-SELECT id, user_id, tour_id, host_id, porter_id, quantity, total_price, created_at, updated_at FROM booking
+SELECT id, user_id, tour_id, porter_id, quantity, total_price, created_at, updated_at FROM booking
 WHERE id = $1 LIMIT 1 FOR NO KEY UPDATE
 `
 
@@ -106,7 +101,6 @@ func (q *Queries) GetBookingForUpdate(ctx context.Context, id uuid.UUID) (*Booki
 		&i.ID,
 		&i.UserID,
 		&i.TourID,
-		&i.HostID,
 		&i.PorterID,
 		&i.Quantity,
 		&i.TotalPrice,
@@ -114,100 +108,6 @@ func (q *Queries) GetBookingForUpdate(ctx context.Context, id uuid.UUID) (*Booki
 		&i.UpdatedAt,
 	)
 	return &i, err
-}
-
-const listHostBookings = `-- name: ListHostBookings :many
-SELECT id, user_id, tour_id, host_id, porter_id, quantity, total_price, created_at, updated_at FROM booking
-WHERE host_id = $1
-ORDER BY created_at DESC
-    LIMIT $2
-OFFSET $3
-`
-
-type ListHostBookingsParams struct {
-	HostID uuid.UUID `json:"host_id"`
-	Limit  int32     `json:"limit"`
-	Offset int32     `json:"offset"`
-}
-
-func (q *Queries) ListHostBookings(ctx context.Context, arg *ListHostBookingsParams) ([]*Booking, error) {
-	rows, err := q.db.QueryContext(ctx, listHostBookings, arg.HostID, arg.Limit, arg.Offset)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []*Booking{}
-	for rows.Next() {
-		var i Booking
-		if err := rows.Scan(
-			&i.ID,
-			&i.UserID,
-			&i.TourID,
-			&i.HostID,
-			&i.PorterID,
-			&i.Quantity,
-			&i.TotalPrice,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, &i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listUserBookings = `-- name: ListUserBookings :many
-SELECT id, user_id, tour_id, host_id, porter_id, quantity, total_price, created_at, updated_at FROM booking
-WHERE user_id = $1
-ORDER BY created_at DESC
-    LIMIT $2
-OFFSET $3
-`
-
-type ListUserBookingsParams struct {
-	UserID uuid.UUID `json:"user_id"`
-	Limit  int32     `json:"limit"`
-	Offset int32     `json:"offset"`
-}
-
-func (q *Queries) ListUserBookings(ctx context.Context, arg *ListUserBookingsParams) ([]*Booking, error) {
-	rows, err := q.db.QueryContext(ctx, listUserBookings, arg.UserID, arg.Limit, arg.Offset)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []*Booking{}
-	for rows.Next() {
-		var i Booking
-		if err := rows.Scan(
-			&i.ID,
-			&i.UserID,
-			&i.TourID,
-			&i.HostID,
-			&i.PorterID,
-			&i.Quantity,
-			&i.TotalPrice,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, &i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
 }
 
 const updateBooking = `-- name: UpdateBooking :exec
