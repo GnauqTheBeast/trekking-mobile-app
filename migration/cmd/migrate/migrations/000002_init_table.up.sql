@@ -5,7 +5,7 @@ CREATE TABLE "user" (
                         "password" varchar NOT NULL,
                         "phone_number" varchar,
                         "role_id" uuid,
-                        "address" text,
+                        "address" text NOT NULL,
                         "dob" date,
                         "provider_id" uuid,
                         "created_at" timestamptz NOT NULL DEFAULT (now()),
@@ -19,8 +19,8 @@ CREATE TABLE "role" (
 );
 
 CREATE TABLE "role_permission" (
-                       "role_id" uuid,
-                       "permission_id" uuid
+                       "role_id" uuid NOT NULL,
+                       "permission_id" uuid NOT NULL,
 );
 
 CREATE TABLE "auth_provider" (
@@ -55,7 +55,6 @@ CREATE TABLE "booking" (
                            "id" uuid PRIMARY KEY,
                            "user_id" uuid NOT NULL,
                            "tour_id" uuid NOT NULL,
-                           "host_id" uuid NOT NULL,
                            "porter_id" uuid,
                            "quantity" int NOT NULL DEFAULT 1,
                            "total_price" bigint NOT NULL,
@@ -67,10 +66,9 @@ CREATE TABLE "payment" (
                            "id" uuid PRIMARY KEY,
                            "booking_id" uuid NOT NULL,
                            "total" bigint NOT NULL,
-                           "method" varchar,
-                           "type" varchar,
-                           "status" varchar,
-                           "transaction_id" varchar,
+                           "method" varchar NOT NULL,
+                           "type" varchar NOT NULL,
+                           "status" varchar NOT NULL,
                            "created_at" timestamptz NOT NULL DEFAULT (now()),
                            "updated_at" timestamptz NOT NULL DEFAULT (now())
 );
@@ -79,16 +77,16 @@ CREATE TABLE "rating" (
                           "id" uuid PRIMARY KEY,
                           "user_id" uuid NOT NULL,
                           "booking_id" uuid NOT NULL,
-                          "rate" int,
-                          "review" text,
+                          "rate" int NOT NULL,
+                          "review" text NOT NULL,
                           "created_at" timestamptz NOT NULL DEFAULT (now()),
                           "updated_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "notification" (
                                 "id" uuid PRIMARY KEY,
-                                "name" varchar,
-                                "description" text,
+                                "name" varchar NOT NULL,
+                                "description" text NOT NULL,
                                 "created_at" timestamptz NOT NULL DEFAULT (now()),
                                 "updated_at" timestamptz NOT NULL DEFAULT (now())
 );
@@ -102,13 +100,11 @@ ALTER TABLE "role_permission" ADD FOREIGN KEY ("role_id") REFERENCES "role" ("id
 
 ALTER TABLE "role_permission" ADD FOREIGN KEY ("permission_id") REFERENCES "permission" ("id");
 
-ALTER TABLE "booking" ADD FOREIGN KEY ("host_id") REFERENCES "user" ("id");
-
 ALTER TABLE "booking" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("id");
 
 ALTER TABLE "booking" ADD FOREIGN KEY ("tour_id") REFERENCES "tour" ("id");
 
-ALTER TABLE "booking" ADD FOREIGN KEY ("porter_id") REFERENCES "user" ("id");
+ALTER TABLE "booking" ADD CONSTRAINT "booking_porter_id_fkey" FOREIGN KEY ("porter_id") REFERENCES "user" ("id") ON DELETE SET NULL;
 
 ALTER TABLE "tour" ADD FOREIGN KEY ("host_id") REFERENCES "user" ("id");
 

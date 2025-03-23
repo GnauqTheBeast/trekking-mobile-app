@@ -5,10 +5,10 @@ ALTER TABLE "role_permission" DROP CONSTRAINT IF EXISTS "role_permission_permiss
 ALTER TABLE "tour" DROP CONSTRAINT IF EXISTS "tour_host_id_fkey";
 ALTER TABLE "booking" DROP CONSTRAINT IF EXISTS "booking_user_id_fkey";
 ALTER TABLE "booking" DROP CONSTRAINT IF EXISTS "booking_tour_id_fkey";
-ALTER TABLE "booking" DROP CONSTRAINT IF EXISTS "booking_porter_id_fkey";
 ALTER TABLE "payment" DROP CONSTRAINT IF EXISTS "payment_booking_id_fkey";
 ALTER TABLE "rating" DROP CONSTRAINT IF EXISTS "rating_user_id_fkey";
 ALTER TABLE "rating" DROP CONSTRAINT IF EXISTS "rating_booking_id_fkey";
+ALTER TABLE "booking" DROP CONSTRAINT IF EXISTS "booking_porter_id_fkey";
 
 DROP TABLE IF EXISTS "user" CASCADE;
 DROP TABLE IF EXISTS "role" CASCADE;
