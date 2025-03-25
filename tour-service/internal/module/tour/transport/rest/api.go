@@ -2,17 +2,25 @@ package rest
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/trekking-mobile-app/internal/module/tour"
+	"github.com/trekking-mobile-app/internal/module/tour/business"
 	"github.com/trekking-mobile-app/internal/module/tour/entity"
 	"github.com/trekking-mobile-app/internal/pkg/paging"
 	"net/http"
 )
 
-type api struct {
-	biz tour.Business
+type API interface {
+	CreateTourHdl() gin.HandlerFunc
+	ListTourHdl() gin.HandlerFunc
+	GetTourHdl() gin.HandlerFunc
+	UpdateTourHdl() gin.HandlerFunc
+	DeleteTourHdl() gin.HandlerFunc
 }
 
-func NewAPI(biz tour.Business) tour.API {
+type api struct {
+	biz business.Business
+}
+
+func NewAPI(biz business.Business) API {
 	return &api{
 		biz: biz,
 	}

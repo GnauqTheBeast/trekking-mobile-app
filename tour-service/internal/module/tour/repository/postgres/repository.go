@@ -1,4 +1,4 @@
-package repository
+package postgres
 
 import (
 	"context"
@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/trekking-mobile-app/app/database/sqlc"
-	"github.com/trekking-mobile-app/internal/module/tour"
 	"github.com/trekking-mobile-app/internal/module/tour/entity"
 )
 
@@ -18,11 +17,19 @@ var (
 	ErrInvalidTourData = errors.New("invalid booking data")
 )
 
+type Repository interface {
+	InsertNewTour(ctx context.Context, data *entity.TourCreateData) (*entity.Tour, error)
+	GetTourByID(ctx context.Context, tourID string) (*entity.Tour, error)
+	ListTours(ctx context.Context, paging *paging.Paging) ([]*entity.Tour, error)
+	UpdateTour(ctx context.Context, tourID string, data *entity.TourPatchData) error
+	DeleteTour(ctx context.Context, tourID string) error
+}
+
 type postgresRepo struct {
 	queries *sqlc.Queries
 }
 
-func NewPostgresRepo(db *sqlc.SQLRepository) tour.Repository {
+func NewPostgresRepo(db *sqlc.SQLRepository) Repository {
 	if db == nil {
 		panic("db connection is required")
 	}

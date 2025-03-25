@@ -2,11 +2,13 @@ package business
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"github.com/google/uuid"
+	"github.com/trekking-mobile-app/internal/module/tour/repository/postgres"
 	"github.com/trekking-mobile-app/internal/pkg/paging"
 	"time"
 
-	"github.com/trekking-mobile-app/internal/module/tour"
 	"github.com/trekking-mobile-app/internal/module/tour/entity"
 )
 
@@ -15,11 +17,19 @@ var (
 	ErrInvalidStatusTransition = fmt.Errorf("invalid status transition")
 )
 
-type business struct {
-	repository tour.Repository
+type Business interface {
+	CreateNewTour(ctx context.Context, data *entity.TourCreateData) (*entity.Tour, error)
+	ListTours(ctx context.Context, paging *paging.Paging) ([]*entity.Tour, error)
+	GetTourDetails(ctx context.Context, tourID string) (*entity.Tour, error)
+	UpdateTour(ctx context.Context, tourID string, data *entity.TourPatchData) error
+	DeleteTour(ctx context.Context, tourID string) error
 }
 
-func NewBusiness(repository tour.Repository) tour.Business {
+type business struct {
+	repository postgres.Repository
+}
+
+func NewBusiness(repository postgres.Repository) *business {
 	if repository == nil {
 		panic("repository is required")
 	}
@@ -125,4 +135,18 @@ func validateStatusTransition(current, new entity.TourStatus) error {
 		return fmt.Errorf("%w: archived tours cannot transition to other states", ErrInvalidStatusTransition)
 	}
 	return nil
+}
+
+func (b *business) CheckTourExist(ctx context.Context, tourID string) (*entity.Tour, error) {
+	_, err := uuid.Parse(tourID)
+	if err != nil {
+		return nil, errors.New("invalid tourByID ID")
+	}
+
+	tourByID, err := b.repository.GetTourByID(ctx, tourID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get tourByID: %w", err)
+	}
+
+	return tourByID, nil
 }

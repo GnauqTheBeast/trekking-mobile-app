@@ -4,12 +4,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/trekking-mobile-app/internal/context"
 	"github.com/trekking-mobile-app/internal/module/tour/business"
-	"github.com/trekking-mobile-app/internal/module/tour/repository"
+	"github.com/trekking-mobile-app/internal/module/tour/repository/postgres"
 	"github.com/trekking-mobile-app/internal/module/tour/transport/rest"
 )
 
 func startRouteV1(group *gin.RouterGroup) {
-	repo := repository.NewPostgresRepo(context.GetSQLClient())
+	repo := postgres.NewPostgresRepo(context.GetSQLClient())
 	biz := business.NewBusiness(repo)
 	tourService := rest.NewAPI(biz)
 

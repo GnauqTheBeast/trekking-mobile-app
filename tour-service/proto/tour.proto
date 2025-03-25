@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "pb/";
+
+message TourReq {
+  string tour_id = 1;
+}
+
+message TourResp {
+  string tour_id = 1;
+  string name = 2;
+  string description = 3;
+  string host_id = 4;
+  string slot = 5;
+  string status = 6;
+  string start_at = 7;
+  string end_at = 8;
+}
+
+service TourService {
+  rpc CheckTourExist(TourReq) returns (TourResp);
+}

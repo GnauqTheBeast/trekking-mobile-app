@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/trekking-mobile-app/cmd/api"
+	"github.com/trekking-mobile-app/cmd/rpc"
 	"github.com/trekking-mobile-app/internal/pkg/env"
 	"github.com/urfave/cli/v2"
 	"os"
@@ -22,6 +23,7 @@ func main() {
 		},
 		Commands: []*cli.Command{
 			api.NewCommand(),
+			rpc.NewCommand(),
 		},
 	}
 
