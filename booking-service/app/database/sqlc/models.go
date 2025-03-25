@@ -5,7 +5,6 @@
 package sqlc
 
 import (
-	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -17,7 +16,7 @@ type Booking struct {
 	TourID     uuid.UUID     `json:"tour_id"`
 	PorterID   uuid.NullUUID `json:"porter_id"`
 	Quantity   int32         `json:"quantity"`
-	TotalPrice sql.NullInt64 `json:"total_price"`
+	TotalPrice int64         `json:"total_price"`
 	CreatedAt  time.Time     `json:"created_at"`
 	UpdatedAt  time.Time     `json:"updated_at"`
 }

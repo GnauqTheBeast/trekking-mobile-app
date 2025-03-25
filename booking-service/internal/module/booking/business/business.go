@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/trekking-mobile-app/internal/module/booking"
 	"github.com/trekking-mobile-app/internal/module/booking/entity"
-	"github.com/trekking-mobile-app/internal/pkg/paging"
 )
 
 type business struct {
@@ -20,12 +19,10 @@ func NewBusiness(repository booking.Repository) booking.Business {
 	}
 }
 
-func (b *business) ListBookings(ctx context.Context, paging *paging.Paging) ([]*entity.Booking, error) {
-	// Todo: Validate paging
-	return b.repository.ListBookings(ctx, paging)
+func (b *business) GetBookingByID(ctx context.Context, bookingID string) (*entity.Booking, error) {
+	return b.repository.GetBookingByID(ctx, bookingID)
 }
 
 func (b *business) CreateBooking(ctx context.Context, booking *entity.Booking) (*entity.Booking, error) {
-	// Todo: Validate booking object
 	return b.repository.InsertNewBooking(ctx, booking)
 }

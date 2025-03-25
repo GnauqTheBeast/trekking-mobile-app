@@ -7,7 +7,6 @@ package sqlc
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -32,7 +31,7 @@ type CreateBookingParams struct {
 	TourID     uuid.UUID     `json:"tour_id"`
 	PorterID   uuid.NullUUID `json:"porter_id"`
 	Quantity   int32         `json:"quantity"`
-	TotalPrice sql.NullInt64 `json:"total_price"`
+	TotalPrice int64         `json:"total_price"`
 }
 
 func (q *Queries) CreateBooking(ctx context.Context, arg *CreateBookingParams) (*Booking, error) {
@@ -128,7 +127,7 @@ type UpdateBookingParams struct {
 	TourID     uuid.UUID     `json:"tour_id"`
 	PorterID   uuid.NullUUID `json:"porter_id"`
 	Quantity   int32         `json:"quantity"`
-	TotalPrice sql.NullInt64 `json:"total_price"`
+	TotalPrice int64         `json:"total_price"`
 	UpdatedAt  time.Time     `json:"updated_at"`
 }
 

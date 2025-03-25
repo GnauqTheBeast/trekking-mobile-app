@@ -4,7 +4,7 @@ CREATE TABLE "booking" (
         "tour_id" uuid NOT NULL,
         "porter_id" uuid,
         "quantity" int NOT NULL DEFAULT 1,
-        "total_price" bigint,
+        "total_price" bigint NOT NULL,
         "created_at" timestamptz NOT NULL DEFAULT (now()),
         "updated_at" timestamptz NOT NULL DEFAULT (now())
 );

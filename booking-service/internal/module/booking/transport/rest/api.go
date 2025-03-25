@@ -1,10 +1,11 @@
 package rest
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/trekking-mobile-app/internal/module/booking"
 	"github.com/trekking-mobile-app/internal/module/booking/entity"
-	"github.com/trekking-mobile-app/internal/pkg/paging"
 )
 
 type api struct {
@@ -36,14 +37,27 @@ func (a *api) CreateBookingHdl() gin.HandlerFunc {
 	}
 }
 
-func (a *api) ListBookingHdl() gin.HandlerFunc {
+func (a *api) GetBookingByID() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		bookings, err := a.biz.ListBookings(c, paging.GetQueryPaging(c))
-		if err != nil {
+		bookingID := c.Param("id")
+		if bookingID == "" {
+			responseError(c, errors.New("bookingByID id required"))
 			return
 		}
 
-		responseSuccess(c, bookings)
+		_, err := uuid.Parse(bookingID)
+		if err != nil {
+			responseError(c, errors.New("invalid bookingByID id"))
+			return
+		}
+
+		bookingByID, err := a.biz.GetBookingByID(c, bookingID)
+		if err != nil {
+			responseNotFound(c, err)
+			return
+		}
+
+		responseSuccess(c, bookingByID)
 		return
 	}
 }

@@ -2,9 +2,10 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"errors"
+	"fmt"
 	"github.com/google/uuid"
-	"github.com/trekking-mobile-app/internal/pkg/paging"
 
 	"github.com/trekking-mobile-app/app/database/sqlc"
 	"github.com/trekking-mobile-app/internal/module/booking"
@@ -12,8 +13,7 @@ import (
 )
 
 var (
-	ErrBookingNotFound    = errors.New("booking not found")
-	ErrInvalidBookingData = errors.New("invalid booking data")
+	ErrBookingNotFound = errors.New("booking not found")
 )
 
 type postgresRepo struct {
@@ -29,38 +29,42 @@ func NewPostgresRepo(db *sqlc.SQLRepository) booking.Repository {
 	}
 }
 
-func (repo *postgresRepo) ListBookings(ctx context.Context, paging *paging.Paging) ([]*entity.Booking, error) {
-	bookingList, err := repo.queries.ListHostBookings(ctx, &sqlc.ListHostBookingsParams{
-		Limit:  int32(paging.Limit),
-		Offset: int32(paging.Offset),
-	})
+func (repo *postgresRepo) GetBookingByID(ctx context.Context, bookingID string) (*entity.Booking, error) {
+	bookingUUID, err := uuid.Parse(bookingID)
 	if err != nil {
+		return nil, ErrBookingNotFound
+	}
+
+	result, err := repo.queries.GetBookingByID(ctx, bookingUUID)
+	if err != nil {
+		fmt.Println("err", err)
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrBookingNotFound
+		}
 		return nil, err
 	}
 
-	result := make([]*entity.Booking, 0)
-	for _, t := range bookingList {
-		result = append(result, &entity.Booking{
-			ID: t.ID,
-		})
-	}
+	fmt.Println("OKOKOK")
+	fmt.Println(result)
 
-	return result, nil
+	return &entity.Booking{
+		ID:         result.ID,
+		UserID:     result.UserID,
+		TourID:     result.TourID,
+		PorterID:   result.PorterID,
+		Quantity:   int(result.Quantity),
+		TotalPrice: result.TotalPrice,
+		CreatedAt:  result.CreatedAt,
+		UpdatedAt:  result.UpdatedAt,
+	}, nil
 }
 
 func (repo *postgresRepo) InsertNewBooking(ctx context.Context, booking *entity.Booking) (*entity.Booking, error) {
-	// Todo: handle case if customer doesn't need porter
-	if booking.PorterID != nil {
-	}
-
 	newBooking, err := repo.queries.CreateBooking(ctx, &sqlc.CreateBookingParams{
-		ID:     booking.ID,
-		UserID: booking.UserID,
-		TourID: booking.TourID,
-		PorterID: uuid.NullUUID{
-			Valid: true,
-			UUID:  *booking.PorterID,
-		},
+		ID:       booking.ID,
+		UserID:   booking.UserID,
+		TourID:   booking.TourID,
+		PorterID: booking.PorterID,
 	})
 	if err != nil {
 		return nil, err

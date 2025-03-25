@@ -11,14 +11,11 @@ import (
 func startRouteV1(group *gin.RouterGroup) {
 	repo := repository.NewPostgresRepo(context.GetSQLClient())
 	biz := business.NewBusiness(repo)
-	tourService := rest.NewAPI(biz)
+	bookingService := rest.NewAPI(biz)
 
-	tours := group.Group("/tours")
+	booking := group.Group("/booking")
 	{
-		tours.POST("", tourService.CreateTourHdl())
-		tours.GET("", tourService.ListTourHdl())
-		tours.GET("/:id", tourService.GetTourHdl())
-		tours.PATCH("/:id", tourService.UpdateTourHdl())
-		tours.DELETE("/:id", tourService.DeleteTourHdl())
+		booking.POST("/create", bookingService.CreateBookingHdl())
+		booking.GET("/:id", bookingService.GetBookingByID())
 	}
 }
