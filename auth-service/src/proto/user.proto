@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package user;
+
+import "google/protobuf/empty.proto";
+
+message User {
+    string id = 1;
+    string email = 2;
+    string fullname = 3;
+    string roleId = 4;
+    string roleName = 5;
+}
+
+message UserInfo {
+    string id = 1;
+    string email = 2;
+    string fullname = 3;
+    string phoneNumber = 4;
+    string dob = 5;
+    string address = 6;
+}
+
+
+message CreateUserRequest {
+    string email = 1;
+    string fullname = 2;
+    string password = 3;
+    string roleName = 4;
+}
+
+
+message CheckLoginRequest {
+    string email = 1;
+    string password = 2;
+}
+
+message CheckLoginResponse {
+    User user = 3;
+}
+
+message GetUserByIdRequest {
+    string id = 1;
+}
+
+message GetUserByIdResponse {
+    UserInfo user = 1;
+}
+
+service UserService {
+    rpc CreateUser (CreateUserRequest) returns (google.protobuf.Empty);
+    rpc CheckLogin (CheckLoginRequest) returns (CheckLoginResponse);
+    rpc GetUserById (GetUserByIdRequest) returns (GetUserByIdResponse);
+}
