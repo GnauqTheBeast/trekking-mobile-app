@@ -31,5 +31,6 @@ func (t *TourServiceServer) CheckTourExist(ctx context.Context, req *pb.TourReq)
 		TourId:      req.TourId,
 		Name:        exist.Name,
 		Description: exist.Description,
+		Slot:        exist.Slot,
 	}, nil
 }

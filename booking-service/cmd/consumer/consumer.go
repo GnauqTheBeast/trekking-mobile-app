@@ -1,16 +1,18 @@
-package api
+package consumer
 
 import (
-	"github.com/gin-gonic/gin"
+	"fmt"
 	"github.com/trekking-mobile-app/internal/context"
 	"github.com/trekking-mobile-app/internal/dependencies"
-	"github.com/trekking-mobile-app/middleware"
 	"github.com/urfave/cli/v2"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 func NewCommand() *cli.Command {
 	return &cli.Command{
-		Name:  "api",
+		Name:  "consumer",
 		Usage: "start the booking-service",
 		Action: func(c *cli.Context) error {
 			return start(c)
@@ -23,16 +25,22 @@ func NewCommand() *cli.Command {
 
 func beforeCommand() error {
 	dependencies.Register(context.SetContextSQL)
+	dependencies.Register(context.SetContextKafkaConsumer)
 	return dependencies.Init()
 }
 
 func start(c *cli.Context) error {
-	router := gin.Default()
-	router.RedirectTrailingSlash = true
-	gin.SetMode(gin.DebugMode)
-	router.Use(middleware.Cors())
+	topic := "booking_request"
 
-	startRouteV1(router.Group("/api/v1"))
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
-	return router.Run("localhost:8081")
+	done := make(chan struct{})
+	Consumer().ConsumePartition(topic, 0, done)
+
+	sigChan <- syscall.SIGINT
+	fmt.Println("Shutdown signal received. Exiting...")
+
+	close(done)
+	return nil
 }

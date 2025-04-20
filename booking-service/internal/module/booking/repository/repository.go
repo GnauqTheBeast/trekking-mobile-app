@@ -6,9 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
-
 	"github.com/trekking-mobile-app/app/database/sqlc"
-	"github.com/trekking-mobile-app/internal/module/booking"
 	"github.com/trekking-mobile-app/internal/module/booking/entity"
 )
 
@@ -16,20 +14,17 @@ var (
 	ErrBookingNotFound = errors.New("booking not found")
 )
 
-type postgresRepo struct {
+type repository struct {
 	queries *sqlc.Queries
 }
 
-func NewPostgresRepo(db *sqlc.SQLRepository) booking.Repository {
-	if db == nil {
-		panic("db connection is required")
-	}
-	return &postgresRepo{
+func NewPostgresRepo(db *sqlc.SQLRepository) *repository {
+	return &repository{
 		queries: sqlc.New(db.Client),
 	}
 }
 
-func (repo *postgresRepo) GetBookingByID(ctx context.Context, bookingID string) (*entity.Booking, error) {
+func (repo *repository) GetBookingByID(ctx context.Context, bookingID string) (*entity.Booking, error) {
 	bookingUUID, err := uuid.Parse(bookingID)
 	if err != nil {
 		return nil, ErrBookingNotFound
@@ -44,9 +39,6 @@ func (repo *postgresRepo) GetBookingByID(ctx context.Context, bookingID string) 
 		return nil, err
 	}
 
-	fmt.Println("OKOKOK")
-	fmt.Println(result)
-
 	return &entity.Booking{
 		ID:         result.ID,
 		UserID:     result.UserID,
@@ -59,7 +51,7 @@ func (repo *postgresRepo) GetBookingByID(ctx context.Context, bookingID string) 
 	}, nil
 }
 
-func (repo *postgresRepo) InsertNewBooking(ctx context.Context, booking *entity.Booking) (*entity.Booking, error) {
+func (repo *repository) InsertNewBooking(ctx context.Context, booking *entity.Booking) (*entity.Booking, error) {
 	newBooking, err := repo.queries.CreateBooking(ctx, &sqlc.CreateBookingParams{
 		ID:       booking.ID,
 		UserID:   booking.UserID,

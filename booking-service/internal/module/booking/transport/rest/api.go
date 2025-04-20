@@ -1,18 +1,23 @@
 package rest
 
 import (
+	"context"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/trekking-mobile-app/internal/module/booking"
 	"github.com/trekking-mobile-app/internal/module/booking/entity"
 )
 
-type api struct {
-	biz booking.Business
+type Business interface {
+	RequestBooking(ctx context.Context, booking *entity.Booking) error
+	GetBookingByID(ctx context.Context, bookingID string) (*entity.Booking, error)
 }
 
-func NewAPI(biz booking.Business) booking.API {
+type api struct {
+	biz Business
+}
+
+func NewAPI(biz Business) *api {
 	return &api{
 		biz: biz,
 	}
@@ -21,18 +26,19 @@ func NewAPI(biz booking.Business) booking.API {
 func (a *api) CreateBookingHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		data := new(entity.Booking)
+		data.ID = uuid.New()
 		if err := c.ShouldBindJSON(&data); err != nil {
 			responseError(c, err)
 			return
 		}
 
-		createdBooking, err := a.biz.CreateBooking(c, data)
+		err := a.biz.RequestBooking(c, data)
 		if err != nil {
 			responseError(c, err)
 			return
 		}
 
-		responseSuccess(c, createdBooking)
+		responseAccepted(c, data)
 		return
 	}
 }

@@ -38,7 +38,7 @@ The service follows Clean Architecture with the following layers:
 git clone https://github.com/GnauqTheBeast/trekking-mobile-app.git
 
 # Navigate to the service directory
-cd tour-service
+cd booking-service
 
 # Install dependencies
 go mod download

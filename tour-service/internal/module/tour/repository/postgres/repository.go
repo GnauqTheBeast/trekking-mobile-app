@@ -25,20 +25,20 @@ type Repository interface {
 	DeleteTour(ctx context.Context, tourID string) error
 }
 
-type postgresRepo struct {
+type repository struct {
 	queries *sqlc.Queries
 }
 
-func NewPostgresRepo(db *sqlc.SQLRepository) Repository {
+func NewPostgresRepo(db *sqlc.SQLRepository) *repository {
 	if db == nil {
 		panic("db connection is required")
 	}
-	return &postgresRepo{
+	return &repository{
 		queries: sqlc.New(db.Client),
 	}
 }
 
-func (repo *postgresRepo) ListTours(ctx context.Context, paging *paging.Paging) ([]*entity.Tour, error) {
+func (repo *repository) ListTours(ctx context.Context, paging *paging.Paging) ([]*entity.Tour, error) {
 	tours, err := repo.queries.ListTours(ctx, &sqlc.ListToursParams{
 		Limit:  int32(paging.Limit),
 		Offset: int32(paging.Offset),
@@ -61,7 +61,7 @@ func (repo *postgresRepo) ListTours(ctx context.Context, paging *paging.Paging) 
 	return result, nil
 }
 
-func (repo *postgresRepo) UpdateTour(ctx context.Context, tourID string, data *entity.TourPatchData) error {
+func (repo *repository) UpdateTour(ctx context.Context, tourID string, data *entity.TourPatchData) error {
 	if data == nil {
 		return ErrInvalidTourData
 	}
@@ -91,7 +91,7 @@ func (repo *postgresRepo) UpdateTour(ctx context.Context, tourID string, data *e
 	})
 }
 
-func (repo *postgresRepo) DeleteTour(ctx context.Context, tourID string) error {
+func (repo *repository) DeleteTour(ctx context.Context, tourID string) error {
 	id, err := uuid.Parse(tourID)
 	if err != nil {
 		return ErrInvalidTourData
@@ -107,7 +107,7 @@ func (repo *postgresRepo) DeleteTour(ctx context.Context, tourID string) error {
 	return nil
 }
 
-func (repo *postgresRepo) InsertNewTour(ctx context.Context, data *entity.TourCreateData) (*entity.Tour, error) {
+func (repo *repository) InsertNewTour(ctx context.Context, data *entity.TourCreateData) (*entity.Tour, error) {
 	if data == nil {
 		return nil, ErrInvalidTourData
 	}
@@ -139,7 +139,7 @@ func (repo *postgresRepo) InsertNewTour(ctx context.Context, data *entity.TourCr
 	}, err
 }
 
-func (repo *postgresRepo) GetTourByID(ctx context.Context, tourID string) (*entity.Tour, error) {
+func (repo *repository) GetTourByID(ctx context.Context, tourID string) (*entity.Tour, error) {
 	ID, err := uuid.Parse(tourID)
 	if err != nil {
 		return nil, err

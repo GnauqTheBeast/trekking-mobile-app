@@ -20,7 +20,7 @@ type api struct {
 	biz business.Business
 }
 
-func NewAPI(biz business.Business) API {
+func NewAPI(biz business.Business) *api {
 	return &api{
 		biz: biz,
 	}
