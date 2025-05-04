@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	TourService_CheckTourExist_FullMethodName = "/pb.TourService/CheckTourExist"
+	TourService_CheckTourExist_FullMethodName          = "/pb.TourService/CheckTourExist"
+	TourService_UpdateTourAvailableSlot_FullMethodName = "/pb.TourService/UpdateTourAvailableSlot"
 )
 
 // TourServiceClient is the client API for TourService service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TourServiceClient interface {
 	CheckTourExist(ctx context.Context, in *TourReq, opts ...grpc.CallOption) (*TourResp, error)
+	UpdateTourAvailableSlot(ctx context.Context, in *AvailableSlotReq, opts ...grpc.CallOption) (*AvailableSlotResp, error)
 }
 
 type tourServiceClient struct {
@@ -47,11 +49,22 @@ func (c *tourServiceClient) CheckTourExist(ctx context.Context, in *TourReq, opt
 	return out, nil
 }
 
+func (c *tourServiceClient) UpdateTourAvailableSlot(ctx context.Context, in *AvailableSlotReq, opts ...grpc.CallOption) (*AvailableSlotResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AvailableSlotResp)
+	err := c.cc.Invoke(ctx, TourService_UpdateTourAvailableSlot_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TourServiceServer is the server API for TourService service.
 // All implementations must embed UnimplementedTourServiceServer
 // for forward compatibility.
 type TourServiceServer interface {
 	CheckTourExist(context.Context, *TourReq) (*TourResp, error)
+	UpdateTourAvailableSlot(context.Context, *AvailableSlotReq) (*AvailableSlotResp, error)
 	mustEmbedUnimplementedTourServiceServer()
 }
 
@@ -64,6 +77,9 @@ type UnimplementedTourServiceServer struct{}
 
 func (UnimplementedTourServiceServer) CheckTourExist(context.Context, *TourReq) (*TourResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckTourExist not implemented")
+}
+func (UnimplementedTourServiceServer) UpdateTourAvailableSlot(context.Context, *AvailableSlotReq) (*AvailableSlotResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateTourAvailableSlot not implemented")
 }
 func (UnimplementedTourServiceServer) mustEmbedUnimplementedTourServiceServer() {}
 func (UnimplementedTourServiceServer) testEmbeddedByValue()                     {}
@@ -104,6 +120,24 @@ func _TourService_CheckTourExist_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TourService_UpdateTourAvailableSlot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AvailableSlotReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TourServiceServer).UpdateTourAvailableSlot(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TourService_UpdateTourAvailableSlot_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TourServiceServer).UpdateTourAvailableSlot(ctx, req.(*AvailableSlotReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TourService_ServiceDesc is the grpc.ServiceDesc for TourService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -114,6 +148,10 @@ var TourService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CheckTourExist",
 			Handler:    _TourService_CheckTourExist_Handler,
+		},
+		{
+			MethodName: "UpdateTourAvailableSlot",
+			Handler:    _TourService_UpdateTourAvailableSlot_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

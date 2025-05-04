@@ -45,6 +45,7 @@ CREATE TABLE "tour" (
                         "host_id" uuid NOT NULL,
                         "slot" int NOT NULL,
                         "available_slot" int NOT NULL,
+                        "price" int NOT NULL,
                         "status" "TourStatus" NOT NULL,
                         "start_at" timestamptz NOT NULL,
                         "end_at" timestamptz NOT NULL,

@@ -24,7 +24,7 @@ func NewPostgresRepo(db *sqlc.SQLRepository) *repository {
 	}
 }
 
-func (repo *repository) GetBookingByID(ctx context.Context, bookingID string) (*entity.Booking, error) {
+func (repo *repository) GetBookingById(ctx context.Context, bookingID string) (*entity.Booking, error) {
 	bookingUUID, err := uuid.Parse(bookingID)
 	if err != nil {
 		return nil, ErrBookingNotFound
@@ -40,10 +40,10 @@ func (repo *repository) GetBookingByID(ctx context.Context, bookingID string) (*
 	}
 
 	return &entity.Booking{
-		ID:         result.ID,
-		UserID:     result.UserID,
-		TourID:     result.TourID,
-		PorterID:   result.PorterID,
+		Id:         result.ID,
+		UserId:     result.UserID,
+		TourId:     result.TourID,
+		PorterId:   result.PorterID,
 		Quantity:   int(result.Quantity),
 		TotalPrice: result.TotalPrice,
 		CreatedAt:  result.CreatedAt,
@@ -53,18 +53,49 @@ func (repo *repository) GetBookingByID(ctx context.Context, bookingID string) (*
 
 func (repo *repository) InsertNewBooking(ctx context.Context, booking *entity.Booking) (*entity.Booking, error) {
 	newBooking, err := repo.queries.CreateBooking(ctx, &sqlc.CreateBookingParams{
-		ID:       booking.ID,
-		UserID:   booking.UserID,
-		TourID:   booking.TourID,
-		PorterID: booking.PorterID,
+		ID:         booking.Id,
+		UserID:     booking.UserId,
+		TourID:     booking.TourId,
+		PorterID:   booking.PorterId,
+		TotalPrice: booking.TotalPrice,
+		Quantity:   int32(booking.Quantity),
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	return &entity.Booking{
-		ID:     newBooking.ID,
-		UserID: newBooking.UserID,
-		TourID: newBooking.TourID,
+		Id:         newBooking.ID,
+		UserId:     newBooking.UserID,
+		TourId:     newBooking.TourID,
+		PorterId:   newBooking.PorterID,
+		Quantity:   int(newBooking.Quantity),
+		TotalPrice: newBooking.TotalPrice,
+		CreatedAt:  newBooking.CreatedAt,
+		UpdatedAt:  newBooking.UpdatedAt,
+		Status:     entity.BookingStatus(newBooking.Status),
+	}, nil
+}
+
+func (repo *repository) UpdateBookingStatus(ctx context.Context, bookingId uuid.UUID, status entity.BookingStatus) (*entity.Booking, error) {
+	updateBookingStatus := &sqlc.UpdateBookingStatusParams{
+		ID:     bookingId,
+		Status: string(status),
+	}
+	booking, err := repo.queries.UpdateBookingStatus(ctx, updateBookingStatus)
+	if err != nil {
+		return nil, err
+	}
+
+	return &entity.Booking{
+		Id:         booking.ID,
+		UserId:     booking.UserID,
+		TourId:     booking.TourID,
+		PorterId:   booking.PorterID,
+		Quantity:   int(booking.Quantity),
+		Status:     entity.BookingStatus(booking.Status),
+		TotalPrice: booking.TotalPrice,
+		CreatedAt:  booking.CreatedAt,
+		UpdatedAt:  booking.UpdatedAt,
 	}, nil
 }

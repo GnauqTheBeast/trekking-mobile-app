@@ -2,7 +2,6 @@ package rpc
 
 import (
 	"context"
-	"fmt"
 	"github.com/trekking-mobile-app/proto/pb"
 )
 
@@ -20,6 +19,17 @@ func (c *rpcClient) CheckTourExist(ctx context.Context, tourId string) (*pb.Tour
 		return nil, err
 	}
 
-	fmt.Println(exist)
 	return exist, nil
+}
+
+func (c *rpcClient) UpdateTourAvailableSlot(ctx context.Context, tourId string, lockedSlot int) (*pb.AvailableSlotResp, error) {
+	slotTourUpdated, err := c.client.UpdateTourAvailableSlot(ctx, &pb.AvailableSlotReq{
+		TourId:     tourId,
+		LockedSlot: int32(lockedSlot),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return slotTourUpdated, nil
 }

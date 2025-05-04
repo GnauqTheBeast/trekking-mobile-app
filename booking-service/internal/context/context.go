@@ -55,6 +55,23 @@ func GetRedisClient() *redis.CacheRedis {
 	return client
 }
 
+func SetContextKafkaProducer() error {
+	client, err := kafka.NewKafkaProducer()
+	if err != nil {
+		return err
+	}
+	background = context.WithValue(background, contextKafkaProducer, client)
+	return nil
+}
+
+func GetContextKafkaProducer() kafka.KafkaProducer {
+	client, ok := background.Value(contextKafkaProducer).(kafka.KafkaProducer)
+	if !ok {
+		return nil
+	}
+	return client
+}
+
 func SetContextKafkaConsumer() error {
 	client, err := kafka.NewKafkaConsumer()
 	if err != nil {

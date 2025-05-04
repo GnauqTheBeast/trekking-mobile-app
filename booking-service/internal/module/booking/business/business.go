@@ -2,45 +2,151 @@ package business
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"github.com/google/uuid"
+	"github.com/trekking-mobile-app/app/kafka"
 	"github.com/trekking-mobile-app/internal/module/booking/entity"
 	"github.com/trekking-mobile-app/proto/pb"
 )
 
 type Repository interface {
 	InsertNewBooking(ctx context.Context, booking *entity.Booking) (*entity.Booking, error)
-	GetBookingByID(ctx context.Context, bookingID string) (*entity.Booking, error)
+	GetBookingById(ctx context.Context, bookingID string) (*entity.Booking, error)
+	UpdateBookingStatus(ctx context.Context, bookingId uuid.UUID, status entity.BookingStatus) (*entity.Booking, error)
 }
 
 type TourRepository interface {
 	CheckTourExist(ctx context.Context, tourId string) (*pb.TourResp, error)
+	UpdateTourAvailableSlot(ctx context.Context, tourId string, lockedSlot int) (*pb.AvailableSlotResp, error)
 }
 
 type business struct {
-	repository Repository
-	tourRepo   TourRepository
+	repository    Repository
+	tourRepo      TourRepository
+	kafkaProducer kafka.KafkaProducer
 }
 
-func NewBusiness(repository Repository, tourRepo TourRepository) *business {
+func NewBusiness(repository Repository, tourRepo TourRepository, kafkaProducer kafka.KafkaProducer) *business {
 	return &business{
-		repository: repository,
-		tourRepo:   tourRepo,
+		repository:    repository,
+		tourRepo:      tourRepo,
+		kafkaProducer: kafkaProducer,
 	}
 }
 
 func (b *business) GetBookingByID(ctx context.Context, bookingID string) (*entity.Booking, error) {
-	return b.repository.GetBookingByID(ctx, bookingID)
+	return b.repository.GetBookingById(ctx, bookingID)
 }
 
-func (b *business) RequestBooking(ctx context.Context, booking *entity.Booking) error {
-	tour, err := b.tourRepo.CheckTourExist(ctx, "e5bdd4b2-d455-4922-b6b1-5f0e4be6fbe7")
+func (b *business) RequestBooking(ctx context.Context, booking *entity.Booking) (*entity.Booking, error) {
+	tour, err := b.tourRepo.CheckTourExist(ctx, booking.TourId.String())
 	if err != nil {
-		return err
+		return nil, err
 	}
-	fmt.Println(tour)
-	// Check tour exist
 
-	// Check slot of tour
+	if tour == nil {
+		return nil, fmt.Errorf("tour not found")
+	}
 
-	return nil
+	if tour.Status != "PUBLISHED" {
+		return nil, fmt.Errorf("tour is not published")
+	}
+
+	if booking.Quantity > int(tour.AvailableSlot) {
+		return nil, fmt.Errorf("tour quantity is greater than available slot limit")
+	}
+
+	if booking.TotalPrice != int64(int(tour.Price)*booking.Quantity) {
+		return nil, fmt.Errorf("total price is wrong")
+	}
+
+	newBooking, err := b.repository.InsertNewBooking(ctx, booking)
+	if err != nil {
+		return nil, err
+	}
+
+	go func() {
+		msgBytes, err := json.Marshal(newBooking)
+		if err != nil {
+			fmt.Printf("failed to marshal booking message: %v\n", err)
+			return
+		}
+
+		b.kafkaProducer.Publish("booking_request", []byte(newBooking.Id.String()), msgBytes)
+	}()
+
+	_, err = b.tourRepo.UpdateTourAvailableSlot(ctx, tour.TourId, booking.Quantity)
+	if err != nil {
+		return nil, err
+	}
+
+	return &entity.Booking{
+		Id:         newBooking.Id,
+		UserId:     newBooking.UserId,
+		TourId:     newBooking.TourId,
+		Quantity:   newBooking.Quantity,
+		TotalPrice: newBooking.TotalPrice,
+		PorterId:   newBooking.PorterId,
+		Status:     newBooking.Status,
+		CreatedAt:  newBooking.CreatedAt,
+		UpdatedAt:  newBooking.UpdatedAt,
+	}, nil
+}
+
+func (b *business) CancelBooking(ctx context.Context, bookingId string) (*entity.Booking, error) {
+	Id, err := uuid.Parse(bookingId)
+	if err != nil {
+		return nil, err
+	}
+
+	cancelBooking, err := b.UpdateBookingStatus(ctx, Id, entity.BookingStatusCancel)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = b.tourRepo.UpdateTourAvailableSlot(ctx, cancelBooking.TourId.String(), -cancelBooking.Quantity)
+	if err != nil {
+		return nil, err
+	}
+
+	go func() {
+		msgBytes, err := json.Marshal(cancelBooking)
+		if err != nil {
+			fmt.Printf("failed to marshal cancelBooking message: %v\n", err)
+			return
+		}
+
+		b.kafkaProducer.Publish("booking_cancel", []byte(cancelBooking.Id.String()), msgBytes)
+	}()
+
+	return &entity.Booking{
+		Id:         cancelBooking.Id,
+		UserId:     cancelBooking.UserId,
+		TourId:     cancelBooking.TourId,
+		Quantity:   cancelBooking.Quantity,
+		TotalPrice: cancelBooking.TotalPrice,
+		PorterId:   cancelBooking.PorterId,
+		Status:     cancelBooking.Status,
+		CreatedAt:  cancelBooking.CreatedAt,
+		UpdatedAt:  cancelBooking.UpdatedAt,
+	}, nil
+}
+
+func (b *business) UpdateBookingStatus(ctx context.Context, bookingId uuid.UUID, status entity.BookingStatus) (*entity.Booking, error) {
+	isValid := IsValidBookingStatus(status)
+	if !isValid {
+		return nil, fmt.Errorf("invalid booking status")
+	}
+
+	return b.repository.UpdateBookingStatus(ctx, bookingId, status)
+}
+
+func IsValidBookingStatus(s entity.BookingStatus) bool {
+	switch s {
+	case entity.BookingStatusCancel, entity.BookingStatusPending, entity.BookingStatusSuccess:
+		return true
+	default:
+		return false
+	}
 }

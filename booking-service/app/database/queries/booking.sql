@@ -32,3 +32,10 @@ SET
     total_price = $6,
     updated_at = NOW()
 WHERE id = $1 AND updated_at = $7;
+
+-- name: UpdateBookingStatus :one
+UPDATE booking
+SET
+    status = $2,
+    updated_at = NOW()
+WHERE id = $1 RETURNING *;

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/trekking-mobile-app/internal/module/tour/repository/postgres"
 	"github.com/trekking-mobile-app/internal/pkg/paging"
 	"time"
 
@@ -17,19 +16,20 @@ var (
 	ErrInvalidStatusTransition = fmt.Errorf("invalid status transition")
 )
 
-type Business interface {
-	CreateNewTour(ctx context.Context, data *entity.TourCreateData) (*entity.Tour, error)
+type Repository interface {
+	InsertNewTour(ctx context.Context, data *entity.TourCreateData) (*entity.Tour, error)
+	GetTourById(ctx context.Context, tourId string) (*entity.Tour, error)
 	ListTours(ctx context.Context, paging *paging.Paging) ([]*entity.Tour, error)
-	GetTourDetails(ctx context.Context, tourID string) (*entity.Tour, error)
-	UpdateTour(ctx context.Context, tourID string, data *entity.TourPatchData) error
-	DeleteTour(ctx context.Context, tourID string) error
+	UpdateTour(ctx context.Context, tourId string, data *entity.TourPatchData) error
+	DeleteTour(ctx context.Context, tourId string) error
+	UpdateTourAvailableSlot(ctx context.Context, tourId string, availableSlot int) (*entity.Tour, error)
 }
 
 type business struct {
-	repository postgres.Repository
+	repository Repository
 }
 
-func NewBusiness(repository postgres.Repository) *business {
+func NewBusiness(repository Repository) *business {
 	if repository == nil {
 		panic("repository is required")
 	}
@@ -63,27 +63,27 @@ func (b *business) ListTours(ctx context.Context, paging *paging.Paging) ([]*ent
 	return b.repository.ListTours(ctx, paging)
 }
 
-func (b *business) GetTourDetails(ctx context.Context, tourID string) (*entity.Tour, error) {
-	if tourID == "" {
+func (b *business) GetTourDetails(ctx context.Context, tourId string) (*entity.Tour, error) {
+	if tourId == "" {
 		return nil, fmt.Errorf("%w: booking ID is required", ErrInvalidTourData)
 	}
 
-	tour, err := b.repository.GetTourByID(ctx, tourID)
+	tour, err := b.repository.GetTourById(ctx, tourId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get booking: %w", err)
 	}
 	return tour, nil
 }
 
-func (b *business) UpdateTour(ctx context.Context, tourID string, data *entity.TourPatchData) error {
-	if tourID == "" {
+func (b *business) UpdateTour(ctx context.Context, tourId string, data *entity.TourPatchData) error {
+	if tourId == "" {
 		return fmt.Errorf("%w: booking ID is required", ErrInvalidTourData)
 	}
 	if data == nil {
 		return ErrInvalidTourData
 	}
 
-	existingTour, err := b.repository.GetTourByID(ctx, tourID)
+	existingTour, err := b.repository.GetTourById(ctx, tourId)
 	if err != nil {
 		return fmt.Errorf("failed to get existing booking: %w", err)
 	}
@@ -101,24 +101,24 @@ func (b *business) UpdateTour(ctx context.Context, tourID string, data *entity.T
 		return fmt.Errorf("%w: description must be at least 10 characters", ErrInvalidTourData)
 	}
 
-	return b.repository.UpdateTour(ctx, tourID, data)
+	return b.repository.UpdateTour(ctx, tourId, data)
 }
 
-func (b *business) DeleteTour(ctx context.Context, tourID string) error {
-	if tourID == "" {
-		return fmt.Errorf("%w: tourByID ID is required", ErrInvalidTourData)
+func (b *business) DeleteTour(ctx context.Context, tourId string) error {
+	if tourId == "" {
+		return fmt.Errorf("%w: tourById ID is required", ErrInvalidTourData)
 	}
 
-	tourByID, err := b.repository.GetTourByID(ctx, tourID)
+	tourById, err := b.repository.GetTourById(ctx, tourId)
 	if err != nil {
-		return fmt.Errorf("failed to get tourByID: %w", err)
+		return fmt.Errorf("failed to get tourById: %w", err)
 	}
 
-	if tourByID.Status == entity.TourStatusPublished {
-		return fmt.Errorf("%w: cannot delete published tourByID", ErrInvalidStatusTransition)
+	if tourById.Status == entity.TourStatusPublished {
+		return fmt.Errorf("%w: cannot delete published tourById", ErrInvalidStatusTransition)
 	}
 
-	return b.repository.DeleteTour(ctx, tourID)
+	return b.repository.DeleteTour(ctx, tourId)
 }
 
 func validateStatusTransition(current, new entity.TourStatus) error {
@@ -137,16 +137,38 @@ func validateStatusTransition(current, new entity.TourStatus) error {
 	return nil
 }
 
-func (b *business) CheckTourExist(ctx context.Context, tourID string) (*entity.Tour, error) {
-	_, err := uuid.Parse(tourID)
+func (b *business) CheckTourExist(ctx context.Context, tourId string) (*entity.Tour, error) {
+	_, err := uuid.Parse(tourId)
 	if err != nil {
-		return nil, errors.New("invalid tourByID ID")
+		return nil, errors.New("invalid tourById ID")
 	}
 
-	tourByID, err := b.repository.GetTourByID(ctx, tourID)
+	tourById, err := b.repository.GetTourById(ctx, tourId)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get tourByID: %w", err)
+		return nil, fmt.Errorf("failed to get tourById: %w", err)
 	}
 
-	return tourByID, nil
+	return tourById, nil
+}
+
+func (b *business) UpdateTourAvailableSlot(ctx context.Context, tourId string, lockedSlot int) (*entity.Tour, error) {
+	_, err := uuid.Parse(tourId)
+	if err != nil {
+		return nil, errors.New("invalid tourById Id")
+	}
+
+	tourById, err := b.repository.GetTourById(ctx, tourId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get tourById: %w", err)
+	}
+
+	if tourById.AvailableSlot > tourById.Slot {
+		return nil, fmt.Errorf("out of available slot")
+	}
+
+	if lockedSlot > int(tourById.AvailableSlot) {
+		return nil, fmt.Errorf("out of available slot")
+	}
+
+	return b.repository.UpdateTourAvailableSlot(ctx, tourId, int(tourById.AvailableSlot)-lockedSlot)
 }
