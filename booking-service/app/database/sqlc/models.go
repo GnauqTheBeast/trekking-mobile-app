@@ -18,6 +18,7 @@ type Booking struct {
 	Status     string        `json:"status"`
 	Quantity   int32         `json:"quantity"`
 	TotalPrice int64         `json:"total_price"`
+	ExpiredAt  time.Time     `json:"expired_at"`
 	CreatedAt  time.Time     `json:"created_at"`
 	UpdatedAt  time.Time     `json:"updated_at"`
 }

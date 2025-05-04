@@ -22,7 +22,7 @@ INSERT INTO booking (
     total_price
 ) VALUES (
      $1, $2, $3, $4, $5, $6
-) RETURNING id, user_id, tour_id, porter_id, status, quantity, total_price, created_at, updated_at
+) RETURNING id, user_id, tour_id, porter_id, status, quantity, total_price, expired_at, created_at, updated_at
 `
 
 type CreateBookingParams struct {
@@ -52,13 +52,14 @@ func (q *Queries) CreateBooking(ctx context.Context, arg *CreateBookingParams) (
 		&i.Status,
 		&i.Quantity,
 		&i.TotalPrice,
+		&i.ExpiredAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return &i, err
 }
 
-const deleteBooking = `-- name: CancelBooking :exec
+const deleteBooking = `-- name: DeleteBooking :exec
 DELETE FROM booking
 WHERE id = $1
 `
@@ -68,8 +69,8 @@ func (q *Queries) DeleteBooking(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
-const getBookingByID = `-- name: GetBookingByIdHdl :one
-SELECT id, user_id, tour_id, porter_id, status, quantity, total_price, created_at, updated_at FROM booking
+const getBookingByID = `-- name: GetBookingByID :one
+SELECT id, user_id, tour_id, porter_id, status, quantity, total_price, expired_at, created_at, updated_at FROM booking
 WHERE id = $1 LIMIT 1
 `
 
@@ -84,6 +85,7 @@ func (q *Queries) GetBookingByID(ctx context.Context, id uuid.UUID) (*Booking, e
 		&i.Status,
 		&i.Quantity,
 		&i.TotalPrice,
+		&i.ExpiredAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -91,7 +93,7 @@ func (q *Queries) GetBookingByID(ctx context.Context, id uuid.UUID) (*Booking, e
 }
 
 const getBookingForUpdate = `-- name: GetBookingForUpdate :one
-SELECT id, user_id, tour_id, porter_id, status, quantity, total_price, created_at, updated_at FROM booking
+SELECT id, user_id, tour_id, porter_id, status, quantity, total_price, expired_at, created_at, updated_at FROM booking
 WHERE id = $1 LIMIT 1 FOR NO KEY UPDATE
 `
 
@@ -106,6 +108,7 @@ func (q *Queries) GetBookingForUpdate(ctx context.Context, id uuid.UUID) (*Booki
 		&i.Status,
 		&i.Quantity,
 		&i.TotalPrice,
+		&i.ExpiredAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -152,7 +155,7 @@ UPDATE booking
 SET
     status = $2,
     updated_at = NOW()
-WHERE id = $1 RETURNING id, user_id, tour_id, porter_id, status, quantity, total_price, created_at, updated_at
+WHERE id = $1 RETURNING id, user_id, tour_id, porter_id, status, quantity, total_price, expired_at, created_at, updated_at
 `
 
 type UpdateBookingStatusParams struct {
@@ -171,6 +174,7 @@ func (q *Queries) UpdateBookingStatus(ctx context.Context, arg *UpdateBookingSta
 		&i.Status,
 		&i.Quantity,
 		&i.TotalPrice,
+		&i.ExpiredAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

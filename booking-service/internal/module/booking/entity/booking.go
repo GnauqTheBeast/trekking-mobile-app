@@ -8,6 +8,7 @@ import (
 type BookingStatus string
 
 const (
+	BookingStatusExpired BookingStatus = "EXPIRED"
 	BookingStatusPending BookingStatus = "PENDING"
 	BookingStatusCancel  BookingStatus = "CANCEL"
 	BookingStatusSuccess BookingStatus = "SUCCESS"
@@ -21,6 +22,7 @@ type Booking struct {
 	Quantity   int           `json:"quantity" binding:"required,min=1"`
 	Status     BookingStatus `json:"status" binding:"required"`
 	TotalPrice int64         `json:"total_price,omitempty"`
+	ExpiredAt  time.Time     `json:"expired_at,omitempty"`
 	CreatedAt  time.Time     `json:"created_at"`
 	UpdatedAt  time.Time     `json:"updated_at,omitempty"`
 }
