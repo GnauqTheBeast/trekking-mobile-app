@@ -18,7 +18,7 @@ type API interface {
 
 func startRouteV1(group *gin.RouterGroup) {
 	repo := postgres.NewPostgresRepo(context.GetSQLClient())
-	biz := business.NewBusiness(repo)
+	biz := business.NewBusiness(repo, context.GetRedisClient())
 	tourService := rest.NewAPI(biz)
 
 	tours := group.Group("/tours")

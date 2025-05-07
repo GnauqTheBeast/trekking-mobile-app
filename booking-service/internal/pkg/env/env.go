@@ -1,9 +1,10 @@
 package env
 
 import (
-	"github.com/joho/godotenv"
 	"strings"
 	"sync"
+
+	"github.com/joho/godotenv"
 )
 
 const envPath = "cmd/.env,cmd/.env.local"

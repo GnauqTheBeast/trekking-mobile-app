@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"context"
+
 	"github.com/google/uuid"
 	"github.com/trekking-mobile-app/internal/module/booking/entity"
 	"github.com/trekking-mobile-app/proto/pb"

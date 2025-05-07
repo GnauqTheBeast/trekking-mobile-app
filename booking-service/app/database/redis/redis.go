@@ -2,10 +2,11 @@ package redis
 
 import (
 	"context"
-	"github.com/go-redis/cache/v9"
-	"github.com/redis/go-redis/v9"
 	"os"
 	"time"
+
+	"github.com/go-redis/cache/v9"
+	"github.com/redis/go-redis/v9"
 )
 
 type CacheRedis struct {

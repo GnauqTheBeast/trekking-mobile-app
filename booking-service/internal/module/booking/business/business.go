@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
 	"github.com/google/uuid"
 	"github.com/trekking-mobile-app/app/kafka"
 	"github.com/trekking-mobile-app/internal/module/booking/entity"

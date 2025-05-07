@@ -5,14 +5,13 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+
 	"github.com/google/uuid"
 	"github.com/trekking-mobile-app/app/database/sqlc"
 	"github.com/trekking-mobile-app/internal/module/booking/entity"
 )
 
-var (
-	ErrBookingNotFound = errors.New("booking not found")
-)
+var ErrBookingNotFound = errors.New("booking not found")
 
 type repository struct {
 	queries *sqlc.Queries

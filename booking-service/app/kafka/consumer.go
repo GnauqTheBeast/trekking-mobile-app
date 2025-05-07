@@ -2,9 +2,10 @@ package kafka
 
 import (
 	"fmt"
-	"github.com/IBM/sarama"
 	"os"
 	"strings"
+
+	"github.com/IBM/sarama"
 )
 
 const (
