@@ -8,9 +8,17 @@ import (
 	"github.com/trekking-mobile-app/internal/module/tour/transport/rest"
 )
 
+type API interface {
+	CreateTourHdl() gin.HandlerFunc
+	ListTourHdl() gin.HandlerFunc
+	GetTourHdl() gin.HandlerFunc
+	UpdateTourHdl() gin.HandlerFunc
+	DeleteTourHdl() gin.HandlerFunc
+}
+
 func startRouteV1(group *gin.RouterGroup) {
 	repo := postgres.NewPostgresRepo(context.GetSQLClient())
-	biz := business.NewBusiness(repo)
+	biz := business.NewBusiness(repo, context.GetRedisClient())
 	tourService := rest.NewAPI(biz)
 
 	tours := group.Group("/tours")

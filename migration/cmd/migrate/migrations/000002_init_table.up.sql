@@ -20,7 +20,7 @@ CREATE TABLE "role" (
 
 CREATE TABLE "role_permission" (
                        "role_id" uuid NOT NULL,
-                       "permission_id" uuid NOT NULL,
+                       "permission_id" uuid NOT NULL
 );
 
 CREATE TABLE "auth_provider" (
@@ -44,6 +44,8 @@ CREATE TABLE "tour" (
                         "description" text NOT NULL,
                         "host_id" uuid NOT NULL,
                         "slot" int NOT NULL,
+                        "available_slot" int NOT NULL,
+                        "price" int NOT NULL,
                         "status" "TourStatus" NOT NULL,
                         "start_at" timestamptz NOT NULL,
                         "end_at" timestamptz NOT NULL,
@@ -57,7 +59,9 @@ CREATE TABLE "booking" (
                            "tour_id" uuid NOT NULL,
                            "porter_id" uuid,
                            "quantity" int NOT NULL DEFAULT 1,
+                           "status" varchar NOT NULL DEFAULT 'PENDING',
                            "total_price" bigint NOT NULL,
+                           "expired_at" timestamptz NOT NULL DEFAULT (now() + interval '15 minutes'),
                            "created_at" timestamptz NOT NULL DEFAULT (now()),
                            "updated_at" timestamptz NOT NULL DEFAULT (now())
 );

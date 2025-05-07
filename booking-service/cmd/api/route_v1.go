@@ -8,14 +8,23 @@ import (
 	"github.com/trekking-mobile-app/internal/module/booking/transport/rest"
 )
 
+type API interface {
+	CreateBookingHdl() gin.HandlerFunc
+	GetBookingByIdHdl() gin.HandlerFunc
+	CancelBookingHdl() gin.HandlerFunc
+}
+
 func startRouteV1(group *gin.RouterGroup) {
+	tourRepo := tourGrpcClient()
+
 	repo := repository.NewPostgresRepo(context.GetSQLClient())
-	biz := business.NewBusiness(repo)
+	biz := business.NewBusiness(repo, tourRepo, context.GetContextKafkaProducer())
 	bookingService := rest.NewAPI(biz)
 
 	booking := group.Group("/booking")
 	{
 		booking.POST("/create", bookingService.CreateBookingHdl())
-		booking.GET("/:id", bookingService.GetBookingByID())
+		booking.GET("/:id", bookingService.GetBookingByIdHdl())
+		booking.POST("/:id", bookingService.CancelBookingHdl())
 	}
 }

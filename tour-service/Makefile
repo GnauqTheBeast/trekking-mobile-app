@@ -14,4 +14,9 @@ sqlc:
 	sqlc generate
 test:
 	go test -v -cover ./...
-.PHONY: postgres createdb dropdb migratedown migrateup sqlc test create-migration
+protoc:
+	protoc --proto_path=proto --go_out=proto/pb --go_opt=paths=source_relative \
+               --go-grpc_out=proto/pb --go-grpc_opt=paths=source_relative \
+               proto/*.proto
+.PHONY: postgres createdb dropdb migratedown migrateup sqlc test create-migration protoc
+

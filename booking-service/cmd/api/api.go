@@ -23,6 +23,7 @@ func NewCommand() *cli.Command {
 
 func beforeCommand() error {
 	dependencies.Register(context.SetContextSQL)
+	dependencies.Register(context.SetContextKafkaProducer)
 	return dependencies.Init()
 }
 
@@ -34,8 +35,5 @@ func start(c *cli.Context) error {
 
 	startRouteV1(router.Group("/api/v1"))
 
-	go router.Run("localhost:8081")
-	go startGrpcServer()
-
-	select {}
+	return router.Run("localhost:8081")
 }

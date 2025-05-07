@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "pb/";
+
+message BookingReq {
+  string booking_id = 1;
+  string status = 2;
+}
+
+message BookingResp {
+  string id = 1;
+  string user_id = 2;
+  string tour_id = 3;
+  string porter_id = 4;
+  string status = 5;
+  int32 quantity = 6;
+  int64 total_price = 7;
+  string created_at = 8;
+  string updated_at = 9;
+}
+
+service BookingService {
+  rpc UpdateBookingStatus(BookingReq) returns (BookingResp);
+}

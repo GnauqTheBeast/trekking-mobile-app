@@ -1,26 +1,27 @@
 package rest
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
-	"github.com/trekking-mobile-app/internal/module/tour/business"
 	"github.com/trekking-mobile-app/internal/module/tour/entity"
 	"github.com/trekking-mobile-app/internal/pkg/paging"
 	"net/http"
 )
 
-type API interface {
-	CreateTourHdl() gin.HandlerFunc
-	ListTourHdl() gin.HandlerFunc
-	GetTourHdl() gin.HandlerFunc
-	UpdateTourHdl() gin.HandlerFunc
-	DeleteTourHdl() gin.HandlerFunc
+type Business interface {
+	CreateNewTour(ctx context.Context, data *entity.TourCreateData) (*entity.Tour, error)
+	ListTours(ctx context.Context, paging *paging.Paging) ([]*entity.Tour, error)
+	GetTourDetails(ctx context.Context, tourId string) (*entity.Tour, error)
+	UpdateTour(ctx context.Context, tourId string, data *entity.TourPatchData) error
+	DeleteTour(ctx context.Context, tourId string) error
+	UpdateTourAvailableSlot(ctx context.Context, tourId string, lockedSlot int) (*entity.Tour, error)
 }
 
 type api struct {
-	biz business.Business
+	biz Business
 }
 
-func NewAPI(biz business.Business) API {
+func NewAPI(biz Business) *api {
 	return &api{
 		biz: biz,
 	}

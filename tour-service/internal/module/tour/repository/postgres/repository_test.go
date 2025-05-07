@@ -80,7 +80,7 @@ func TestGetTourByID(t *testing.T) {
 			UpdatedAt:   time.Now(),
 		}
 
-		mockQueries.On("GetTourByID", ctx, tourID.String()).Return(mockTour, nil)
+		mockQueries.On("GetTourById", ctx, tourID.String()).Return(mockTour, nil)
 
 		result, err := mockQueries.GetTourByID(ctx, tourID.String())
 

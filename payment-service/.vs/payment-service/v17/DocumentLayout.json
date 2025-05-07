@@ -1,0 +1,190 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\duckii\\OneDrive\\M\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{24FDED0C-16CB-439C-8CDA-CEB2E6228602}|PaymentService.GrpcService\\PaymentService.GrpcService.csproj|c:\\users\\duckii\\onedrive\\m\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\paymentservice.grpcservice\\services\\paymentgrpcservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{24FDED0C-16CB-439C-8CDA-CEB2E6228602}|PaymentService.GrpcService\\PaymentService.GrpcService.csproj|solutionrelative:paymentservice.grpcservice\\services\\paymentgrpcservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{24FDED0C-16CB-439C-8CDA-CEB2E6228602}|PaymentService.GrpcService\\PaymentService.GrpcService.csproj|c:\\users\\duckii\\onedrive\\m\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\paymentservice.grpcservice\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{24FDED0C-16CB-439C-8CDA-CEB2E6228602}|PaymentService.GrpcService\\PaymentService.GrpcService.csproj|solutionrelative:paymentservice.grpcservice\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{24FDED0C-16CB-439C-8CDA-CEB2E6228602}|PaymentService.GrpcService\\PaymentService.GrpcService.csproj|c:\\users\\duckii\\onedrive\\m\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\paymentservice.grpcservice\\paymentservice.grpcservice.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{24FDED0C-16CB-439C-8CDA-CEB2E6228602}|PaymentService.GrpcService\\PaymentService.GrpcService.csproj|solutionrelative:paymentservice.grpcservice\\paymentservice.grpcservice.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{24FDED0C-16CB-439C-8CDA-CEB2E6228602}|PaymentService.GrpcService\\PaymentService.GrpcService.csproj|c:\\users\\duckii\\onedrive\\m\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\paymentservice.grpcservice\\services\\greeterservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{24FDED0C-16CB-439C-8CDA-CEB2E6228602}|PaymentService.GrpcService\\PaymentService.GrpcService.csproj|solutionrelative:paymentservice.grpcservice\\services\\greeterservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{24FDED0C-16CB-439C-8CDA-CEB2E6228602}|PaymentService.GrpcService\\PaymentService.GrpcService.csproj|c:\\users\\duckii\\onedrive\\m\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\paymentservice.grpcservice\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{24FDED0C-16CB-439C-8CDA-CEB2E6228602}|PaymentService.GrpcService\\PaymentService.GrpcService.csproj|solutionrelative:paymentservice.grpcservice\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0C28FBC0-E8FA-4E1B-B5EE-0A9ABC2D39AD}|PaymentService.Application\\PaymentService.Application.csproj|c:\\users\\duckii\\onedrive\\m\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\paymentservice.application\\services\\paymentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0C28FBC0-E8FA-4E1B-B5EE-0A9ABC2D39AD}|PaymentService.Application\\PaymentService.Application.csproj|solutionrelative:paymentservice.application\\services\\paymentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8C415160-811E-452A-A8B3-0E8F75CE230A}|PaymentService.Infrastructure\\PaymentService.Infrastructure.csproj|c:\\users\\duckii\\onedrive\\m\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\paymentservice.infrastructure\\repositories\\transactionrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8C415160-811E-452A-A8B3-0E8F75CE230A}|PaymentService.Infrastructure\\PaymentService.Infrastructure.csproj|solutionrelative:paymentservice.infrastructure\\repositories\\transactionrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8C415160-811E-452A-A8B3-0E8F75CE230A}|PaymentService.Infrastructure\\PaymentService.Infrastructure.csproj|c:\\users\\duckii\\onedrive\\m\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\paymentservice.infrastructure\\repositories\\accountrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8C415160-811E-452A-A8B3-0E8F75CE230A}|PaymentService.Infrastructure\\PaymentService.Infrastructure.csproj|solutionrelative:paymentservice.infrastructure\\repositories\\accountrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0C28FBC0-E8FA-4E1B-B5EE-0A9ABC2D39AD}|PaymentService.Application\\PaymentService.Application.csproj|c:\\users\\duckii\\onedrive\\m\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\paymentservice.application\\paymentservice.application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{0C28FBC0-E8FA-4E1B-B5EE-0A9ABC2D39AD}|PaymentService.Application\\PaymentService.Application.csproj|solutionrelative:paymentservice.application\\paymentservice.application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0C28FBC0-E8FA-4E1B-B5EE-0A9ABC2D39AD}|PaymentService.Application\\PaymentService.Application.csproj|c:\\users\\duckii\\onedrive\\m\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\paymentservice.application\\interfaces\\ipaymentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0C28FBC0-E8FA-4E1B-B5EE-0A9ABC2D39AD}|PaymentService.Application\\PaymentService.Application.csproj|solutionrelative:paymentservice.application\\interfaces\\ipaymentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "C:\\Users\\duckii\\OneDrive\\M\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\PaymentService.GrpcService\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "PaymentService.GrpcService\\Properties\\launchSettings.json",
+              "ToolTip": "C:\\Users\\duckii\\OneDrive\\M\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\PaymentService.GrpcService\\Properties\\launchSettings.json",
+              "RelativeToolTip": "PaymentService.GrpcService\\Properties\\launchSettings.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABAAAAAvAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-05-02T11:18:47.58Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "GreeterService.cs",
+              "DocumentMoniker": "C:\\Users\\duckii\\OneDrive\\M\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\PaymentService.GrpcService\\Services\\GreeterService.cs",
+              "RelativeDocumentMoniker": "PaymentService.GrpcService\\Services\\GreeterService.cs",
+              "ToolTip": "C:\\Users\\duckii\\OneDrive\\M\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\PaymentService.GrpcService\\Services\\GreeterService.cs",
+              "RelativeToolTip": "PaymentService.GrpcService\\Services\\GreeterService.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-02T09:52:57.942Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "PaymentService.GrpcService",
+              "DocumentMoniker": "C:\\Users\\duckii\\OneDrive\\M\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\PaymentService.GrpcService\\PaymentService.GrpcService.csproj",
+              "RelativeDocumentMoniker": "PaymentService.GrpcService\\PaymentService.GrpcService.csproj",
+              "ToolTip": "C:\\Users\\duckii\\OneDrive\\M\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\PaymentService.GrpcService\\PaymentService.GrpcService.csproj",
+              "RelativeToolTip": "PaymentService.GrpcService\\PaymentService.GrpcService.csproj",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAsAAAAOAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-05-02T09:41:07.175Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "PaymentGrpcService.cs",
+              "DocumentMoniker": "C:\\Users\\duckii\\OneDrive\\M\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\PaymentService.GrpcService\\Services\\PaymentGrpcService.cs",
+              "RelativeDocumentMoniker": "PaymentService.GrpcService\\Services\\PaymentGrpcService.cs",
+              "ToolTip": "C:\\Users\\duckii\\OneDrive\\M\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\PaymentService.GrpcService\\Services\\PaymentGrpcService.cs",
+              "RelativeToolTip": "PaymentService.GrpcService\\Services\\PaymentGrpcService.cs",
+              "ViewState": "AQIAABMAAAAAAAAAAAAgwCAAAAAMAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-02T09:40:42.251Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\duckii\\OneDrive\\M\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\PaymentService.GrpcService\\Program.cs",
+              "RelativeDocumentMoniker": "PaymentService.GrpcService\\Program.cs",
+              "ToolTip": "C:\\Users\\duckii\\OneDrive\\M\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\PaymentService.GrpcService\\Program.cs",
+              "RelativeToolTip": "PaymentService.GrpcService\\Program.cs",
+              "ViewState": "AQIAABcAAAAAAAAAAAAQwB4AAAADAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-02T09:39:57.612Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "TransactionRepository.cs",
+              "DocumentMoniker": "C:\\Users\\duckii\\OneDrive\\M\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\PaymentService.Infrastructure\\Repositories\\TransactionRepository.cs",
+              "RelativeDocumentMoniker": "PaymentService.Infrastructure\\Repositories\\TransactionRepository.cs",
+              "ToolTip": "C:\\Users\\duckii\\OneDrive\\M\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\PaymentService.Infrastructure\\Repositories\\TransactionRepository.cs",
+              "RelativeToolTip": "PaymentService.Infrastructure\\Repositories\\TransactionRepository.cs",
+              "ViewState": "AQIAABAAAAAAAAAAAAAmwBsAAAAkAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-02T09:38:26.927Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "PaymentService.Application",
+              "DocumentMoniker": "C:\\Users\\duckii\\OneDrive\\M\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\PaymentService.Application\\PaymentService.Application.csproj",
+              "RelativeDocumentMoniker": "PaymentService.Application\\PaymentService.Application.csproj",
+              "ToolTip": "C:\\Users\\duckii\\OneDrive\\M\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\PaymentService.Application\\PaymentService.Application.csproj",
+              "RelativeToolTip": "PaymentService.Application\\PaymentService.Application.csproj",
+              "ViewState": "AQIAAAkAAAAAAAAAAAAAAAUAAAAfAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-05-02T09:37:42.048Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "AccountRepository.cs",
+              "DocumentMoniker": "C:\\Users\\duckii\\OneDrive\\M\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\PaymentService.Infrastructure\\Repositories\\AccountRepository.cs",
+              "RelativeDocumentMoniker": "PaymentService.Infrastructure\\Repositories\\AccountRepository.cs",
+              "ToolTip": "C:\\Users\\duckii\\OneDrive\\M\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\PaymentService.Infrastructure\\Repositories\\AccountRepository.cs",
+              "RelativeToolTip": "PaymentService.Infrastructure\\Repositories\\AccountRepository.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAMAAAAGAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-02T09:37:16.407Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "PaymentService.cs",
+              "DocumentMoniker": "C:\\Users\\duckii\\OneDrive\\M\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\PaymentService.Application\\Services\\PaymentService.cs",
+              "RelativeDocumentMoniker": "PaymentService.Application\\Services\\PaymentService.cs",
+              "ToolTip": "C:\\Users\\duckii\\OneDrive\\M\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\PaymentService.Application\\Services\\PaymentService.cs",
+              "RelativeToolTip": "PaymentService.Application\\Services\\PaymentService.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABIAAAAzAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-02T09:37:15.645Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "IPaymentService.cs",
+              "DocumentMoniker": "C:\\Users\\duckii\\OneDrive\\M\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\PaymentService.Application\\Interfaces\\IPaymentService.cs",
+              "RelativeDocumentMoniker": "PaymentService.Application\\Interfaces\\IPaymentService.cs",
+              "ToolTip": "C:\\Users\\duckii\\OneDrive\\M\u00E1y t\u00EDnh\\mobile\\trekking-mobile-app\\payment-service\\PaymentService.Application\\Interfaces\\IPaymentService.cs",
+              "RelativeToolTip": "PaymentService.Application\\Interfaces\\IPaymentService.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAsAAAANAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-02T09:37:11.414Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
