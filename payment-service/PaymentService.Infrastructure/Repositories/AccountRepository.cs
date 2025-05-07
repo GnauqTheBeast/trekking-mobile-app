@@ -14,6 +14,8 @@ namespace PaymentService.Infrastructure.Repositories
         public AccountRepository(string connectionString)
         {
             _connectionString = connectionString;
+            // Configure Dapper to map snake_case to PascalCase
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
         public async Task<Account> GetByIdAsync(Guid id)
@@ -57,23 +59,22 @@ namespace PaymentService.Infrastructure.Repositories
             return await connection.QueryFirstOrDefaultAsync<Account>(sql, account);
         }
 
-        public async Task<bool> UpdateBalanceAsync(Guid accountId, long amount)
+        public async Task<Account> UpdateBalanceAsync(Guid accountId, long amount)
         {
             using var connection = new NpgsqlConnection(_connectionString);
             var sql = @"
                 UPDATE account 
                 SET balance = balance + @Amount,
                     updated_at = @UpdatedAt
-                WHERE id = @Id";
+                WHERE id = @Id
+                RETURNING *";
             
-            var rowsAffected = await connection.ExecuteAsync(sql, new 
+            return await connection.QueryFirstOrDefaultAsync<Account>(sql, new 
             { 
                 Id = accountId, 
                 Amount = amount,
                 UpdatedAt = DateTime.UtcNow
             });
-            
-            return rowsAffected > 0;
         }
     }
 } 

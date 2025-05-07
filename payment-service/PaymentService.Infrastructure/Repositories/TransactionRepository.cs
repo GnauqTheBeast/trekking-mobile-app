@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Dapper;
 using Npgsql;
 using PaymentService.Core.Interfaces;
@@ -12,6 +15,8 @@ namespace PaymentService.Infrastructure.Repositories
         public TransactionRepository(string connectionString)
         {
             _connectionString = connectionString;
+            // Configure Dapper to map snake_case to PascalCase
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
 
         public async Task<Transaction> GetByIdAsync(Guid id)
@@ -53,6 +58,7 @@ namespace PaymentService.Infrastructure.Repositories
             var sql = @"
                 UPDATE transaction 
                 SET status = @Status,
+                    description = @Description,
                     updated_at = @UpdatedAt
                 WHERE id = @Id
                 RETURNING *";

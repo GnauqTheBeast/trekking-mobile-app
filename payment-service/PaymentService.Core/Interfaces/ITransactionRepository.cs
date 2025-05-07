@@ -11,6 +11,5 @@ namespace PaymentService.Core.Interfaces
         Task<IEnumerable<Transaction>> GetByAccountIdAsync(Guid accountId);
         Task<Transaction> CreateAsync(Transaction transaction);
         Task<Transaction> UpdateAsync(Transaction transaction);
-        Task<IEnumerable<Transaction>> GetByReferenceIdAsync(Guid referenceId, string referenceType);
     }
 } 
