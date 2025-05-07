@@ -2,6 +2,8 @@ using PaymentService.Application.Interfaces;
 using PaymentService.Application.Services;
 using PaymentService.Core.Interfaces;
 using PaymentService.Infrastructure.Repositories;
+using PaymentService.Api.Services;
+using Confluent.Kafka;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +38,21 @@ builder.Services.AddScoped<IAccountRepository>(sp => new AccountRepository(conne
 builder.Services.AddScoped<ITransactionRepository>(sp => new TransactionRepository(connectionString));
 builder.Services.AddScoped<IBookingRepository>(sp => new BookingRepository(connectionString));
 builder.Services.AddScoped<IPaymentRepository>(sp => new PaymentRepository(connectionString));
+
+// Configure Kafka Consumer
+var consumerConfig = new ConsumerConfig
+{
+    BootstrapServers = builder.Configuration["Kafka:BootstrapServers"] ?? "localhost:9092",
+    GroupId = "payment-service-group",
+    AutoOffsetReset = AutoOffsetReset.Earliest,
+    EnableAutoCommit = false
+};
+
+builder.Services.AddSingleton<IConsumer<string, string>>(sp => 
+    new ConsumerBuilder<string, string>(consumerConfig).Build());
+
+// Register Kafka Consumer Service
+builder.Services.AddHostedService<KafkaConsumerService>();
 
 var app = builder.Build();
 
