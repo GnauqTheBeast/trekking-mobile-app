@@ -4,6 +4,10 @@ import { AuthController } from './controller/auth.controller';
 import { ClientGrpcModule } from 'src/client-grpc/client.grpc';
 import { JwtService } from './service/jwt.service';
 import { JwtModule } from '@nestjs/jwt';
+import { OtpService } from 'src/otp/otp.service';
+import { RedisService } from 'src/redis/redis.service';
+import { RedisModule } from 'src/redis/redis.module';
+import { RedisConfig } from 'src/redis/redis.config';
 
 @Module({
     imports: [
@@ -11,9 +15,10 @@ import { JwtModule } from '@nestjs/jwt';
         JwtModule.register({
             secret: 'dev',
             signOptions: {expiresIn: '1h'}
-        })
+        }),
+        RedisModule
     ],
-    providers: [AuthService, JwtService],
+    providers: [AuthService, JwtService, OtpService, RedisService],
     controllers: [AuthController],
     exports: [AuthService]
 })

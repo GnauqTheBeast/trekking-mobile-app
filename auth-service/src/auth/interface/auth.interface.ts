@@ -18,7 +18,17 @@ export interface LoginRequest {
 export interface LoginResponse {
   status: number;
   message: string;
-  token: string;
+  token: string | null;
+  user: {
+    id: string;
+    email: string;
+    fullname: string;
+    phoneNumber: string | null;
+    dob: string | null;
+    address: string | null;
+    roleId: string;
+    roleName: string;
+  } | null
 }
 
 export interface RegisterRequest {
