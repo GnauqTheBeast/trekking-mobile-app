@@ -10,6 +10,6 @@ namespace PaymentService.Core.Interfaces
         Task<Account> GetByUserIdAsync(Guid userId);
         Task<Account> CreateAsync(Account account);
         Task<Account> UpdateAsync(Account account);
-        Task<bool> UpdateBalanceAsync(Guid accountId, long amount);
+        Task<Account> UpdateBalanceAsync(Guid accountId, long amount);
     }
 } 

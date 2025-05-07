@@ -23,7 +23,7 @@ namespace PaymentService.GrpcService.Services
         {
             try
             {
-                var transaction = await _paymentService.DepositAsync(
+                var transaction = await _paymentService.InitiateDepositAsync(
                     Guid.Parse(request.UserId),
                     request.Amount,
                     request.Description);
@@ -41,7 +41,7 @@ namespace PaymentService.GrpcService.Services
         {
             try
             {
-                var transaction = await _paymentService.WithdrawAsync(
+                var transaction = await _paymentService.InitiateWithdrawAsync(
                     Guid.Parse(request.UserId),
                     request.Amount,
                     request.Description);
