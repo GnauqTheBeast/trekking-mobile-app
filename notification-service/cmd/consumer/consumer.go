@@ -97,16 +97,11 @@ func consumeTopic(consumer sarama.Consumer, topic string, partition int32, done 
 
 var topicHandlers = map[string]func(*sarama.ConsumerMessage){
 	"email_register":  handleEmailRegister,
-	"booking_request": handleOrderCreated,
 	"payment_success": handlePaymentSuccess,
 }
 
 func handleEmailRegister(msg *sarama.ConsumerMessage) {
 	fmt.Printf("Handling Email Register: %s\n", string(msg.Value))
-}
-
-func handleOrderCreated(msg *sarama.ConsumerMessage) {
-	fmt.Printf("Handling Order Created: %s\n", string(msg.Value))
 }
 
 func handlePaymentSuccess(msg *sarama.ConsumerMessage) {
