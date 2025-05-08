@@ -1,10 +1,10 @@
-package consumer
+package api
 
 import (
 	"fmt"
-	"os"
-	"os/signal"
-	"syscall"
+
+	"github.com/gin-gonic/gin"
+	ws "github.com/trekking-mobile-app/internal/module/notification/ws"
 
 	"github.com/IBM/sarama"
 	"github.com/trekking-mobile-app/internal/context"
@@ -12,10 +12,12 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+var topicHandlers = map[string]func(*sarama.ConsumerMessage){}
+
 func NewCommand() *cli.Command {
 	return &cli.Command{
-		Name:  "consumer",
-		Usage: "start the booking-service",
+		Name:  "websocket",
+		Usage: "start the notification-service",
 		Action: func(c *cli.Context) error {
 			return start(c)
 		},
@@ -27,32 +29,36 @@ func NewCommand() *cli.Command {
 
 func beforeCommand() error {
 	dependencies.Register(context.SetContextSQL)
+	dependencies.Register(context.SetContextKafkaConsumer)
 	return dependencies.Init()
 }
 
 func start(c *cli.Context) error {
-	topics := []string{"email_register", "booking_request", "payment_success"}
 	brokers := []string{"localhost:9092"}
 
 	consumer, err := connectConsumer(brokers)
 	if err != nil {
 		panic(err)
 	}
-
 	defer consumer.Close()
 
-	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+	wsHandler := ws.NewWS()
+	topicHandlers["payment_result"] = wsHandler.HandlePaymentResult
+
+	go func() {
+		r := gin.Default()
+		ws.RegisterRoutes(r, wsHandler)
+		if err := r.Run(":8080"); err != nil {
+			fmt.Printf("WebSocket server failed: %v\n", err)
+		}
+	}()
 
 	done := make(chan struct{})
-
-	for _, topic := range topics {
+	for topic := range topicHandlers {
 		go consumeTopic(consumer, topic, 0, done)
 	}
 
-	<-sigChan
-	fmt.Println("Shutdown signal received. Exiting...")
-
+	fmt.Println("Shutdown signal received.")
 	close(done)
 	return nil
 }
@@ -66,7 +72,7 @@ func connectConsumer(brokers []string) (sarama.Consumer, error) {
 func consumeTopic(consumer sarama.Consumer, topic string, partition int32, done <-chan struct{}) {
 	partitionConsumer, err := consumer.ConsumePartition(topic, partition, sarama.OffsetOldest)
 	if err != nil {
-		fmt.Printf("Error starting partition consumer for topic %s: %v\n", topic, err)
+		fmt.Printf("Error starting partition api for topic %s: %v\n", topic, err)
 		return
 	}
 	defer partitionConsumer.Close()
@@ -82,28 +88,13 @@ func consumeTopic(consumer sarama.Consumer, topic string, partition int32, done 
 
 			if handler, ok := topicHandlers[topic]; ok {
 				handler(msg)
-			} else {
-				fmt.Printf("No handler for topic %s\n", topic)
 			}
 
 		case err := <-partitionConsumer.Errors():
 			fmt.Printf("Error on topic %s: %v\n", topic, err)
 		case <-done:
-			fmt.Printf("Stopping consumer for topic %s after %d messages\n", topic, msgCount)
+			fmt.Printf("Stopping api for topic %s after %d messages\n", topic, msgCount)
 			return
 		}
 	}
-}
-
-var topicHandlers = map[string]func(*sarama.ConsumerMessage){
-	"email_register":  handleEmailRegister,
-	"payment_success": handlePaymentSuccess,
-}
-
-func handleEmailRegister(msg *sarama.ConsumerMessage) {
-	fmt.Printf("Handling Email Register: %s\n", string(msg.Value))
-}
-
-func handlePaymentSuccess(msg *sarama.ConsumerMessage) {
-	fmt.Printf("Handling Payment Success: %s\n", string(msg.Value))
 }

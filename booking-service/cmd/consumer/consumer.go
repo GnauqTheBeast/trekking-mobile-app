@@ -13,7 +13,7 @@ import (
 
 func NewCommand() *cli.Command {
 	return &cli.Command{
-		Name:  "consumer",
+		Name:  "api",
 		Usage: "start the booking-service",
 		Action: func(c *cli.Context) error {
 			return start(c)

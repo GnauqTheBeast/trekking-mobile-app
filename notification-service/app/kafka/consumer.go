@@ -2,9 +2,10 @@ package kafka
 
 import (
 	"fmt"
-	"github.com/IBM/sarama"
 	"os"
 	"strings"
+
+	"github.com/IBM/sarama"
 )
 
 const (
@@ -52,7 +53,7 @@ func (k *Consumer) ConsumePartition(topic string, partition int32, done <-chan s
 		case err := <-consumePartition.Errors():
 			fmt.Printf("Error on topic %s: %v\n", topic, err)
 		case <-done:
-			fmt.Printf("Stopping consumer for topic %s\n", topic)
+			fmt.Printf("Stopping api for topic %s\n", topic)
 			return
 		}
 	}
