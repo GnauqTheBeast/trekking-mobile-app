@@ -10,8 +10,9 @@ import (
 
 func NewCommand() *cli.Command {
 	return &cli.Command{
-		Name:  "api",
-		Usage: "start the booking-service",
+		Name:    "api-cmd",
+		Aliases: []string{"a"},
+		Usage:   "start the booking-service",
 		Action: func(c *cli.Context) error {
 			return start(c)
 		},

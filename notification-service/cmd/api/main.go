@@ -2,14 +2,22 @@ package api
 
 import (
 	"fmt"
+	"os"
+	"os/signal"
+	"strings"
+	"syscall"
 
-	"github.com/gin-gonic/gin"
-	ws "github.com/trekking-mobile-app/internal/module/notification/ws"
+	"github.com/trekking-mobile-app/internal/context"
+	"github.com/trekking-mobile-app/internal/module/notification/transport/ws"
 
 	"github.com/IBM/sarama"
-	"github.com/trekking-mobile-app/internal/context"
+	"github.com/gin-gonic/gin"
 	"github.com/trekking-mobile-app/internal/dependencies"
 	"github.com/urfave/cli/v2"
+)
+
+const (
+	kafkaConn = "KAFKA_CONNECTION"
 )
 
 var topicHandlers = map[string]func(*sarama.ConsumerMessage){}
@@ -34,7 +42,7 @@ func beforeCommand() error {
 }
 
 func start(c *cli.Context) error {
-	brokers := []string{"localhost:9092"}
+	brokers := strings.Split(os.Getenv(kafkaConn), ",")
 
 	consumer, err := connectConsumer(brokers)
 	if err != nil {
@@ -47,8 +55,8 @@ func start(c *cli.Context) error {
 
 	go func() {
 		r := gin.Default()
-		ws.RegisterRoutes(r, wsHandler)
-		if err := r.Run(":8080"); err != nil {
+		RegisterRoutes(r, wsHandler)
+		if err := r.Run(":8082"); err != nil {
 			fmt.Printf("WebSocket server failed: %v\n", err)
 		}
 	}()
@@ -58,7 +66,10 @@ func start(c *cli.Context) error {
 		go consumeTopic(consumer, topic, 0, done)
 	}
 
-	fmt.Println("Shutdown signal received.")
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+	<-sigChan
+
 	close(done)
 	return nil
 }

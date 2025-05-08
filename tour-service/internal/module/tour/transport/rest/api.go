@@ -9,7 +9,7 @@ import (
 )
 
 type Business interface {
-	CreateNewTour(ctx context.Context, data *entity.TourCreateData) (*entity.Tour, error)
+	CreateNewTour(ctx context.Context, data *entity.Tour) (*entity.Tour, error)
 	ListTours(ctx context.Context, paging *paging.Paging) ([]*entity.Tour, error)
 	GetTourDetails(ctx context.Context, tourId string) (*entity.Tour, error)
 	UpdateTour(ctx context.Context, tourId string, data *entity.TourPatchData) error
@@ -29,7 +29,7 @@ func NewAPI(biz Business) *api {
 
 func (a *api) CreateTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		data := new(entity.TourCreateData)
+		data := new(entity.Tour)
 		if err := c.ShouldBindJSON(&data); err != nil {
 			responseError(c, err)
 			return
@@ -60,18 +60,18 @@ func (a *api) ListTourHdl() gin.HandlerFunc {
 
 func (a *api) GetTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tourID := c.Param("id")
-		if tourID == "" {
-			responseErrorWithMessage(c, "tourID is required")
+		tourId := c.Param("id")
+		if tourId == "" {
+			responseErrorWithMessage(c, "tourId is required")
 			return
 		}
 
-		tourDetails, err := a.biz.GetTourDetails(c, tourID)
+		tourDetails, err := a.biz.GetTourDetails(c, tourId)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"message": tourDetails.ID})
+		c.JSON(http.StatusOK, gin.H{"message": tourDetails})
 		return
 	}
 }

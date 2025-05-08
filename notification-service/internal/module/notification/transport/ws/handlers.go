@@ -2,8 +2,10 @@ package ws
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"sync"
 
 	"github.com/IBM/sarama"
@@ -29,26 +31,25 @@ func NewWS() *WS {
 	}
 }
 
-func (w *WS) wsHandler(c *gin.Context) {
-	// Lấy token từ header hoặc query
+func (w *WS) WsHandler(c *gin.Context) {
 	token := c.GetHeader("Authorization")
 	if token == "" {
 		token = c.Query("token")
 	}
 
-	// Xác thực token
 	userId, err := validateToken(token)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
 		return
 	}
 
-	// Sử dụng userId từ token thay vì query
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		return
 	}
 	defer conn.Close()
+
+	fmt.Println("UserId connect successfully", userId)
 
 	w.mu.Lock()
 	w.clients[userId] = conn
@@ -66,9 +67,11 @@ func (w *WS) wsHandler(c *gin.Context) {
 }
 
 func validateToken(token string) (string, error) {
-	// Implement token validation logic here (rpc to auth service)
-	// Return userId and error
-	return "", nil
+	if strings.HasPrefix(token, "Bearer ") {
+		userId := strings.TrimPrefix(token, "Bearer ")
+		return userId, nil
+	}
+	return "", errors.New("invalid token")
 }
 
 func (w *WS) HandlePaymentResult(msg *sarama.ConsumerMessage) {

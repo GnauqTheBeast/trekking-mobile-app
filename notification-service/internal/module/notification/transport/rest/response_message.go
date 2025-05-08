@@ -1,4 +1,4 @@
-package ws
+package rest
 
 import (
 	"net/http"

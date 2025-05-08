@@ -39,7 +39,7 @@ func startGrpcServer() error {
 	s := grpc.NewServer()
 
 	repo := postgres.NewPostgresRepo(context.GetSQLClient())
-	biz := business.NewBusiness(repo)
+	biz := business.NewBusiness(repo, context.GetRedisClient())
 	tourRpcService := rpc.NewTourServiceServer(biz)
 
 	pb.RegisterTourServiceServer(s, tourRpcService)
