@@ -51,6 +51,7 @@ func (a *api) ListTourHdl() gin.HandlerFunc {
 		listTours, err := a.biz.ListTours(c, paging.GetQueryPaging(c))
 		if err != nil {
 			responseError(c, err)
+			return
 		}
 
 		responseSuccess(c, listTours)
@@ -78,7 +79,26 @@ func (a *api) GetTourHdl() gin.HandlerFunc {
 
 func (a *api) UpdateTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "UpdateTourHdl called"})
+		tourId := c.Param("id")
+		if tourId == "" {
+			responseErrorWithMessage(c, "tourId is required")
+			return
+		}
+
+		data := new(entity.TourPatchData)
+		if err := c.ShouldBindJSON(&data); err != nil {
+			responseError(c, err)
+			return
+		}
+
+		err := a.biz.UpdateTour(c, tourId, data)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		responseSuccess(c, nil)
+		return
 	}
 }
 

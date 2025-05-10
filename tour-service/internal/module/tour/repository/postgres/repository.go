@@ -103,7 +103,7 @@ func (repo *repository) DeleteTour(ctx context.Context, tourId string) error {
 	return nil
 }
 
-func (repo *repository) InsertNewTour(ctx context.Context, data *entity.TourCreateData) (*entity.Tour, error) {
+func (repo *repository) InsertNewTour(ctx context.Context, data *entity.Tour) (*entity.Tour, error) {
 	if data == nil {
 		return nil, ErrInvalidTourData
 	}

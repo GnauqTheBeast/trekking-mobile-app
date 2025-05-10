@@ -1,6 +1,22 @@
 version: "3.3"
 
 services:
+#  tour-service:
+#    container_name: app_tour_service
+#    build:
+#      context: ./tour-service/.
+#      dockerfile: Dockerfile
+#    networks:
+#      - app
+#    env_file:
+#      - ./tour-service/cmd/.env
+#    restart: unless-stopped
+#    depends_on:
+#      - postgres
+#      - kafka
+#      - redis
+#      - zookeeper
+
   postgres:
     container_name: app_postgres
     image: postgres
@@ -15,6 +31,33 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
     restart: unless-stopped
 
+#  nginx:
+#    image: nginx:latest
+#    volumes:
+#      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+#    depends_on:
+#      - api-gateway
+
+  zookeeper:
+    container_name: app_zookeeper
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    container_name: app_kafka
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
   redis:
     container_name: app_redis
     image: redis
@@ -23,6 +66,13 @@ services:
     volumes:
       - ./redis-data:/data
     restart: unless-stopped
+
+  #  nginx:
+  #    image: nginx:latest
+  #    ports:
+  #      - "80:80"
+  #    volumes:
+  #      - ./nginx.conf:/etc/nginx/conf.d/default.conf
 
 networks:
   app:

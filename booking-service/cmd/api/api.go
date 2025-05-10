@@ -10,9 +10,8 @@ import (
 
 func NewCommand() *cli.Command {
 	return &cli.Command{
-		Name:    "api-cmd",
-		Aliases: []string{"a"},
-		Usage:   "start the booking-service",
+		Name:  "api",
+		Usage: "start the booking-service server",
 		Action: func(c *cli.Context) error {
 			return start(c)
 		},
@@ -36,5 +35,5 @@ func start(c *cli.Context) error {
 
 	startRouteV1(router.Group("/api/v1"))
 
-	return router.Run("localhost:8081")
+	return router.Run(":8081")
 }

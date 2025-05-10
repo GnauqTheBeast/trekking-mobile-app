@@ -2,7 +2,6 @@ package rpc
 
 import (
 	"context"
-
 	"github.com/trekking-mobile-app/proto/pb"
 )
 

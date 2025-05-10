@@ -20,7 +20,7 @@ var (
 )
 
 type Repository interface {
-	InsertNewTour(ctx context.Context, data *entity.TourCreateData) (*entity.Tour, error)
+	InsertNewTour(ctx context.Context, data *entity.Tour) (*entity.Tour, error)
 	GetTourById(ctx context.Context, tourId string) (*entity.Tour, error)
 	ListTours(ctx context.Context, paging *paging.Paging) ([]*entity.Tour, error)
 	UpdateTour(ctx context.Context, tourId string, data *entity.TourPatchData) error
@@ -43,7 +43,7 @@ func NewBusiness(repository Repository, cache *redis.CacheRedis) *business {
 	}
 }
 
-func (b *business) CreateNewTour(ctx context.Context, data *entity.TourCreateData) (*entity.Tour, error) {
+func (b *business) CreateNewTour(ctx context.Context, data *entity.Tour) (*entity.Tour, error) {
 	if data == nil {
 		return nil, ErrInvalidTourData
 	}
