@@ -25,6 +25,16 @@ func NewAPI(biz Business) *api {
 	}
 }
 
+// CreateBookingHdl godoc
+// @Summary Tạo booking mới
+// @Description Gửi yêu cầu đặt tour
+// @Tags Booking
+// @Accept json
+// @Produce json
+// @Param booking body entity.Booking true "Thông tin booking"
+// @Success 202 {object} entity.Booking
+// @Failure 400 {object} map[string]string
+// @Router /bookings [post]
 func (a *api) CreateBookingHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		data := new(entity.Booking)
@@ -45,6 +55,17 @@ func (a *api) CreateBookingHdl() gin.HandlerFunc {
 	}
 }
 
+// GetBookingByIdHdl godoc
+// @Summary Lấy thông tin booking
+// @Description Truy vấn chi tiết booking theo ID
+// @Tags Booking
+// @Accept json
+// @Produce json
+// @Param id path string true "Booking ID"
+// @Success 200 {object} entity.Booking
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /bookings/{id} [get]
 func (a *api) GetBookingByIdHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		bookingId := c.Param("id")
@@ -70,6 +91,17 @@ func (a *api) GetBookingByIdHdl() gin.HandlerFunc {
 	}
 }
 
+// CancelBookingHdl godoc
+// @Summary Hủy booking
+// @Description Hủy booking theo ID
+// @Tags Booking
+// @Accept json
+// @Produce json
+// @Param id path string true "Booking ID"
+// @Success 200 {object} entity.Booking
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /bookings/{id}/cancel [post]
 func (a *api) CancelBookingHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		bookingId := c.Param("id")

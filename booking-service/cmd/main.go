@@ -6,6 +6,7 @@ import (
 
 	"github.com/trekking-mobile-app/cmd/api"
 	"github.com/trekking-mobile-app/cmd/consumer"
+	_ "github.com/trekking-mobile-app/docs"
 	"github.com/trekking-mobile-app/internal/pkg/env"
 	"github.com/urfave/cli/v2"
 )

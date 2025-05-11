@@ -1,0 +1,356 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/tours": {
+            "get": {
+                "description": "Lấy danh sách tour theo phân trang",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tour"
+                ],
+                "summary": "Danh sách tour",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Trang hiện tại",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Số lượng mỗi trang",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.Tour"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "API tạo tour du lịch mới",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tour"
+                ],
+                "summary": "Tạo tour mới",
+                "parameters": [
+                    {
+                        "description": "Thông tin tour",
+                        "name": "tour",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.Tour"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Tour"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tours/{id}": {
+            "get": {
+                "description": "Lấy chi tiết tour theo ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tour"
+                ],
+                "summary": "Lấy thông tin chi tiết tour",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tour ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Tour"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Xóa tour theo ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tour"
+                ],
+                "summary": "Xóa tour",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tour ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Cập nhật tour theo ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tour"
+                ],
+                "summary": "Cập nhật thông tin tour",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tour ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Dữ liệu cần cập nhật",
+                        "name": "tour",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.TourPatchData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "entity.Tour": {
+            "type": "object",
+            "required": [
+                "available_slot",
+                "description",
+                "end",
+                "host_id",
+                "id",
+                "name",
+                "price",
+                "slot",
+                "start",
+                "status"
+            ],
+            "properties": {
+                "available_slot": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string",
+                    "minLength": 10
+                },
+                "end": {
+                    "type": "string"
+                },
+                "host_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 3
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "slot": {
+                    "type": "integer"
+                },
+                "start": {
+                    "type": "string"
+                },
+                "status": {
+                    "enum": [
+                        "DRAFT",
+                        "PUBLISHED",
+                        "ARCHIVED"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entity.TourStatus"
+                        }
+                    ]
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.TourPatchData": {
+            "type": "object",
+            "required": [
+                "end",
+                "price",
+                "slot",
+                "start"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "minLength": 10
+                },
+                "end": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "slot": {
+                    "type": "integer"
+                },
+                "start": {
+                    "type": "string"
+                },
+                "status": {
+                    "enum": [
+                        "draft",
+                        "published",
+                        "archived"
+                    ],
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entity.TourStatus"
+                        }
+                    ]
+                },
+                "title": {
+                    "type": "string",
+                    "maxLength": 255,
+                    "minLength": 3
+                }
+            }
+        },
+        "entity.TourStatus": {
+            "type": "string",
+            "enum": [
+                "DRAFT",
+                "PUBLISHED",
+                "ARCHIVED"
+            ],
+            "x-enum-varnames": [
+                "TourStatusDraft",
+                "TourStatusPublished",
+                "TourStatusArchived"
+            ]
+        }
+    }
+}
