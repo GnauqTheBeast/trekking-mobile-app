@@ -41,19 +41,6 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 
-    // Booking Service Documentation
-    c.SwaggerDoc("booking", new OpenApiInfo
-    {
-        Title = "Booking Service API",
-        Version = "v1",
-        Description = "Tour Booking Management Service API",
-        Contact = new OpenApiContact
-        {
-            Name = "Trekking App Team",
-            Email = "support@trekkingapp.com"
-        }
-    });
-
     // Tour Service Documentation
     c.SwaggerDoc("tour", new OpenApiInfo
     {
@@ -137,25 +124,20 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    // Configure Swagger UI for each service
-    c.SwaggerEndpoint("/auth-service/swagger/v1/swagger.json", "Auth Service API");
-    c.SwaggerEndpoint("/user-service/swagger/v1/swagger.json", "User Service API");
-    c.SwaggerEndpoint("/booking-service/swagger/v1/swagger.json", "Booking Service API");
     c.SwaggerEndpoint("/tour-service/swagger/v1/swagger.json", "Tour Service API");
+    c.SwaggerEndpoint("/booking-service/swagger/v1/swagger.json", "Booking Service API");
     c.SwaggerEndpoint("/notification-service/swagger/v1/swagger.json", "Notification Service API");
     c.SwaggerEndpoint("/payment-service/swagger/v1/swagger.json", "Payment Service API");
 
-    // Customize Swagger UI
     c.DocumentTitle = "Trekking App API Documentation";
-    c.RoutePrefix = string.Empty; // Serve at root URL
-    c.DefaultModelsExpandDepth(-1); // Hide models section by default
-    c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None); // Collapse all endpoints by default
-    c.EnableDeepLinking(); // Enable deep linking for direct navigation to specific endpoints
-    c.DisplayRequestDuration(); // Show request duration
-    c.EnableValidator(); // Enable request/response validation
+    c.RoutePrefix = string.Empty;
+    c.DefaultModelsExpandDepth(-1);
+    c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+    c.EnableDeepLinking();
+    c.DisplayRequestDuration();
+    c.EnableValidator();
 });
 
-app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseAuthorization();
 

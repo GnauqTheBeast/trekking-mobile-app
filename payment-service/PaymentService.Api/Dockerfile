@@ -1,18 +1,27 @@
 # Build stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
+
+# Copy csproj and restore dependencies
 COPY ["PaymentService.Api/PaymentService.Api.csproj", "PaymentService.Api/"]
 COPY ["PaymentService.Infrastructure/PaymentService.Infrastructure.csproj", "PaymentService.Infrastructure/"]
-COPY ["PaymentService.Core/PaymentService.Core.csproj", "PaymentService.Core/"]
-COPY ["PaymentService.Application/PaymentService.Application.csproj", "PaymentService.Application/"]
 RUN dotnet restore "PaymentService.Api/PaymentService.Api.csproj"
+
+# Copy the rest of the code
 COPY . .
-RUN dotnet publish "PaymentService.Api/PaymentService.Api.csproj" -c Release -o /app/publish
+
+# Build and publish
+WORKDIR "/src/PaymentService.Api"
+RUN dotnet build "PaymentService.Api.csproj" -c Release -o /app/build
+RUN dotnet publish "PaymentService.Api.csproj" -c Release -o /app/publish
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
-EXPOSE 5001
-ENV ASPNETCORE_URLS=http://+:5001
+
+# Set environment variables
+ENV ASPNETCORE_URLS=http://+:5000
+ENV ASPNETCORE_ENVIRONMENT=Production
+# Run the application
 ENTRYPOINT ["dotnet", "PaymentService.Api.dll"] 

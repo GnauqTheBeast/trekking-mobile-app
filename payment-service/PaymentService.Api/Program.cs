@@ -41,6 +41,7 @@ builder.Services.AddScoped<IBookingRepository>(sp => new BookingRepository(conne
 builder.Services.AddScoped<IPaymentRepository>(sp => new PaymentRepository(connectionString));
 
 // Configure Kafka Consumer
+/*
 var consumerConfig = new ConsumerConfig
 {
     BootstrapServers = builder.Configuration["Kafka:BootstrapServers"] ?? "localhost:9092",
@@ -49,11 +50,12 @@ var consumerConfig = new ConsumerConfig
     EnableAutoCommit = false
 };
 
-builder.Services.AddSingleton<IConsumer<string, string>>(sp => 
+builder.Services.AddSingleton<IConsumer<string, string>>(sp =>
     new ConsumerBuilder<string, string>(consumerConfig).Build());
 
 // Register Kafka Consumer Service with IServiceScopeFactory
 builder.Services.AddHostedService<KafkaConsumerService>();
+*/
 
 // Add health checks
 builder.Services.AddHealthChecks();
@@ -61,11 +63,9 @@ builder.Services.AddHealthChecks();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");

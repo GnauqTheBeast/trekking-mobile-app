@@ -21,9 +21,12 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
+# Set environment variables
+ENV ASPNETCORE_URLS=http://+:8084
+ENV ASPNETCORE_ENVIRONMENT=Development
+
 # Expose the port the app runs on
-EXPOSE 80
-EXPOSE 443
+EXPOSE 8084
 
 # Set the entry point
 ENTRYPOINT ["dotnet", "OcelotGateway.dll"] 

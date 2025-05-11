@@ -1,6 +1,41 @@
 version: "3.3"
 
 services:
+  api-gateway:
+    container_name: app_api_gateway
+    build:
+      context: ./api-gate-way/OcelotGateway
+      dockerfile: Dockerfile
+    networks:
+      - app
+    ports:
+      - "8084:8084"
+    depends_on:
+      - tour-service
+      - booking-service
+      - notification-service
+      - payment-service
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_URLS=http://+:8084
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  payment-service:
+    container_name: app_payment_service
+    build:
+      context: ./payment-service
+      dockerfile: PaymentService.Api/Dockerfile
+    networks:
+      - app
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+      - kafka
+      - zookeeper
+      - redis
+    restart: unless-stopped
+
   tour-service:
     container_name: app_tour_service
     build:
@@ -17,7 +52,7 @@ services:
       - kafka
       - zookeeper
     ports:
-      - "8080:8080"
+      - "8083:8083"
       - "50051:50051"
 
   booking-service:
@@ -95,7 +130,7 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
@@ -117,22 +152,6 @@ services:
     restart: unless-stopped
     ports:
       - "6379:6379"
-
-  payment-service:
-    container_name: app_payment_service
-    build:
-      context: ./payment-service
-      dockerfile: PaymentService.Api/Dockerfile
-    networks:
-      - app
-    env_file:
-      - ./payment-service/PaymentService.Api/.env
-    restart: unless-stopped
-    depends_on:
-      - postgres
-      - kafka
-      - zookeeper
-      - redis
 
   #  nginx:
   #    image: nginx:latest
