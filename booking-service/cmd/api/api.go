@@ -2,6 +2,8 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/trekking-mobile-app/internal/context"
 	"github.com/trekking-mobile-app/internal/dependencies"
 	"github.com/trekking-mobile-app/middleware"
@@ -32,6 +34,8 @@ func start(c *cli.Context) error {
 	router.RedirectTrailingSlash = true
 	gin.SetMode(gin.DebugMode)
 	router.Use(middleware.Cors())
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	startRouteV1(router.Group("/api/v1"))
 

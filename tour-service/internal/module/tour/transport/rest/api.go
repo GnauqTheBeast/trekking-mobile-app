@@ -27,6 +27,16 @@ func NewAPI(biz Business) *api {
 	}
 }
 
+// CreateTourHdl godoc
+// @Summary Tạo tour mới
+// @Description API tạo tour du lịch mới
+// @Tags Tour
+// @Accept json
+// @Produce json
+// @Param tour body entity.Tour true "Thông tin tour"
+// @Success 200 {object} entity.Tour
+// @Failure 400 {object} map[string]string
+// @Router /tours [post]
 func (a *api) CreateTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		data := new(entity.Tour)
@@ -46,6 +56,17 @@ func (a *api) CreateTourHdl() gin.HandlerFunc {
 	}
 }
 
+// ListTourHdl godoc
+// @Summary Danh sách tour
+// @Description Lấy danh sách tour theo phân trang
+// @Tags Tour
+// @Accept json
+// @Produce json
+// @Param page query int false "Trang hiện tại"
+// @Param limit query int false "Số lượng mỗi trang"
+// @Success 200 {array} entity.Tour
+// @Failure 400 {object} map[string]string
+// @Router /tours [get]
 func (a *api) ListTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		listTours, err := a.biz.ListTours(c, paging.GetQueryPaging(c))
@@ -59,6 +80,16 @@ func (a *api) ListTourHdl() gin.HandlerFunc {
 	}
 }
 
+// GetTourHdl godoc
+// @Summary Lấy thông tin chi tiết tour
+// @Description Lấy chi tiết tour theo ID
+// @Tags Tour
+// @Accept json
+// @Produce json
+// @Param id path string true "Tour ID"
+// @Success 200 {object} entity.Tour
+// @Failure 400 {object} map[string]string
+// @Router /tours/{id} [get]
 func (a *api) GetTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tourId := c.Param("id")
@@ -77,6 +108,17 @@ func (a *api) GetTourHdl() gin.HandlerFunc {
 	}
 }
 
+// UpdateTourHdl godoc
+// @Summary Cập nhật thông tin tour
+// @Description Cập nhật tour theo ID
+// @Tags Tour
+// @Accept json
+// @Produce json
+// @Param id path string true "Tour ID"
+// @Param tour body entity.TourPatchData true "Dữ liệu cần cập nhật"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Router /tours/{id} [patch]
 func (a *api) UpdateTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tourId := c.Param("id")
@@ -102,6 +144,16 @@ func (a *api) UpdateTourHdl() gin.HandlerFunc {
 	}
 }
 
+// DeleteTourHdl godoc
+// @Summary Xóa tour
+// @Description Xóa tour theo ID
+// @Tags Tour
+// @Accept json
+// @Produce json
+// @Param id path string true "Tour ID"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Router /tours/{id} [delete]
 func (a *api) DeleteTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tourID := c.Param("id")
