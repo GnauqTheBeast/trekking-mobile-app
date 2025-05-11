@@ -10,6 +10,6 @@ FROM alpine:latest
 RUN apk add ca-certificates multirun
 WORKDIR /app
 COPY --from=builder /app/. ./
-EXPOSE 8080
+EXPOSE 8083
 EXPOSE 50051
 CMD ["multirun", "./main api", "./main rpc"]

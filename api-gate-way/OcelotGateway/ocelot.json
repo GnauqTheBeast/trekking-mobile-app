@@ -64,7 +64,7 @@
       "Priority": 1
     },
     {
-      "DownstreamPathTemplate": "/swagger/{everything}",
+      "DownstreamPathTemplate": "/swagger/doc.json",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -72,7 +72,7 @@
           "Port": 8081
         }
       ],
-      "UpstreamPathTemplate": "/booking-service/swagger/{everything}",
+      "UpstreamPathTemplate": "/booking-service/swagger/v1/swagger.json",
       "UpstreamHttpMethod": [ "GET" ]
     },
     {
@@ -89,7 +89,7 @@
       "Priority": 1
     },
     {
-      "DownstreamPathTemplate": "/swagger/{everything}",
+      "DownstreamPathTemplate": "/swagger/doc.json",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -97,7 +97,7 @@
           "Port": 8083
         }
       ],
-      "UpstreamPathTemplate": "/tour-service/swagger/{everything}",
+      "UpstreamPathTemplate": "/tour-service/swagger/v1/swagger.json",
       "UpstreamHttpMethod": [ "GET" ]
     },
     {
