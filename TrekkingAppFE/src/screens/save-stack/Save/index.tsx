@@ -107,7 +107,7 @@ const saveTreks: TrekProps[] = [
     },
 ];
 
-const Save: React.FC = () => {
+const SaveScreen: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
 
@@ -159,4 +159,4 @@ const Save: React.FC = () => {
 };
 
 
-export default Save;
+export default SaveScreen;

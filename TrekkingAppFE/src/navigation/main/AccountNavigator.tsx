@@ -1,10 +1,7 @@
 import { NavigationContainer } from "@react-navigation/native"
 import { createStackNavigator } from "@react-navigation/stack"
 import React from "react"
-import AccountScreen from "../../screens/Account"
-import LoginScreen from "../../screens/Login"
-import SignUpScreen from "../../screens/Register"
-
+import AccountScreen from "../../screens/account-stack/Account";
 
 export type AccountStackParamList = {
     AccountScreen: undefined,

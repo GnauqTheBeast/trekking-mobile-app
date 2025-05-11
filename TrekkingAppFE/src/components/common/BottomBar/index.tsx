@@ -14,41 +14,67 @@ import AccountIcon from '../../../assets/icons/taskbar/person.svg';
 import AccountOutlineIcon from '../../../assets/icons/taskbar/person-outline.svg';
 
 const tabs = [
-  { name: 'Home', stack: 'HomeStack', activeIcon: HomeIcon, inactiveIcon: HomeOutlineIcon, size: 36 },
+  { name: 'Home', stack: 'HomeStack',activeIcon: HomeIcon, inactiveIcon: HomeOutlineIcon, size: 36 },
   { name: 'Booking', stack: 'BookingStack', activeIcon: BookingIcon, inactiveIcon: BookingOutlineIcon, size: 28 },
   { name: 'Save', stack: 'SaveStack', activeIcon: SaveIcon, inactiveIcon: SaveOutlineIcon, size: 32 },
   { name: 'Notification', stack: 'NotificationStack', activeIcon: NotificationIcon, inactiveIcon: NotificationOutlineIcon, size: 32 },
   { name: 'Account', stack: 'AccountStack', activeIcon: AccountIcon, inactiveIcon: AccountOutlineIcon, size: 38 },
 ];
 
+const tabScreens = {
+  HomeStack: 'HomeScreen',
+  BookingStack: 'TreksActiveScreen',
+  SaveStack: 'SaveScreen',
+  NotificationStack: 'NotificationScreen',
+  AccountStack: 'AccountScreen',
+};
+
+
+
 const BottomBar: React.FC<BottomTabBarProps> = ({ state, navigation }) => {
+
+  // {
+  //   index: 0,
+  //   key: "tab-2TiGWUhaMKVdq29F9dGlM",
+  //   preloadedRouteKeys: [],
+  //   routeNames: [
+  //     "HomeStack",
+  //     "BookingStack",
+  //     "SaveStack",
+  //     "NotificationStack",
+  //     "AccountStack"
+  //   ],
+  //   routes: [
+  //     {
+  //       key: "HomeStack-M9CtbgQjx5BAqe-G3QZ82",
+  //       name: "HomeStack",
+  //       params: {
+  //         screen: "HomeScreen"
+  //       },
+
+
   const focusedStack = state?.routes[state.index]?.name;
+
+  const firstScreenInStack = tabScreens[focusedStack as keyof typeof tabScreens]
 
   const currentStackState = state?.routes[state.index]?.state;
   const currentScreenInStack =
     currentStackState && typeof currentStackState.index === 'number'
       ? currentStackState.routes?.[currentStackState.index]?.name
-      : undefined;
-  console.log(focusedStack)
-  console.log(currentScreenInStack)
+      : firstScreenInStack;
+
+  console.log("current stack:", focusedStack)
+  console.log("first screen: ", firstScreenInStack)
+  console.log("Current screen:", currentScreenInStack)
 
   const handleOnPress = useCallback(
     (stack: string) => {
-      if (stack === 'HomeStack') {
-        if (focusedStack !== 'HomeStack') {
-          navigation.navigate('HomeStack');
-        } else if (currentScreenInStack !== 'HomeScreen') {
-          navigation.navigate('HomeStack', { screen: 'HomeScreen' });
-        }
+      console.log(stack)
+      if (stack === focusedStack && currentScreenInStack !== firstScreenInStack ) {
+          navigation.navigate(stack, { screen: firstScreenInStack });
       } else {
-        navigation.navigate(stack);
+        navigation.navigate(stack, {screen: currentScreenInStack});
       }
-      // if(stack === focusedStack){
-      //   navigation.navigate(focusedStack, {scree})
-      // }
-      // esle {
-      //   navigation.navigate(stack);
-      // }
     },
     [navigation, focusedStack, currentScreenInStack]
   );

@@ -21,20 +21,27 @@ const TopBarBooking: React.FC = () => {
 
   const [headerTab, setHeaderTab] = useState<"Treks" | "Porter">("Treks");
 
-  // Xác định tab hiện tại từ route name
   const selectedTab = route.name
     .replace(headerTab, "")
     .replace("Screen", "");
 
   const handleTabPress = (tab: any) => {
     const screenName = `${headerTab}${tab.name}Screen` as keyof BookingStackParamList;
-    navigation.navigate(screenName);
+    if (screenName === 'BookingDetailScreen') {
+        return
+    } else {
+        navigation.navigate(screenName);
+    }
   }
 
   const handleHeaderTabPress = (tab: "Treks" | "Porter") => {
     setHeaderTab(tab);
     const screenName = `${tab}ActiveScreen` as keyof BookingStackParamList;
-    navigation.navigate(screenName);
+    if (screenName === 'BookingDetailScreen') {
+        return
+    } else {
+        navigation.navigate(screenName);
+    }
   };
 
   return (
