@@ -2,6 +2,7 @@ package context
 
 import (
 	"context"
+
 	"github.com/trekking-mobile-app/app/database/redis"
 	"github.com/trekking-mobile-app/app/database/sqlc"
 	"github.com/trekking-mobile-app/app/kafka"
@@ -13,9 +14,7 @@ const (
 	contextKafkaProducer = "CONTEXT_KAFKA_PRODUCER"
 )
 
-var (
-	background = context.Background()
-)
+var background = context.Background()
 
 func SetContextSQL() error {
 	client, err := sqlc.NewSQLRepository()

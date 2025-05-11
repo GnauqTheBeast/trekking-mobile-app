@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/trekking-mobile-app/migration/cmd/migrate"
 	"github.com/urfave/cli/v2"
-	"os"
 )
 
 func main() {

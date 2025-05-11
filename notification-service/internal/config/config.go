@@ -63,8 +63,8 @@ func setDefaults() {
 	viper.SetDefault("kafka.consumerGroup", "notification-group")
 	viper.SetDefault("kafka.topics.userEvents", "user-events")
 	viper.SetDefault("kafka.topics.notifications", "notifications")
-	viper.SetDefault("kafka.consumer.initialOffset", "oldest")
-	viper.SetDefault("kafka.consumer.strategy", "roundrobin")
+	viper.SetDefault("kafka.api.initialOffset", "oldest")
+	viper.SetDefault("kafka.api.strategy", "roundrobin")
 	viper.SetDefault("kafka.kafka.returnSuccesses", true)
 	viper.SetDefault("kafka.kafka.returnErrors", true)
 

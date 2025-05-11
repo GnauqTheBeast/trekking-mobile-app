@@ -2,18 +2,18 @@ package context
 
 import (
 	"context"
-	"github.com/trekking-mobile-app/app/database/redis"
+
+	"github.com/trekking-mobile-app/app/kafka"
+
 	"github.com/trekking-mobile-app/app/database/sqlc"
 )
 
 const (
-	contextSQLClient   = "CONTEXT_SQL_CLIENT"
-	contextRedisClient = "CONTEXT_REDIS_CLIENT"
+	contextSQLClient     = "CONTEXT_SQL_CLIENT"
+	contextKafkaConsumer = "CONTEXT_KAFKA_CONSUMER"
 )
 
-var (
-	background = context.Background()
-)
+var background = context.Background()
 
 func SetContextSQL() error {
 	client, err := sqlc.NewSQLRepository()
@@ -34,18 +34,18 @@ func GetSQLClient() *sqlc.SQLRepository {
 	return client
 }
 
-func SetContextRedisClient() error {
-	redisClient, err := redis.NewCacheRedis(false)
+func SetContextKafkaConsumer() error {
+	client, err := kafka.NewKafkaConsumer()
 	if err != nil {
 		return err
 	}
 
-	background = context.WithValue(background, contextRedisClient, redisClient)
+	background = context.WithValue(background, contextKafkaConsumer, client)
 	return nil
 }
 
-func GetRedisClient() *redis.CacheRedis {
-	client, ok := background.Value(contextRedisClient).(*redis.CacheRedis)
+func GetKafkaConsumer() kafka.KafkaConsumer {
+	client, ok := background.Value(contextKafkaConsumer).(kafka.KafkaConsumer)
 	if !ok {
 		return nil
 	}

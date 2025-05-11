@@ -1,4 +1,4 @@
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 
 import { JwtService } from './jwt.service';
 import { LoginResponse, RegisterResponse, ValidateResponse } from '../interface/auth.interface';
@@ -7,6 +7,9 @@ import { USER_SERVICE_NAME, UserServiceClient } from '../interface/user.interfac
 import { ClientGrpc } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { ROLE_PERMISSION_SERVICE_NAME, RolePermissionServiceClient } from '../interface/role-permission.interface';
+import { OtpService } from 'src/otp/otp.service';
+import { sendOtp } from 'src/util/mail.util';
+import { RedisService } from 'src/redis/redis.service';
 
 
 
@@ -16,6 +19,8 @@ export class AuthService {
     private rolePermissionService: RolePermissionServiceClient;
     constructor (
         private readonly jwtService: JwtService,
+        private readonly otpService: OtpService,
+        private readonly redisService: RedisService,
 
         @Inject(USER_SERVICE_NAME)
         private readonly userClient: ClientGrpc,
@@ -31,48 +36,113 @@ export class AuthService {
     public async register (
         {email, fullname, password, roleName}: RegisterRequestDto
     ) : Promise<RegisterResponse> {
-        try {
-            await firstValueFrom(
-                this.userService.createUser({
-                    email, fullname, password, roleName
-                })
-            )
-            return {
-                status: HttpStatus.OK,
-                message: 'Register succesfully!'
-            }
+
+        const data = await firstValueFrom(
+            this.userService.checkExistByEmail({email})
+        )
+        console.log(data)
+        if(data.result) {
+            throw new HttpException("Email already exist!", HttpStatus.CONFLICT)
         }
-        catch(err) {
-            const {status, message} = err.response;
-            return {
-                status,
-                message,
-            }
+
+        const otp = this.otpService.generateOtp();
+        await this.otpService.saveOtp(email, otp);
+        await sendOtp(email, otp)
+
+        const key = `user:info:${email}`;
+        await this.redisService.set(key, {fullname, password, roleName}, 300)
+
+        return {
+            status: HttpStatus.OK,
+            message: 'Fill Otp!'
         }
+    }
+
+    async verifyOtp(email: string, otp: string): Promise<RegisterResponse> {
+        await this.otpService.verifyOtp(email, otp);
+
+        const key = `user:info:${email}`;
+        const user = await this.redisService.get<{
+            fullname: string,
+            password: string,
+            roleName: string
+        }>(key);
+
+        if (!user) {
+            throw new BadRequestException('User data not found. Please register again.');
+        }
+
+        const { fullname, password, roleName } = user;
+
+        await firstValueFrom(
+            this.userService.create({
+                email,
+                fullname,
+                password,
+                roleName
+            })
+        );
+
+        await this.redisService.del(key);
+
+        return {
+            status: HttpStatus.CREATED,
+            message: 'User registered successfully!',
+        };
+    }
+
+    async resendOtp(email: string): Promise<void> {
+        const otp = this.otpService.generateOtp();
+        await this.otpService.saveOtp(email, otp);
+        await sendOtp(email, otp)
     }
 
     public async login(
         { email, password }: LoginRequestDto
     ): Promise<LoginResponse>{
 
-        const data = await firstValueFrom(
-            this.userService.checkLogin({ email, password })
+        const checkEmailExist = await firstValueFrom(
+            this.userService.checkExistByEmail({ email })
         )
-
-        if(!data.user) {
+        if(!checkEmailExist.result) {
             return {
                 status: HttpStatus.NOT_FOUND,
                 message: 'Invalid email or password!',
-                token: ''
+                token: null,
+                user: null
             }
         }
 
-        const token = await this.jwtService.generateToken(data.user);
+        const data = await firstValueFrom(
+            this.userService.checkLogin({email, password})
+        )
+
+        const user = data.user;
+        if(!user) {
+            return {
+                status: HttpStatus.NOT_ACCEPTABLE,
+                message: 'Invalid email or password!',
+                token: null,
+                user: null
+            }
+        }
+
+        const token = this.jwtService.generateToken(user);
 
         return {
             status: HttpStatus.OK,
             message: 'Login successfully!',
             token: token,
+            user: {
+                id: user.id,
+                email: user.email,
+                fullname: user.fullname,
+                phoneNumber: user.phoneNumber,
+                dob: String(user.dob),
+                address: user.address,
+                roleId: user.roleId,
+                roleName: user.roleName
+            }
         }
     }
 
@@ -98,7 +168,7 @@ export class AuthService {
         console.log(decoded.id)
 
         const dataUser = await firstValueFrom(
-            this.userService.getUserById({id: decoded.id})
+            this.userService.getById({id: decoded.id})
         )
 
         if(!dataUser.user) {

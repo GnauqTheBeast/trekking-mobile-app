@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
 	"github.com/google/uuid"
 	"github.com/trekking-mobile-app/app/kafka"
 	"github.com/trekking-mobile-app/internal/module/booking/entity"
@@ -42,6 +43,7 @@ func (b *business) GetBookingByID(ctx context.Context, bookingID string) (*entit
 func (b *business) RequestBooking(ctx context.Context, booking *entity.Booking) (*entity.Booking, error) {
 	tour, err := b.tourRepo.CheckTourExist(ctx, booking.TourId.String())
 	if err != nil {
+		fmt.Println("=========================", err)
 		return nil, err
 	}
 

@@ -25,6 +25,21 @@ export class AuthController implements AuthServiceController {
         return await this.authService.login(request);
     }
 
+    @Post('otp')
+    async verifyOTP(
+        @Body() { email, otp }: { email: string, otp: string }
+    ): Promise<RegisterResponse> {
+        return await this.authService.verifyOtp(email, otp)
+    }
+
+    @Post('resend-otp')
+    async resendOtp(
+        @Body() { email }: { email: string }
+    ): Promise<void> {
+        return await this.authService.resendOtp(email);
+    }
+
+
     @Post('test')
     async test(
         @Body() request: ValidateRequestDto

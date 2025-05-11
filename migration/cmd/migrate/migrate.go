@@ -3,6 +3,8 @@ package migrate
 import (
 	"database/sql"
 	"fmt"
+	"os"
+
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
@@ -10,7 +12,6 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/trekking-mobile-app/migration/internal/util/env"
 	"github.com/urfave/cli/v2"
-	"os"
 )
 
 const (

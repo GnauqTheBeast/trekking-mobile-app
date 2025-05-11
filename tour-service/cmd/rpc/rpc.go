@@ -28,6 +28,7 @@ func NewCommand() *cli.Command {
 
 func beforeCommand() error {
 	dependencies.Register(context.SetContextSQL)
+	dependencies.Register(context.SetContextRedisClient)
 	return dependencies.Init()
 }
 
@@ -39,7 +40,7 @@ func startGrpcServer() error {
 	s := grpc.NewServer()
 
 	repo := postgres.NewPostgresRepo(context.GetSQLClient())
-	biz := business.NewBusiness(repo)
+	biz := business.NewBusiness(repo, context.GetRedisClient())
 	tourRpcService := rpc.NewTourServiceServer(biz)
 
 	pb.RegisterTourServiceServer(s, tourRpcService)

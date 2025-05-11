@@ -2,11 +2,12 @@ package sqlc
 
 import (
 	"database/sql"
-	_ "github.com/lib/pq"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	_ "github.com/lib/pq"
 )
 
 const (

@@ -18,6 +18,6 @@ async function bootstrap() {
 
   await app.startAllMicroservices()
   await app.listen(3001)
-  console.log('gRPC Auth Service is running on HTTP:3000 and gRPC:50051');
+  console.log('gRPC Auth Service is running on HTTP:3001 and gRPC:50051');
 }
 bootstrap();

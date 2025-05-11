@@ -8,47 +8,46 @@ message User {
     string id = 1;
     string email = 2;
     string fullname = 3;
-    string roleId = 4;
-    string roleName = 5;
+    string dob = 4;
+    string address = 5;
+    string phoneNumber = 6;
+    string roleId = 7;
+    string roleName = 8;
 }
 
-message UserInfo {
-    string id = 1;
-    string email = 2;
-    string fullname = 3;
-    string phoneNumber = 4;
-    string dob = 5;
-    string address = 6;
-}
-
-
-message CreateUserRequest {
+message CreateRequest {
     string email = 1;
     string fullname = 2;
     string password = 3;
     string roleName = 4;
 }
 
+message GetByIdRequest {
+    string id = 1;
+}
+message GetByIdResponse {
+    User user = 1;
+}
+
+message CheckExistByEmailRequest {
+    string email = 1;
+}
+message CheckExistByEmailResponse {
+    bool result = 1;
+}
 
 message CheckLoginRequest {
     string email = 1;
     string password = 2;
 }
-
 message CheckLoginResponse {
-    User user = 3;
-}
-
-message GetUserByIdRequest {
-    string id = 1;
-}
-
-message GetUserByIdResponse {
-    UserInfo user = 1;
+    User user = 2;
 }
 
 service UserService {
-    rpc CreateUser (CreateUserRequest) returns (google.protobuf.Empty);
+    rpc Create (CreateRequest) returns (google.protobuf.Empty);
+    rpc GetById (GetByIdRequest) returns (GetByIdResponse);
+    rpc CheckExistByEmail (CheckExistByEmailRequest) returns (CheckExistByEmailResponse);
     rpc CheckLogin (CheckLoginRequest) returns (CheckLoginResponse);
-    rpc GetUserById (GetUserByIdRequest) returns (GetUserByIdResponse);
+
 }

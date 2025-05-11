@@ -2,12 +2,13 @@ package consumer
 
 import (
 	"fmt"
-	"github.com/trekking-mobile-app/internal/context"
-	"github.com/trekking-mobile-app/internal/dependencies"
-	"github.com/urfave/cli/v2"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/trekking-mobile-app/internal/context"
+	"github.com/trekking-mobile-app/internal/dependencies"
+	"github.com/urfave/cli/v2"
 )
 
 func NewCommand() *cli.Command {

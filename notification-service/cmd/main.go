@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/trekking-mobile-app/cmd/consumer"
+	"os"
+
+	"github.com/trekking-mobile-app/cmd/api"
 	"github.com/trekking-mobile-app/internal/pkg/env"
 	"github.com/urfave/cli/v2"
-	"os"
 )
 
 func init() {
@@ -21,7 +22,7 @@ func main() {
 			return nil
 		},
 		Commands: []*cli.Command{
-			consumer.NewCommand(),
+			api.NewCommand(),
 		},
 	}
 

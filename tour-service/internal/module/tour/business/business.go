@@ -4,9 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/trekking-mobile-app/internal/pkg/paging"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/trekking-mobile-app/app/database/redis"
+	"github.com/trekking-mobile-app/internal/pkg/caching"
+	"github.com/trekking-mobile-app/internal/pkg/paging"
 
 	"github.com/trekking-mobile-app/internal/module/tour/entity"
 )
@@ -17,7 +20,7 @@ var (
 )
 
 type Repository interface {
-	InsertNewTour(ctx context.Context, data *entity.TourCreateData) (*entity.Tour, error)
+	InsertNewTour(ctx context.Context, data *entity.Tour) (*entity.Tour, error)
 	GetTourById(ctx context.Context, tourId string) (*entity.Tour, error)
 	ListTours(ctx context.Context, paging *paging.Paging) ([]*entity.Tour, error)
 	UpdateTour(ctx context.Context, tourId string, data *entity.TourPatchData) error
@@ -27,18 +30,20 @@ type Repository interface {
 
 type business struct {
 	repository Repository
+	cache      *redis.CacheRedis
 }
 
-func NewBusiness(repository Repository) *business {
+func NewBusiness(repository Repository, cache *redis.CacheRedis) *business {
 	if repository == nil {
 		panic("repository is required")
 	}
 	return &business{
 		repository: repository,
+		cache:      cache,
 	}
 }
 
-func (b *business) CreateNewTour(ctx context.Context, data *entity.TourCreateData) (*entity.Tour, error) {
+func (b *business) CreateNewTour(ctx context.Context, data *entity.Tour) (*entity.Tour, error) {
 	if data == nil {
 		return nil, ErrInvalidTourData
 	}
@@ -60,7 +65,14 @@ func (b *business) CreateNewTour(ctx context.Context, data *entity.TourCreateDat
 }
 
 func (b *business) ListTours(ctx context.Context, paging *paging.Paging) ([]*entity.Tour, error) {
-	return b.repository.ListTours(ctx, paging)
+	tours, err := caching.FetchFromCallback(b.cache, redisPagingListTour(paging), pagingListTourTTL, func() ([]*entity.Tour, error) {
+		return b.repository.ListTours(ctx, paging)
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return tours, nil
 }
 
 func (b *business) GetTourDetails(ctx context.Context, tourId string) (*entity.Tour, error) {
@@ -68,10 +80,13 @@ func (b *business) GetTourDetails(ctx context.Context, tourId string) (*entity.T
 		return nil, fmt.Errorf("%w: booking ID is required", ErrInvalidTourData)
 	}
 
-	tour, err := b.repository.GetTourById(ctx, tourId)
+	tour, err := caching.FetchFromCallback(b.cache, redisTourDetail(tourId), pagingTourDetailTTL, func() (*entity.Tour, error) {
+		return b.repository.GetTourById(ctx, tourId)
+	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get booking: %w", err)
 	}
+
 	return tour, nil
 }
 
@@ -101,6 +116,8 @@ func (b *business) UpdateTour(ctx context.Context, tourId string, data *entity.T
 		return fmt.Errorf("%w: description must be at least 10 characters", ErrInvalidTourData)
 	}
 
+	b.cache.Delete(ctx, redisTourDetail(tourId))
+
 	return b.repository.UpdateTour(ctx, tourId, data)
 }
 
@@ -117,6 +134,8 @@ func (b *business) DeleteTour(ctx context.Context, tourId string) error {
 	if tourById.Status == entity.TourStatusPublished {
 		return fmt.Errorf("%w: cannot delete published tourById", ErrInvalidStatusTransition)
 	}
+
+	b.cache.Delete(ctx, redisTourDetail(tourId))
 
 	return b.repository.DeleteTour(ctx, tourId)
 }
@@ -143,9 +162,11 @@ func (b *business) CheckTourExist(ctx context.Context, tourId string) (*entity.T
 		return nil, errors.New("invalid tourById ID")
 	}
 
-	tourById, err := b.repository.GetTourById(ctx, tourId)
+	tourById, err := caching.FetchFromCallback(b.cache, redisTourDetail(tourId), pagingTourDetailTTL, func() (*entity.Tour, error) {
+		return b.repository.GetTourById(ctx, tourId)
+	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to get tourById: %w", err)
+		return nil, fmt.Errorf("failed to get booking: %w", err)
 	}
 
 	return tourById, nil
@@ -171,4 +192,15 @@ func (b *business) UpdateTourAvailableSlot(ctx context.Context, tourId string, l
 	}
 
 	return b.repository.UpdateTourAvailableSlot(ctx, tourId, int(tourById.AvailableSlot)-lockedSlot)
+}
+
+func (b *business) DeleteAllTourListCache(ctx context.Context) error {
+	keys, err := b.cache.Keys(redisKeyPagingListTourPattern)
+	if err != nil {
+		return err
+	}
+	for _, key := range keys {
+		b.cache.Delete(ctx, key)
+	}
+	return nil
 }

@@ -3,12 +3,13 @@ package jwt
 import (
 	"crypto/md5"
 	"fmt"
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/trekking-mobile-app/internal/pkg/env"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/trekking-mobile-app/internal/pkg/env"
 )
 
 const (
@@ -60,7 +61,6 @@ func ParseToken(tokenStr string) (int64, error) {
 	token, err := jwt.ParseWithClaims(tokenStr, &UserInfoClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secret), nil
 	}, jwt.WithExpirationRequired())
-
 	if err != nil {
 		return 0, err
 	}
