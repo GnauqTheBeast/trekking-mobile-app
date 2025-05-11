@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package role_permission;
+
+message GetAllPermissionByRoleIdRequest {
+    string roleId = 1;
+}
+
+message GetAllPermissionByRoleIdResponse {
+    repeated string permission = 1;
+}
+
+service RolePermissionService {
+    rpc GetAllPermissionByRoleId (GetAllPermissionByRoleIdRequest) returns (GetAllPermissionByRoleIdResponse);
+}
