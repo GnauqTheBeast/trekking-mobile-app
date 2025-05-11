@@ -38,8 +38,8 @@ func start(c *cli.Context) error {
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	fmt.Printf("ListenAndServe: %s\n", "8080")
+	fmt.Printf("ListenAndServe: %s\n", "8083")
 	startRouteV1(router.Group("/api/v1"))
 
-	return router.Run(":8080")
+	return router.Run(":8083")
 }
