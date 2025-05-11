@@ -24,7 +24,7 @@ var topicHandlers = map[string]func(*sarama.ConsumerMessage){}
 
 func NewCommand() *cli.Command {
 	return &cli.Command{
-		Name:  "websocket",
+		Name:  "api",
 		Usage: "start the notification-service",
 		Action: func(c *cli.Context) error {
 			return start(c)
@@ -46,7 +46,8 @@ func start(c *cli.Context) error {
 
 	consumer, err := connectConsumer(brokers)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		return err
 	}
 	defer consumer.Close()
 
