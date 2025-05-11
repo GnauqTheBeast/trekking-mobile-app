@@ -4,6 +4,7 @@ using PaymentService.Core.Interfaces;
 using PaymentService.Infrastructure.Repositories;
 using PaymentService.Api.Services;
 using Confluent.Kafka;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,8 +52,11 @@ var consumerConfig = new ConsumerConfig
 builder.Services.AddSingleton<IConsumer<string, string>>(sp => 
     new ConsumerBuilder<string, string>(consumerConfig).Build());
 
-// Register Kafka Consumer Service
+// Register Kafka Consumer Service with IServiceScopeFactory
 builder.Services.AddHostedService<KafkaConsumerService>();
+
+// Add health checks
+builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
@@ -68,5 +72,8 @@ app.UseCors("AllowAll");
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Add health check endpoint
+app.MapHealthChecks("/health");
 
 app.Run();
