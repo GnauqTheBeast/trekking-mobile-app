@@ -56,7 +56,7 @@ func start(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	consumeTopic(context.Background(), pubsub, topicHandlers)
+	consumeTopic(c.Context, pubsub, topicHandlers)
 
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)

@@ -140,7 +140,11 @@ func (a *api) CancelBookingHdl() gin.HandlerFunc {
 // @Router       /notification/ping [post]
 func (a *api) PingNotificationServiceHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		a.biz.PingNotificationService(c)
+		err := a.biz.PingNotificationService(c)
+		if err != nil {
+			responseError(c, err)
+			return
+		}
 		c.JSON(http.StatusOK, gin.H{"status": "pong", "message": "pong"})
 	}
 }

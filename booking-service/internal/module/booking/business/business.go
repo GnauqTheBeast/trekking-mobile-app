@@ -156,15 +156,12 @@ func (b *business) UpdateBookingStatus(ctx context.Context, bookingId uuid.UUID,
 }
 
 func (b *business) PingNotificationService(ctx context.Context) error {
-	go func() {
-		b.pubsub.Publish(ctx, &pubsub.Message{
-			Topic: "ping",
-			Message: types.Ping{
-				Message: "pong",
-			},
-		})
-	}()
-	return nil
+	return b.pubsub.Publish(ctx, &pubsub.Message{
+		Topic: "ping",
+		Message: types.Ping{
+			Message: "pong",
+		},
+	})
 }
 
 func IsValidBookingStatus(s entity.BookingStatus) bool {
