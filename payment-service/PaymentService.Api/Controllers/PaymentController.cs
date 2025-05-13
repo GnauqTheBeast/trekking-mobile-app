@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using PaymentService.Api.Services;
 using PaymentService.Application.Interfaces;
 using PaymentService.Core.Models;
 
@@ -14,11 +15,16 @@ namespace PaymentService.Api.Controllers
     {
         private readonly ILogger<PaymentController> _logger;
         private readonly IPaymentService _paymentService;
+        private readonly RedisPublisherService _redisPublisher;
 
-        public PaymentController(ILogger<PaymentController> logger, IPaymentService paymentService)
+        public PaymentController(
+            ILogger<PaymentController> logger, 
+            IPaymentService paymentService,
+            RedisPublisherService redisPublisher)
         {
             _logger = logger;
             _paymentService = paymentService;
+            _redisPublisher = redisPublisher;
         }
 
         /// <summary>
@@ -246,6 +252,10 @@ namespace PaymentService.Api.Controllers
             try
             {
                 var payment = await _paymentService.ProcessPaymentAsync(paymentId);
+                
+                // Publish success message to Redis
+                await _redisPublisher.PublishPaymentSuccessAsync(payment);
+                
                 return Ok(payment);
             }
             catch (InvalidOperationException ex)

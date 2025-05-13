@@ -4,6 +4,7 @@ using PaymentService.Core.Interfaces;
 using PaymentService.Infrastructure.Repositories;
 using PaymentService.Api.Services;
 using Confluent.Kafka;
+using StackExchange.Redis;
 using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,6 +34,11 @@ if (string.IsNullOrEmpty(connectionString))
     throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 }
 
+// Configure Redis
+var redisConnectionString = builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379";
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp => 
+    ConnectionMultiplexer.Connect(redisConnectionString));
+
 // Register services
 builder.Services.AddScoped<IPaymentService, PaymentServiceImpl>();
 builder.Services.AddScoped<IAccountRepository>(sp => new AccountRepository(connectionString));
@@ -56,6 +62,10 @@ builder.Services.AddSingleton<IConsumer<string, string>>(sp =>
 // Register Kafka Consumer Service with IServiceScopeFactory
 builder.Services.AddHostedService<KafkaConsumerService>();
 */
+
+// Register Redis Consumer Service
+builder.Services.AddHostedService<RedisConsumerService>();
+builder.Services.AddSingleton<RedisPublisherService>();
 
 // Add health checks
 builder.Services.AddHealthChecks();
