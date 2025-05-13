@@ -24,43 +24,48 @@ const user = {
 };
 
 const AccountScreen: React.FC = () => {
-    const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [user, setUser] = useState<any>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<any>(null);
 
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-              const token = await AsyncStorage.getItem('token');
-              const userInfoString = await AsyncStorage.getItem('user');
+  useEffect(() => {
+      const fetchUserData = async () => {
+          try {
+            const token = await AsyncStorage.getItem('token');
+            const userInfoString = await AsyncStorage.getItem('user');
 
-              if (token && userInfoString) {
-                setIsLoggedIn(true);
-                setUser(JSON.parse(userInfoString));
-              } else {
-                setIsLoggedIn(false);
-                setUser(null);
-              }
-            } catch (error) {
-              console.error('Failed to fetch user data:', error);
+            if (token && userInfoString) {
+              setIsLoggedIn(true);
+              setUser(JSON.parse(userInfoString));
+            } else {
+              setIsLoggedIn(false);
+              setUser(null);
             }
-          };
+          } catch (error) {
+            console.error('Failed to fetch user data:', error);
+          }
+        };
 
-          fetchUserData();
-    }, []);
+        fetchUserData();
+  }, []);
 
-    const handleLogout = async () => {
-        await AsyncStorage.removeItem('user');
-        await AsyncStorage.removeItem('token');
-        setIsLoggedIn(false);
-        setUser(null);
-    };
+  const handleLogout = async () => {
+      await AsyncStorage.removeItem('user');
+      await AsyncStorage.removeItem('token');
+      setIsLoggedIn(false);
+      setUser(null);
+  };
+
+  const handlePressMenuItem = (title: string) => {
+    if(title === 'My profile') navigation.navigate('MyProfileScreen')
+    else console.log(title)
+  }
 
   const MenuItem = ({ icon, size, title, showArrow = true }: { icon: string, size: number, title: string, showArrow?: boolean }) => (
     <TouchableOpacity
       style={styles.menuItem}
-      onPress={() => console.log(`${title} pressed`)}
+      onPress={() => handlePressMenuItem(title)}
     >
       <View style={styles.menuItemLeft}>
         <Icon name={icon} size={size} color="#FF8E4F" />

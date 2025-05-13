@@ -8,6 +8,18 @@ import { RootStackParamList } from '../../../navigation/AppNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { BookingProps } from '../../../types/booking';
 
+
+const solveMoney = (money: number): string => {
+  let result: string = '';
+  while(money > 1000) {
+      let tmp = money % 1000;
+      result = '.' + tmp.toString().padStart(3, '0') + result;
+      money = Math.floor(money / 1000);
+  }
+  result = money.toString() + result;
+  return result;
+}
+
 const BookingScreen:React.FC = () => {
 
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
@@ -112,7 +124,7 @@ const BookingScreen:React.FC = () => {
               <Icon name="progress-clock" color='#FF8E4F' size={14}/>
                 <Text style={styles.commonText}>{trek.duration}</Text>
               </View>
-              <Text style={styles.pricePerPerson}>{trek.price.toLocaleString()}đ/person</Text>
+              <Text style={styles.pricePerPerson}>{solveMoney(trek.price)}đ/person</Text>
             </View>
           </View>
         </View>
@@ -197,7 +209,7 @@ const BookingScreen:React.FC = () => {
                       fontSize: 14
                   }}
               >Total Price</Text>
-              <Text style={styles.totalPriceValue}>{totalPrice.toLocaleString()}đ</Text>
+              <Text style={styles.totalPriceValue}>{solveMoney(totalPrice)}đ</Text>
           </View>
           <TouchableOpacity onPress={handlePressBooking}>
               <Text style={styles.checkoutButtonText}>Book Now</Text>

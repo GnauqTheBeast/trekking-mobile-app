@@ -63,9 +63,9 @@ const BottomBar: React.FC<BottomTabBarProps> = ({ state, navigation }) => {
       ? currentStackState.routes?.[currentStackState.index]?.name
       : firstScreenInStack;
 
-  console.log("current stack:", focusedStack)
-  console.log("first screen: ", firstScreenInStack)
-  console.log("Current screen:", currentScreenInStack)
+  // console.log("current stack:", focusedStack)
+  // console.log("first screen: ", firstScreenInStack)
+  // console.log("Current screen:", currentScreenInStack)
 
   const handleOnPress = useCallback(
     (stack: string) => {

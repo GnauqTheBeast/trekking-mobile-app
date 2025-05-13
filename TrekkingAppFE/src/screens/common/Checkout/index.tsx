@@ -45,7 +45,7 @@ const CheckoutScreen: React.FC = () => {
     }
     result = money.toString() + result;
     return result;
-}
+  }
 
   return (
     <SafeAreaView style={styles.container}>
