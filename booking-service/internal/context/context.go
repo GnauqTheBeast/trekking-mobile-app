@@ -10,10 +10,10 @@ import (
 )
 
 const (
-	contextSQLClient     = "CONTEXT_SQL_CLIENT"
-	contextRedisClient   = "CONTEXT_REDIS_CLIENT"
-	contextKafkaProducer = "CONTEXT_KAFKA_PRODUCER"
-	contextPubsubClient  = "CONTEXT_PUBSUB_CLIENT"
+	contextSQLClient         = "CONTEXT_SQL_CLIENT"
+	contextRedisClient       = "CONTEXT_REDIS_CLIENT"
+	contextKafkaProducer     = "CONTEXT_KAFKA_PRODUCER"
+	contextRedisPubsubClient = "CONTEXT_PUBSUB_CLIENT"
 )
 
 var background = context.Background()
@@ -97,12 +97,12 @@ func SetContextPubsubClient() error {
 	if err != nil {
 		return err
 	}
-	background = context.WithValue(background, contextPubsubClient, client)
+	background = context.WithValue(background, contextRedisPubsubClient, client)
 	return nil
 }
 
 func GetContextPubSubClient() pubsub.PubSub {
-	client, ok := background.Value(contextPubsubClient).(pubsub.PubSub)
+	client, ok := background.Value(contextRedisPubsubClient).(pubsub.PubSub)
 	if !ok {
 		return nil
 	}
