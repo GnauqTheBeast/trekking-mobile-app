@@ -14,4 +14,3 @@ TrekkingAppFE/ios/build/
 *.apk
 *.so
 *.aab
-docker-compose.yaml
