@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
 	"github.com/trekking-mobile-app/internal/pkg/pubsub"
 	"github.com/trekking-mobile-app/internal/types"
 

@@ -3,14 +3,15 @@ package api
 import (
 	"context"
 	"fmt"
-	"github.com/trekking-mobile-app/internal/pkg/pubsub"
-	"github.com/trekking-mobile-app/internal/types"
 	"log"
 	"os"
 	"os/signal"
 	"strings"
 	"sync"
 	"syscall"
+
+	"github.com/trekking-mobile-app/internal/pkg/pubsub"
+	"github.com/trekking-mobile-app/internal/types"
 
 	ctx "github.com/trekking-mobile-app/internal/context"
 	"github.com/trekking-mobile-app/internal/module/notification/transport/ws"
@@ -36,7 +37,7 @@ func NewCommand() *cli.Command {
 func beforeCommand() error {
 	dependencies.Register(ctx.SetContextSQL)
 	dependencies.Register(ctx.SetContextPubsubClient)
-	//dependencies.Register(ctx.SetContextKafkaConsumer)
+	// dependencies.Register(ctx.SetContextKafkaConsumer)
 	return dependencies.Init()
 }
 

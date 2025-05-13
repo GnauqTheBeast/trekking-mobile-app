@@ -2,6 +2,7 @@ package context
 
 import (
 	"context"
+
 	"github.com/trekking-mobile-app/app/database/redis"
 	"github.com/trekking-mobile-app/internal/pkg/pubsub"
 

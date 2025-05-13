@@ -3,6 +3,7 @@ package redis
 import (
 	"context"
 	"fmt"
+
 	"github.com/trekking-mobile-app/internal/pkg/pubsub"
 
 	"github.com/redis/go-redis/v9"

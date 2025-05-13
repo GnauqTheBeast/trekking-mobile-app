@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+
 	"github.com/trekking-mobile-app/internal/pkg/pubsub"
 
 	"github.com/redis/go-redis/v9"

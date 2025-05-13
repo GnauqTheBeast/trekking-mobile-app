@@ -2,8 +2,9 @@ package business
 
 import (
 	"fmt"
-	"github.com/trekking-mobile-app/internal/pkg/paging"
 	"time"
+
+	"github.com/trekking-mobile-app/internal/pkg/paging"
 )
 
 const (

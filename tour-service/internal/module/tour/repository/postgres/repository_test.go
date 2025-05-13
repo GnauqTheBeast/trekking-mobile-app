@@ -2,9 +2,10 @@ package postgres
 
 import (
 	"context"
-	"github.com/trekking-mobile-app/internal/pkg/paging"
 	"testing"
 	"time"
+
+	"github.com/trekking-mobile-app/internal/pkg/paging"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"

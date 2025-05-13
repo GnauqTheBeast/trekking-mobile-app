@@ -1,6 +1,8 @@
 package types
 
-import "github.com/vmihailenco/msgpack/v5"
+import (
+	"github.com/vmihailenco/msgpack/v5"
+)
 
 type PaymentBookingResult struct {
 	UserId  string `json:"userId"`
