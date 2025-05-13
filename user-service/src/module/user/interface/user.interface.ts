@@ -11,6 +11,11 @@ import { Empty } from "./google/protobuf/empty";
 
 export const protobufPackage = "user";
 
+export interface Role {
+  id: string;
+  name: string
+}
+
 export interface User {
   id: string;
   email: string;
@@ -18,8 +23,8 @@ export interface User {
   dob: string | null;
   address: string | null;
   phoneNumber: string | null;
-  roleId: string;
-  roleName: string;
+  role: Role,
+  permissions: string[]
 }
 
 export interface CreateRequest {

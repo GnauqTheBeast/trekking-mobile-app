@@ -2,8 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Transport } from '@nestjs/microservices';
 import { join } from 'path';
-import { USER_PACKAGE_NAME } from './user/interface/user.interface';
 import * as googleProtoFiles from 'google-proto-files';
+import { USER_PACKAGE_NAME } from './module/user/interface/user.interface';
 
 async function bootstrap() {
 
@@ -14,7 +14,7 @@ async function bootstrap() {
     options: {
       package: USER_PACKAGE_NAME,
       protoPath: join(__dirname, '../src/proto/user.proto'),
-      url: '0.0.0.0:50052',
+      url: 'user-service:50052',
       loader:{
         includeDirs: [googleProtoFiles.getProtoPath()],
         keepCase: true,

@@ -9,6 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 @Module({
   imports: [TypeOrmModule.forFeature([RolePermission]), RedisModule],
   providers: [RolePermissionService],
-  controllers: [RolePermissionController]
+  controllers: [RolePermissionController],
+  exports: [RolePermissionService]
 })
 export class RolePermissionModule {}

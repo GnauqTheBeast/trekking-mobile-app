@@ -7,6 +7,7 @@ import * as bcrypt from 'bcryptjs';
 import { ChangePasswordRequestDto, CheckLoginRequestDto, CreateRequestDto, ResponseDataDto, ResponseDto } from '../dto/user.dto';
 import { RoleService } from 'src/module/role/service/role.service';
 import { RpcException } from '@nestjs/microservices';
+import { RolePermissionService } from 'src/module/role-permission/service/role-permission.service';
 
 @Injectable()
 export class UserService {
@@ -14,7 +15,8 @@ export class UserService {
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
-        private readonly roleService: RoleService
+        private readonly roleService: RoleService,
+        private readonly rolePermissionService: RolePermissionService
     ) {}
 
     async checkExistByEmail(request: CheckExistByEmailRequest): Promise<CheckExistByEmailResponse> {
@@ -41,6 +43,10 @@ export class UserService {
             }
         }
 
+        const roleId = user!.role.id;
+        const data = await this.rolePermissionService.getAllPermissionByRoleId({roleId});
+        const permissions = data.permission;
+
         return {
             user: {
                 id: user!.id,
@@ -49,8 +55,8 @@ export class UserService {
                 phoneNumber: user!.phone_number,
                 dob: user!.dob ? String(user!.dob) : null,
                 address: user!.address,
-                roleId: user!.role.id,
-                roleName: user!.role.name
+                role: user!.role,
+                permissions: permissions
             }
         }
     }
@@ -87,7 +93,8 @@ export class UserService {
         const {id} = request;
 
         const user = await this.userRepository.findOne({
-            where: {id}
+            where: {id},
+            relations: ['role']
         })
 
         if(!user) throw new RpcException({
@@ -103,8 +110,8 @@ export class UserService {
                 phoneNumber: user.phone_number ?? null,
                 dob: user.dob ? String(user.dob) : null,
                 address: user.address ?? null,
-                roleId: user.role.id,
-                roleName: user.role.name
+                role: user.role,
+                permissions: []
             }
         }
     }

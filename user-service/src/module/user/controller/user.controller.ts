@@ -22,7 +22,7 @@ export class UserController {
         return await this.userService.getById(request);
     }
 
-    @GrpcMethod(USER_SERVICE_NAME, 'checkExistEmail')
+    @GrpcMethod(USER_SERVICE_NAME, 'CheckExistByEmail')
     async checkExistByEmail(request: CheckExistByEmailRequest): Promise<CheckExistByEmailResponse> {
         return await this.userService.checkExistByEmail(request);
     }
@@ -31,7 +31,6 @@ export class UserController {
     async checkLogin(request: CheckLoginRequestDto): Promise<CheckLoginResponse> {
         return await this.userService.checkLogin(request)
     }
-
 
 
     @Get('getInfo/:id')
