@@ -6,7 +6,6 @@ import { LoginRequestDto, RegisterRequestDto, ValidateRequestDto } from '../dto/
 import { USER_SERVICE_NAME, UserServiceClient } from '../interface/user.interface';
 import { ClientGrpc } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { ROLE_PERMISSION_SERVICE_NAME, RolePermissionServiceClient } from '../interface/role-permission.interface';
 import { OtpService } from 'src/otp/otp.service';
 import { sendOtp } from 'src/util/mail.util';
 import { RedisService } from 'src/redis/redis.service';
@@ -16,7 +15,6 @@ import { RedisService } from 'src/redis/redis.service';
 @Injectable()
 export class AuthService {
     private userService: UserServiceClient;
-    private rolePermissionService: RolePermissionServiceClient;
     constructor (
         private readonly jwtService: JwtService,
         private readonly otpService: OtpService,
@@ -25,12 +23,9 @@ export class AuthService {
         @Inject(USER_SERVICE_NAME)
         private readonly userClient: ClientGrpc,
 
-        @Inject(ROLE_PERMISSION_SERVICE_NAME)
-        private readonly rolePermissionClient: ClientGrpc,
 
     ) {
         this.userService = this.userClient.getService<UserServiceClient>(USER_SERVICE_NAME);
-        this.rolePermissionService = this.rolePermissionClient.getService<RolePermissionServiceClient>(ROLE_PERMISSION_SERVICE_NAME);
     }
 
     public async register (
@@ -140,8 +135,8 @@ export class AuthService {
                 phoneNumber: user.phoneNumber,
                 dob: String(user.dob),
                 address: user.address,
-                roleId: user.roleId,
-                roleName: user.roleName
+                role: user.role,
+                permissions: user.permissions
             }
         }
     }
@@ -165,36 +160,13 @@ export class AuthService {
         }
 
         console.log(decoded)
-        console.log(decoded.id)
-
-        const dataUser = await firstValueFrom(
-            this.userService.getById({id: decoded.id})
-        )
-
-        if(!dataUser.user) {
-            return {
-                status: HttpStatus.NOT_FOUND,
-                message: 'User not found',
-                id: null,
-                role: null,
-                permissions: null,
-            }
-        }
-
-        console.log("data:", dataUser)
-
-        const data = await firstValueFrom(
-            this.rolePermissionService.getAllPermissionByRoleId({roleId: decoded.roleId})
-        )
-
-        const permissions = data.permission;
 
         return {
             status: HttpStatus.OK,
             message: 'Verified!',
             id: decoded.id,
             role: decoded.roleName,
-            permissions: permissions
+            permissions: decoded.permissions
         }
     }
 }

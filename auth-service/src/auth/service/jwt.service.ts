@@ -18,8 +18,9 @@ export class JwtService {
         return this.jwt.sign(
             {
                 id: user.id,
-                roleId: user.roleId,
-                roleName: user.roleName
+                roleId: user.role.id,
+                roleName: user.role.name,
+                permissions: user.permissions
             }
         )
     }

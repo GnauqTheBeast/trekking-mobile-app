@@ -4,6 +4,11 @@ package user;
 
 import "google/protobuf/empty.proto";
 
+message Role {
+    string id = 1;
+    string name = 2;
+}
+
 message User {
     string id = 1;
     string email = 2;
@@ -11,8 +16,8 @@ message User {
     string dob = 4;
     string address = 5;
     string phoneNumber = 6;
-    string roleId = 7;
-    string roleName = 8;
+    Role role = 7;
+    repeated string permissions = 8;
 }
 
 message CreateRequest {

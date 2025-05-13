@@ -10,6 +10,22 @@ import { Observable } from "rxjs";
 
 export const protobufPackage = "auth";
 
+export interface Role {
+  id: string;
+  name: string
+}
+
+export interface User {
+  id: string;
+  email: string;
+  fullname: string;
+  dob: string | null;
+  address: string | null;
+  phoneNumber: string | null;
+  role: Role,
+  permissions: string[]
+}
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -19,16 +35,7 @@ export interface LoginResponse {
   status: number;
   message: string;
   token: string | null;
-  user: {
-    id: string;
-    email: string;
-    fullname: string;
-    phoneNumber: string | null;
-    dob: string | null;
-    address: string | null;
-    roleId: string;
-    roleName: string;
-  } | null
+  user: User | null
 }
 
 export interface RegisterRequest {
