@@ -1,0 +1,2 @@
+DROP TYPE IF EXISTS "UserRole";
+DROP TYPE IF EXISTS "TourStatus";

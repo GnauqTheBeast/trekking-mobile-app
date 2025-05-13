@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package auth;
+
+message Role {
+    string id = 1;
+    string name = 2;
+}
+
+message User {
+    string id = 1;
+    string email = 2;
+    string fullname = 3;
+    string dob = 4;
+    string address = 5;
+    string phoneNumber = 6;
+    Role role = 7;
+    repeated string permissions = 8;
+}
+
+message LoginRequest {
+    string email = 1;
+    string password = 2;
+}
+
+message LoginResponse {
+    int32 status = 1;
+    string message = 2;
+    string token = 3;
+    User user = 4;
+}
+
+message RegisterRequest {
+    string email = 1;
+    string fullname = 2;
+    string password = 3;
+    string roleName = 4;
+}
+
+message RegisterResponse {
+    int32 status = 1;
+    string message = 2;
+}
+
+message ValidateRequest {
+    string token = 1;
+}
+
+message ValidateResponse {
+    int32 status = 1;
+    string message = 2;
+    string id = 3;
+    string role = 4;
+    repeated string permissions = 5;
+}
+
+service AuthService {
+    rpc register (RegisterRequest) returns (RegisterResponse);
+    rpc login (LoginRequest) returns (LoginResponse);
+    rpc validate (ValidateRequest) returns (ValidateResponse);
+}

@@ -1,0 +1,16 @@
+.idea
+.env
+.env.local
+postgres-data
+redis-data
+docker-compose.override.yaml
+tmp
+node_modules
+android
+ios/build
+android/app/build
+TrekkingAppFE/android/app/build/
+TrekkingAppFE/ios/build/
+*.apk
+*.so
+*.aab
