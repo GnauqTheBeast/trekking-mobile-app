@@ -3,6 +3,7 @@ package rest
 import (
 	"context"
 	"errors"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -13,6 +14,7 @@ type Business interface {
 	RequestBooking(ctx context.Context, booking *entity.Booking) (*entity.Booking, error)
 	GetBookingByID(ctx context.Context, bookingId string) (*entity.Booking, error)
 	CancelBooking(ctx context.Context, bookingId string) (*entity.Booking, error)
+	PingNotificationService(ctx context.Context) error
 }
 
 type api struct {
@@ -123,5 +125,22 @@ func (a *api) CancelBookingHdl() gin.HandlerFunc {
 
 		responseSuccess(c, bookingById)
 		return
+	}
+}
+
+// PingNotificationServiceHdl godoc
+// @Summary      Ping notification service
+// @Description  Send a ping message to notification service via Redis
+// @Tags         Notification
+// @Accept       json
+// @Produce      json
+// @Param        ping  body     Ping  true  "Ping message"
+// @Success      200   {object} map[string]interface{}
+// @Failure      400   {object} map[string]string
+// @Router       /notification/ping [post]
+func (a *api) PingNotificationServiceHdl() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		a.biz.PingNotificationService(c)
+		c.JSON(http.StatusOK, gin.H{"status": "pong", "message": "pong"})
 	}
 }

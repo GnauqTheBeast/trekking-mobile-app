@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/trekking-mobile-app/internal/pkg/pubsub"
+	"github.com/trekking-mobile-app/internal/types"
 
 	"github.com/google/uuid"
 	"github.com/trekking-mobile-app/internal/module/booking/entity"
@@ -152,6 +153,18 @@ func (b *business) UpdateBookingStatus(ctx context.Context, bookingId uuid.UUID,
 	}
 
 	return b.repository.UpdateBookingStatus(ctx, bookingId, status)
+}
+
+func (b *business) PingNotificationService(ctx context.Context) error {
+	go func() {
+		b.pubsub.Publish(ctx, &pubsub.Message{
+			Topic: "ping",
+			Message: types.Ping{
+				Message: "pong",
+			},
+		})
+	}()
+	return nil
 }
 
 func IsValidBookingStatus(s entity.BookingStatus) bool {

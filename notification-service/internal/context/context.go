@@ -11,9 +11,9 @@ import (
 )
 
 const (
-	contextSQLClient     = "CONTEXT_SQL_CLIENT"
-	contextKafkaConsumer = "CONTEXT_KAFKA_CONSUMER"
-	contextRedisPubsub   = "CONTEXT_REDIS_PUBSUB"
+	contextSQLClient         = "CONTEXT_SQL_CLIENT"
+	contextKafkaConsumer     = "CONTEXT_KAFKA_CONSUMER"
+	contextRedisPubsubClient = "CONTEXT_REDIS_PUBSUB"
 )
 
 var background = context.Background()

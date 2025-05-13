@@ -12,6 +12,7 @@ type API interface {
 	CreateBookingHdl() gin.HandlerFunc
 	GetBookingByIdHdl() gin.HandlerFunc
 	CancelBookingHdl() gin.HandlerFunc
+	PingNotificationServiceHdl() gin.HandlerFunc
 }
 
 func startRouteV1(group *gin.RouterGroup) {
@@ -26,5 +27,6 @@ func startRouteV1(group *gin.RouterGroup) {
 		booking.POST("/create", bookingService.CreateBookingHdl())
 		booking.GET("/:id", bookingService.GetBookingByIdHdl())
 		booking.POST("/:id", bookingService.CancelBookingHdl())
+		booking.GET("/ping-notification", bookingService.PingNotificationServiceHdl())
 	}
 }
