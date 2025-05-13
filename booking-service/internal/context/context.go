@@ -2,6 +2,7 @@ package context
 
 import (
 	"context"
+	"github.com/trekking-mobile-app/internal/pkg/pubsub"
 
 	"github.com/trekking-mobile-app/app/database/redis"
 	"github.com/trekking-mobile-app/app/database/sqlc"
@@ -12,6 +13,7 @@ const (
 	contextSQLClient     = "CONTEXT_SQL_CLIENT"
 	contextRedisClient   = "CONTEXT_REDIS_CLIENT"
 	contextKafkaProducer = "CONTEXT_KAFKA_PRODUCER"
+	contextPubsubClient  = "CONTEXT_PUBSUB_CLIENT"
 )
 
 var background = context.Background()
@@ -87,5 +89,22 @@ func GetKafkaConsumer() kafka.KafkaConsumer {
 		return nil
 	}
 
+	return client
+}
+
+func SetContextPubsubClient() error {
+	client, err := redis.GetPubsubRedisClient()
+	if err != nil {
+		return err
+	}
+	background = context.WithValue(background, contextPubsubClient, client)
+	return nil
+}
+
+func GetContextPubSubClient() pubsub.PubSub {
+	client, ok := background.Value(contextPubsubClient).(pubsub.PubSub)
+	if !ok {
+		return nil
+	}
 	return client
 }

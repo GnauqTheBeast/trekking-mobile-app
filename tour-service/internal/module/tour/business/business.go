@@ -34,9 +34,6 @@ type business struct {
 }
 
 func NewBusiness(repository Repository, cache *redis.CacheRedis) *business {
-	if repository == nil {
-		panic("repository is required")
-	}
 	return &business{
 		repository: repository,
 		cache:      cache,
@@ -183,12 +180,17 @@ func (b *business) UpdateTourAvailableSlot(ctx context.Context, tourId string, l
 		return nil, fmt.Errorf("failed to get tourById: %w", err)
 	}
 
-	if tourById.AvailableSlot > tourById.Slot {
-		return nil, fmt.Errorf("out of available slot")
-	}
+	//if tourById.AvailableSlot > tourById.Slot {
+	//	return nil, fmt.Errorf("tour data is not correct")
+	//}
 
 	if lockedSlot > int(tourById.AvailableSlot) {
 		return nil, fmt.Errorf("out of available slot")
+	}
+
+	err = b.cache.Delete(ctx, redisTourDetail(tourId))
+	if err != nil {
+		return nil, fmt.Errorf("failed to delete tour: %w", err)
 	}
 
 	return b.repository.UpdateTourAvailableSlot(ctx, tourId, int(tourById.AvailableSlot)-lockedSlot)

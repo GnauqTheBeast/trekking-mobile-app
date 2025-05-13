@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/trekking-mobile-app/internal/pkg/pubsub"
 
 	"github.com/google/uuid"
-	"github.com/trekking-mobile-app/app/kafka"
 	"github.com/trekking-mobile-app/internal/module/booking/entity"
 	"github.com/trekking-mobile-app/proto/pb"
 )
@@ -23,16 +23,16 @@ type TourRepository interface {
 }
 
 type business struct {
-	repository    Repository
-	tourRepo      TourRepository
-	kafkaProducer kafka.KafkaProducer
+	repository Repository
+	tourRepo   TourRepository
+	pubsub     pubsub.PubSub
 }
 
-func NewBusiness(repository Repository, tourRepo TourRepository, kafkaProducer kafka.KafkaProducer) *business {
+func NewBusiness(repository Repository, tourRepo TourRepository, pubsub pubsub.PubSub) *business {
 	return &business{
-		repository:    repository,
-		tourRepo:      tourRepo,
-		kafkaProducer: kafkaProducer,
+		repository: repository,
+		tourRepo:   tourRepo,
+		pubsub:     pubsub,
 	}
 }
 
@@ -74,7 +74,13 @@ func (b *business) RequestBooking(ctx context.Context, booking *entity.Booking) 
 			return
 		}
 
-		b.kafkaProducer.Publish("booking_request", []byte(newBooking.Id.String()), msgBytes)
+		err = b.pubsub.Publish(ctx, &pubsub.Message{
+			Topic:   "booking_request",
+			Message: msgBytes,
+		})
+		if err != nil {
+			fmt.Printf("failed to publish booking request: %v\n", err)
+		}
 	}()
 
 	_, err = b.tourRepo.UpdateTourAvailableSlot(ctx, tour.TourId, booking.Quantity)
@@ -119,7 +125,10 @@ func (b *business) CancelBooking(ctx context.Context, bookingId string) (*entity
 			return
 		}
 
-		b.kafkaProducer.Publish("booking_cancel", []byte(cancelBooking.Id.String()), msgBytes)
+		b.pubsub.Publish(ctx, &pubsub.Message{
+			Topic:   "booking_cancel",
+			Message: msgBytes,
+		})
 	}()
 
 	return &entity.Booking{

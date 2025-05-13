@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/trekking-mobile-app/cmd/api"
-	"github.com/trekking-mobile-app/cmd/consumer"
 	_ "github.com/trekking-mobile-app/docs"
 	"github.com/trekking-mobile-app/internal/pkg/env"
 	"github.com/urfave/cli/v2"
@@ -25,7 +24,6 @@ func main() {
 		},
 		Commands: []*cli.Command{
 			api.NewCommand(),
-			consumer.NewCommand(),
 		},
 	}
 

@@ -18,7 +18,7 @@ func startRouteV1(group *gin.RouterGroup) {
 	tourRepo := tourGrpcClient()
 
 	repo := repository.NewPostgresRepo(context.GetSQLClient())
-	biz := business.NewBusiness(repo, tourRepo, context.GetContextKafkaProducer())
+	biz := business.NewBusiness(repo, tourRepo, context.GetContextPubSubClient())
 	bookingService := rest.NewAPI(biz)
 
 	booking := group.Group("/booking")

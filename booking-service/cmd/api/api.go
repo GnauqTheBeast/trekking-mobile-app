@@ -25,7 +25,8 @@ func NewCommand() *cli.Command {
 
 func beforeCommand() error {
 	dependencies.Register(context.SetContextSQL)
-	dependencies.Register(context.SetContextKafkaProducer)
+	dependencies.Register(context.SetContextPubsubClient)
+	//dependencies.Register(context.SetContextKafkaProducer)
 	return dependencies.Init()
 }
 

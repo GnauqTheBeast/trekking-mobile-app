@@ -2,6 +2,8 @@ package redis
 
 import (
 	"context"
+	"github.com/trekking-mobile-app/internal/pkg/pubsub"
+	redisPubsub "github.com/trekking-mobile-app/internal/pkg/pubsub/redis"
 	"os"
 	"time"
 
@@ -84,4 +86,20 @@ func GetUniversalClient(DB int) (redis.UniversalClient, error) {
 	opt.DB = DB
 
 	return redis.NewClient(opt), nil
+}
+
+func GetPubsubRedisClient() (pubsub.PubSub, error) {
+	opt, err := redis.ParseURL(os.Getenv("REDIS_PUBSUB_URL"))
+	if err != nil {
+		return nil, err
+	}
+	redisPubsubClient := redis.NewClient(opt)
+
+	opt, err = redis.ParseURL(os.Getenv("REDIS_PUBSUB_URL_READONLY"))
+	if err != nil {
+		return nil, err
+	}
+	redisPubsubReadonlyClient := redis.NewClient(opt)
+
+	return redisPubsub.New(redisPubsubClient, redisPubsubReadonlyClient), nil
 }
