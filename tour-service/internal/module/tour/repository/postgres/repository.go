@@ -4,9 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/trekking-mobile-app/internal/pkg/paging"
-	"time"
 
 	"github.com/trekking-mobile-app/app/database/sqlc"
 	"github.com/trekking-mobile-app/internal/module/tour/entity"

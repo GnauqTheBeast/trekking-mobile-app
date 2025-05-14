@@ -19,3 +19,12 @@ func tourGrpcClient() business.TourRepository {
 	}
 	return rpc.NewClient(pb.NewTourServiceClient(conn))
 }
+
+func authGrpcClient() *rpc.AuthRpcClient {
+	conn, err := grpc.NewClient(os.Getenv("AUTH_RPC"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+	return rpc.NewAuthClient(pb.NewAuthServiceClient(conn))
+}

@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -35,8 +36,6 @@ func start(c *cli.Context) error {
 	router.RedirectTrailingSlash = true
 	gin.SetMode(gin.DebugMode)
 	router.Use(middleware.Cors())
-	router.Use(middleware.RequireAuth(authGrpcClient()))
-
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	fmt.Printf("ListenAndServe: %s\n", "8083")

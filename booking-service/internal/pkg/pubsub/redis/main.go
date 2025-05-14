@@ -2,10 +2,11 @@ package redis
 
 import (
 	"context"
+
 	"github.com/trekking-mobile-app/internal/pkg/pubsub"
+	"github.com/vmihailenco/msgpack/v5"
 
 	"github.com/redis/go-redis/v9"
-	"github.com/vmihailenco/msgpack/v5"
 )
 
 type RedisPubSub struct {

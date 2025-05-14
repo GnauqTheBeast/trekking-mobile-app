@@ -2,11 +2,17 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/trekking-mobile-app/internal/context"
+	"github.com/trekking-mobile-app/internal/module/notification/business"
+	"github.com/trekking-mobile-app/internal/module/notification/repository"
+	"github.com/trekking-mobile-app/internal/module/notification/transport/rest"
 	"github.com/trekking-mobile-app/internal/module/notification/transport/ws"
 )
 
 type API interface {
+	PingHealthCheckHdl() gin.HandlerFunc
 	GetUserNotificationsHdl() gin.HandlerFunc
+	CreateNotificationHdl() gin.HandlerFunc
 }
 
 func RegisterRoutes(router *gin.Engine, ws *ws.WS) {
@@ -15,10 +21,13 @@ func RegisterRoutes(router *gin.Engine, ws *ws.WS) {
 }
 
 func startRouteV1(group *gin.RouterGroup) {
+	repo := repository.NewPostgresRepo(context.GetSQLClient())
+	biz := business.NewBusiness(repo)
+	api := rest.NewAPI(biz)
+
 	noti := group.Group("/notifications")
 	{
-		noti.GET("/ping", func(c *gin.Context) {
-			c.JSON(200, gin.H{"message": "pong"})
-		})
+		noti.GET("/ping", api.PingHealthCheckHdl())
+		noti.GET("/:userId", api.GetUserNotificationsHdl())
 	}
 }

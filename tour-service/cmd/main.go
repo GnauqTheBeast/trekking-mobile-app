@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/trekking-mobile-app/cmd/api"
 	"github.com/trekking-mobile-app/cmd/rpc"
 	_ "github.com/trekking-mobile-app/docs"
 	"github.com/trekking-mobile-app/internal/pkg/env"
 	"github.com/urfave/cli/v2"
-	"os"
 )
 
 func init() {

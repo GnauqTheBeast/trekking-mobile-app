@@ -3,9 +3,10 @@ package caching
 import (
 	"context"
 	"errors"
+	"time"
+
 	"github.com/go-redis/cache/v9"
 	"github.com/trekking-mobile-app/app/database/redis"
-	"time"
 )
 
 func FetchFromCallback[T any](c *redis.CacheRedis, key string, ttl time.Duration, callback func() (T, error)) (T, error) {

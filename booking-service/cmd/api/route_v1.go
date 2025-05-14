@@ -6,6 +6,7 @@ import (
 	"github.com/trekking-mobile-app/internal/module/booking/business"
 	"github.com/trekking-mobile-app/internal/module/booking/repository"
 	"github.com/trekking-mobile-app/internal/module/booking/transport/rest"
+	"github.com/trekking-mobile-app/middleware"
 )
 
 type API interface {
@@ -17,16 +18,23 @@ type API interface {
 
 func startRouteV1(group *gin.RouterGroup) {
 	tourRepo := tourGrpcClient()
-
 	repo := repository.NewPostgresRepo(context.GetSQLClient())
 	biz := business.NewBusiness(repo, tourRepo, context.GetContextPubSubClient())
 	bookingService := rest.NewAPI(biz)
 
 	booking := group.Group("/booking")
 	{
-		booking.POST("/create", bookingService.CreateBookingHdl())
-		booking.GET("/:id", bookingService.GetBookingByIdHdl())
-		booking.POST("/:id", bookingService.CancelBookingHdl())
-		booking.GET("/ping-notification", bookingService.PingNotificationServiceHdl())
+		// Unauthenticated route
+		// For development testing
+		booking.GET("/ping-notification", bookingService.PingNotificationServiceHdl()) // /api/v1/booking/ping-notification
+
+		// Authenticated routes
+		authBooking := booking.Group("")
+		authBooking.Use(middleware.RequireAuth(authGrpcClient())) // comment for developing
+		{
+			authBooking.POST("/create", bookingService.CreateBookingHdl())     // /api/v1/booking/create
+			authBooking.GET("/:id", bookingService.GetBookingByIdHdl())        // /api/v1/booking/:id
+			authBooking.POST("/:id/cancel", bookingService.CancelBookingHdl()) // /api/v1/booking/:id
+		}
 	}
 }

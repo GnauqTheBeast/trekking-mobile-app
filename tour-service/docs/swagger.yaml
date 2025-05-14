@@ -88,7 +88,7 @@ definitions:
 info:
   contact: {}
 paths:
-  /tours:
+  /api/v1/tours:
     get:
       consumes:
       - application/json
@@ -100,7 +100,7 @@ paths:
         type: integer
       - description: Số lượng mỗi trang
         in: query
-        name: limit
+        name: size
         type: integer
       produces:
       - application/json
@@ -147,7 +147,7 @@ paths:
       summary: Tạo tour mới
       tags:
       - Tour
-  /tours/{id}:
+  /api/v1/tours/{id}:
     delete:
       consumes:
       - application/json

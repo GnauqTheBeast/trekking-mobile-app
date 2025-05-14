@@ -2,6 +2,8 @@ package rpc
 
 import (
 	"fmt"
+	"net"
+
 	"github.com/trekking-mobile-app/internal/context"
 	"github.com/trekking-mobile-app/internal/dependencies"
 	"github.com/trekking-mobile-app/internal/module/tour/business"
@@ -10,7 +12,6 @@ import (
 	"github.com/trekking-mobile-app/proto/pb"
 	"github.com/urfave/cli/v2"
 	"google.golang.org/grpc"
-	"net"
 )
 
 func NewCommand() *cli.Command {

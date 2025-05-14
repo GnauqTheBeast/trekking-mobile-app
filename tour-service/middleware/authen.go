@@ -3,8 +3,10 @@ package middleware
 import (
 	"context"
 	"fmt"
-	"github.com/gin-gonic/gin"
+	"net/http"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 type AuthService interface {
@@ -13,8 +15,13 @@ type AuthService interface {
 
 func RequireAuth(auth AuthService) func(*gin.Context) {
 	return func(c *gin.Context) {
-		token, err := extractTokenFromHeaderString(c.GetHeader("Authorization"))
+		authorizerHeader := c.GetHeader("Authorization")
+		if authorizerHeader == "" {
+			c.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
 
+		token, err := extractTokenFromHeaderString(authorizerHeader)
 		if err != nil {
 			c.Abort()
 			return

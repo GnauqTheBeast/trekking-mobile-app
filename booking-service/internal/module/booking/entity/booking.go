@@ -20,7 +20,7 @@ type Booking struct {
 	Id         uuid.UUID     `json:"id" example:"123e4567-e89b-12d3-a456-426614174000"`
 	UserId     uuid.UUID     `json:"user_id" example:"123e4567-e89b-12d3-a456-426614174001"`
 	TourId     uuid.UUID     `json:"tour_id" example:"123e4567-e89b-12d3-a456-426614174002"`
-	PorterId   uuid.NullUUID `json:"porter_id,omitempty" example:"123e4567-e89b-12d3-a456-426614174003"`
+	PorterId   *uuid.UUID    `json:"porter_id,omitempty" example:"123e4567-e89b-12d3-a456-426614174003"`
 	Quantity   int           `json:"quantity" example:"3"`
 	Status     BookingStatus `json:"status" example:"PENDING"`
 	TotalPrice int64         `json:"total_price,omitempty" example:"1500000"`
