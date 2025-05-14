@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/tours": {
+        "/api/v1/tours": {
             "get": {
                 "description": "Lấy danh sách tour theo phân trang",
                 "consumes": [
@@ -38,7 +38,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Số lượng mỗi trang",
-                        "name": "limit",
+                        "name": "size",
                         "in": "query"
                     }
                 ],
@@ -105,7 +105,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/tours/{id}": {
+        "/api/v1/tours/{id}": {
             "get": {
                 "description": "Lấy chi tiết tour theo ID",
                 "consumes": [

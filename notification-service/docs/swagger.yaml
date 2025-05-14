@@ -1,0 +1,68 @@
+definitions:
+  entity.Notification:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/notifications/{userId}:
+    get:
+      consumes:
+      - application/json
+      description: Trả về danh sách thông báo dựa theo userId
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Notification'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Lấy danh sách thông báo của người dùng
+      tags:
+      - Notifications
+  /api/v1/notifications/ping:
+    get:
+      consumes:
+      - application/json
+      description: Trả về "pong" nếu API đang hoạt động
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Kiểm tra trạng thái hoạt động của API
+      tags:
+      - Health
+swagger: "2.0"

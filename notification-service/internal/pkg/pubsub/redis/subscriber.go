@@ -19,18 +19,11 @@ func (r *RedisSubscriber) MessageChannel() <-chan *pubsub.Message {
 	redisCh := r.pubsub.Channel()
 	go func() {
 		for msg := range redisCh {
-			fmt.Println("Received message:", msg.Payload)
-			// Unmarshal the message payload
-			// Assuming the payload is a byte array, you may need to adjust this based on your actual message structure
-			// var payload interface{}
-			// Unmarshal the payload into the desired structure
-			// err := msgpack.Unmarshal([]byte(msg.Payload), &payload)
 			payload, err := r.unmarshalFunc([]byte(msg.Payload))
 			if err != nil {
 				fmt.Println("Error unmarshalling message:", err)
 				continue
 			}
-			fmt.Printf("Unmarshalled message:%+v\n", payload)
 			message := &pubsub.Message{
 				Topic:   msg.Channel,
 				Message: payload,

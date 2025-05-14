@@ -65,3 +65,25 @@ func responseNotFound(c *gin.Context, err error) {
 		Message:    err.Error(),
 	})
 }
+
+// 401 Unauthorized
+func responseUnauthorized(c *gin.Context, err error) {
+	c.JSON(http.StatusUnauthorized, responseMessage{
+		Data:       nil,
+		StatusCode: http.StatusUnauthorized,
+		Message:    err.Error(),
+	})
+}
+
+// 403 Forbidden
+func responseForbidden(c *gin.Context, err error) {
+	message := "forbidden"
+	if err != nil {
+		message = err.Error()
+	}
+	c.JSON(http.StatusForbidden, responseMessage{
+		Data:       nil,
+		StatusCode: http.StatusForbidden,
+		Message:    message,
+	})
+}

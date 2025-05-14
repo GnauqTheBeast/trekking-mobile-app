@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func authGrpcClient() *rpc.RpcClient {
+func authGrpcClient() *rpc.AuthRpcClient {
 	conn, err := grpc.NewClient(os.Getenv("AUTH_RPC"), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Println(err)

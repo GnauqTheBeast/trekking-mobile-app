@@ -4,7 +4,7 @@
         "contact": {}
     },
     "paths": {
-        "/tours": {
+        "/api/v1/tours": {
             "get": {
                 "description": "Lấy danh sách tour theo phân trang",
                 "consumes": [
@@ -27,7 +27,7 @@
                     {
                         "type": "integer",
                         "description": "Số lượng mỗi trang",
-                        "name": "limit",
+                        "name": "size",
                         "in": "query"
                     }
                 ],
@@ -94,7 +94,7 @@
                 }
             }
         },
-        "/tours/{id}": {
+        "/api/v1/tours/{id}": {
             "get": {
                 "description": "Lấy chi tiết tour theo ID",
                 "consumes": [

@@ -2,12 +2,14 @@ package types
 
 import (
 	"encoding/json"
-	"github.com/vmihailenco/msgpack/v5"
 	"time"
+
+	"github.com/vmihailenco/msgpack/v5"
 )
 
 type PaymentBookingResult struct {
 	ID        string    `json:"Id"`
+	UserID    string    `json:"UserId"`
 	BookingID string    `json:"BookingId"`
 	Total     int64     `json:"Total"`
 	Method    string    `json:"Method"`

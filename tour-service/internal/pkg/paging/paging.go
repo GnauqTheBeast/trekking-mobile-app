@@ -8,26 +8,20 @@ import (
 
 const (
 	defaultQueryPage     = "1"
-	defaultQueryPageSize = "8"
+	defaultQueryPageSize = "5"
 )
 
 type Paging struct {
-	Limit     int
-	Offset    int
-	SortOrder string
-	Filter    string
+	Limit  int
+	Offset int
 }
 
 func GetQueryPaging(c *gin.Context) *Paging {
 	page := stringToInt(c.DefaultQuery("page", defaultQueryPage))
 	size := stringToInt(c.DefaultQuery("size", defaultQueryPageSize))
-	sortOrder := c.DefaultQuery("sort_order", "desc")
-	filter := c.DefaultQuery("filter", "")
 	return &Paging{
-		Limit:     size,
-		Offset:    (page - 1) * size,
-		SortOrder: sortOrder,
-		Filter:    filter,
+		Limit:  size,
+		Offset: (page - 1) * size,
 	}
 }
 
