@@ -10,7 +10,7 @@ async function bootstrap() {
   app.connectMicroservice({
     transport: Transport.GRPC,
     options:{
-      url: 'auth-service:50051',
+      url: 'auth-service:50058',
       package: AUTH_PACKAGE_NAME,
       protoPath: join('src', 'proto', 'auth.proto')
     }
@@ -18,6 +18,6 @@ async function bootstrap() {
 
   await app.startAllMicroservices()
   await app.listen(3001)
-  console.log('gRPC Auth Service is running on HTTP:3001 and gRPC:50051');
+  console.log('gRPC Auth Service is running on HTTP:3001 and gRPC:50058');
 }
 bootstrap();

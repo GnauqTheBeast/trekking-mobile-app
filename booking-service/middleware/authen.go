@@ -33,7 +33,7 @@ func RequireAuth(auth AuthService) func(*gin.Context) {
 			return
 		}
 
-		if status != 1 {
+		if status != 200 {
 			c.AbortWithStatusJSON(403, gin.H{"error": "Forbidden: invalid user status"})
 			return
 		}
