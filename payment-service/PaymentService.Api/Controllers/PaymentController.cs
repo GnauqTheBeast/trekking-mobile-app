@@ -252,9 +252,9 @@ namespace PaymentService.Api.Controllers
             try
             {
                 var payment = await _paymentService.ProcessPaymentAsync(paymentId);
-                
+                var userId = await _paymentService.GetUserIdByPaymentIdAsync(paymentId);
                 // Publish success message to Redis
-                await _redisPublisher.PublishPaymentSuccessAsync(payment);
+                await _redisPublisher.PublishPaymentSuccessAsync(payment, userId);
                 
                 return Ok(payment);
             }
