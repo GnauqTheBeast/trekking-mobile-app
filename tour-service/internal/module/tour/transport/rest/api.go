@@ -44,6 +44,7 @@ func NewAPI(biz Business) *api {
 // @Param tour body entity.Tour true "Thông tin tour"
 // @Success 200 {object} entity.Tour
 // @Failure 400 {object} map[string]string
+// @Security BearerAuth
 // @Router /api/v1/tours [post]
 func (a *api) CreateTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -148,6 +149,7 @@ func (a *api) GetTourHdl() gin.HandlerFunc {
 // @Param tour body entity.TourPatchData true "Dữ liệu cần cập nhật"
 // @Success 200 {object} map[string]string
 // @Failure 400 {object} map[string]string
+// @Security BearerAuth
 // @Router /api/v1/tours/{id} [patch]
 func (a *api) UpdateTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -183,6 +185,7 @@ func (a *api) UpdateTourHdl() gin.HandlerFunc {
 // @Param id path string true "Tour ID"
 // @Success 200 {object} map[string]string
 // @Failure 400 {object} map[string]string
+// @Security BearerAuth
 // @Router /api/v1/tours/{id} [delete]
 func (a *api) DeleteTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {

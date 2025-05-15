@@ -14,6 +14,14 @@ func init() {
 	env.LoadOnce()
 }
 
+// @title Booking API
+// @version 1.0
+// @description API cho hệ thống booking tour
+// @BasePath /api/v1
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func main() {
 	app := &cli.App{
 		Name:  "Trekking App",
