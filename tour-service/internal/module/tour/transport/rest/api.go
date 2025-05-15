@@ -3,8 +3,9 @@ package rest
 import (
 	"context"
 	"fmt"
-	"github.com/trekking-mobile-app/internal/utils"
 	"net/http"
+
+	"github.com/trekking-mobile-app/internal/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/trekking-mobile-app/internal/module/tour/entity"
@@ -52,7 +53,7 @@ func (a *api) CreateTourHdl() gin.HandlerFunc {
 			return
 		}
 
-		if userRole.(string) != "host" {
+		if userRole.(string) != "HOST" {
 			responseUnauthorized(c, fmt.Errorf("user is not authorized to perform this action"))
 			return
 		}

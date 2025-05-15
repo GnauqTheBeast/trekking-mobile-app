@@ -8,7 +8,7 @@
 import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
 import { Observable } from "rxjs";
 
-export const protobufPackage = "auth";
+export const protobufPackage = "pb";
 
 export interface Role {
   id: string;
@@ -62,7 +62,7 @@ export interface ValidateResponse {
   permissions: string[] | null;
 }
 
-export const AUTH_PACKAGE_NAME = "auth";
+export const AUTH_PACKAGE_NAME = "pb";
 
 export interface AuthServiceClient {
   register(request: RegisterRequest): Observable<RegisterResponse>;
