@@ -110,8 +110,8 @@ services:
       dockerfile: Dockerfile
     networks:
       - app
-#    env_file:
-#      - ./notification-service/cmd/.env
+    env_file:
+     - ./notification-service/cmd/.env
     restart: unless-stopped
     depends_on:
       - postgres
