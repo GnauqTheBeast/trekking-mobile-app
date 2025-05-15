@@ -1,11 +1,20 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "API cho hệ thống booking tour",
+        "title": "Booking API",
+        "contact": {},
+        "version": "1.0"
     },
+    "basePath": "/api/v1",
     "paths": {
         "/api/v1/booking/create": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Gửi yêu cầu đặt tour",
                 "consumes": [
                     "application/json"
@@ -82,6 +91,11 @@
         },
         "/api/v1/booking/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Truy vấn chi tiết booking theo ID",
                 "consumes": [
                     "application/json"
@@ -132,6 +146,11 @@
         },
         "/api/v1/booking/{id}/cancel": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Hủy booking theo ID",
                 "consumes": [
                     "application/json"
@@ -245,6 +264,13 @@
                 "BookingStatusCancel",
                 "BookingStatusSuccess"
             ]
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

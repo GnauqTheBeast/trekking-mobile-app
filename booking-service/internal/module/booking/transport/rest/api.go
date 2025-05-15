@@ -43,6 +43,7 @@ func NewAPI(biz Business) *api {
 // @Param booking body entity.Booking true "Thông tin booking"
 // @Success 202 {object} entity.Booking
 // @Failure 400 {object} map[string]string
+// @Security BearerAuth
 // @Router /api/v1/booking/create [post]
 func (a *api) CreateBookingHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -91,6 +92,7 @@ func (a *api) CreateBookingHdl() gin.HandlerFunc {
 // @Success 200 {object} entity.Booking
 // @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
+// @Security BearerAuth
 // @Router /api/v1/booking/{id} [get]
 func (a *api) GetBookingByIdHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -127,6 +129,7 @@ func (a *api) GetBookingByIdHdl() gin.HandlerFunc {
 // @Success 200 {object} entity.Booking
 // @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
+// @Security BearerAuth
 // @Router /api/v1/booking/{id}/cancel [post]
 func (a *api) CancelBookingHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {

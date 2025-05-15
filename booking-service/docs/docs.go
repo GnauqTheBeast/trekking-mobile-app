@@ -17,6 +17,11 @@ const docTemplate = `{
     "paths": {
         "/api/v1/booking/create": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Gửi yêu cầu đặt tour",
                 "consumes": [
                     "application/json"
@@ -93,6 +98,11 @@ const docTemplate = `{
         },
         "/api/v1/booking/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Truy vấn chi tiết booking theo ID",
                 "consumes": [
                     "application/json"
@@ -143,6 +153,11 @@ const docTemplate = `{
         },
         "/api/v1/booking/{id}/cancel": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Hủy booking theo ID",
                 "consumes": [
                     "application/json"
@@ -257,17 +272,24 @@ const docTemplate = `{
                 "BookingStatusSuccess"
             ]
         }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "1.0",
 	Host:             "",
-	BasePath:         "",
+	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "Booking API",
+	Description:      "API cho hệ thống booking tour",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",
