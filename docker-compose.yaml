@@ -110,8 +110,8 @@ services:
       dockerfile: Dockerfile
     networks:
       - app
-    # env_file:
-    #   - ./notification-service/cmd/.env
+#    env_file:
+#      - ./notification-service/cmd/.env
     restart: unless-stopped
     depends_on:
       - postgres
@@ -147,12 +147,15 @@ services:
       - "6379:6379"
 
   nginx:
-     image: nginx:latest
-     ports:
-       - "80:80"
-     volumes:
-       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-
+    image: nginx:latest
+    container_name: app_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    restart: unless-stopped
+    networks:
+      - app
 
 networks:
   app:
