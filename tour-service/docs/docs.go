@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/tours": {
+        "/tours": {
             "get": {
                 "description": "Lấy danh sách tour theo phân trang",
                 "consumes": [
@@ -110,7 +110,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/tours/{id}": {
+        "/tours/{id}": {
             "get": {
                 "description": "Lấy chi tiết tour theo ID",
                 "consumes": [
@@ -261,13 +261,20 @@ const docTemplate = `{
             "required": [
                 "available_slot",
                 "description",
-                "end",
+                "distance",
+                "duration",
+                "elevation",
+                "end_at",
                 "host_id",
                 "id",
+                "images",
+                "level",
+                "location",
                 "name",
                 "price",
+                "rate",
                 "slot",
-                "start",
+                "start_at",
                 "status"
             ],
             "properties": {
@@ -278,10 +285,18 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "description": {
-                    "type": "string",
-                    "minLength": 10
+                    "type": "string"
                 },
-                "end": {
+                "distance": {
+                    "type": "integer"
+                },
+                "duration": {
+                    "type": "string"
+                },
+                "elevation": {
+                    "type": "integer"
+                },
+                "end_at": {
                     "type": "string"
                 },
                 "host_id": {
@@ -290,18 +305,29 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "images": {
+                    "type": "string"
+                },
+                "level": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string",
-                    "maxLength": 255,
-                    "minLength": 3
+                    "maxLength": 255
                 },
                 "price": {
                     "type": "integer"
                 },
+                "rate": {
+                    "type": "string"
+                },
                 "slot": {
                     "type": "integer"
                 },
-                "start": {
+                "start_at": {
                     "type": "string"
                 },
                 "status": {
@@ -331,8 +357,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "description": {
-                    "type": "string",
-                    "minLength": 10
+                    "type": "string"
                 },
                 "end": {
                     "type": "string"
@@ -360,8 +385,7 @@ const docTemplate = `{
                 },
                 "title": {
                     "type": "string",
-                    "maxLength": 255,
-                    "minLength": 3
+                    "maxLength": 255
                 }
             }
         },
