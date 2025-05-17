@@ -1,3 +1,4 @@
+basePath: /api/v1
 definitions:
   entity.Tour:
     properties:
@@ -87,8 +88,11 @@ definitions:
     - TourStatusArchived
 info:
   contact: {}
+  description: API cho hệ thống booking tour
+  title: Tour API
+  version: "1.0"
 paths:
-  /tours:
+  /api/v1/tours:
     get:
       consumes:
       - application/json
@@ -100,7 +104,7 @@ paths:
         type: integer
       - description: Số lượng mỗi trang
         in: query
-        name: limit
+        name: size
         type: integer
       produces:
       - application/json
@@ -144,10 +148,12 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Tạo tour mới
       tags:
       - Tour
-  /tours/{id}:
+  /api/v1/tours/{id}:
     delete:
       consumes:
       - application/json
@@ -173,6 +179,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Xóa tour
       tags:
       - Tour
@@ -233,7 +241,14 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Cập nhật thông tin tour
       tags:
       - Tour
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

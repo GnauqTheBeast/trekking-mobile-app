@@ -2,11 +2,18 @@ package rest
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+
+	"github.com/trekking-mobile-app/internal/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/trekking-mobile-app/internal/module/tour/entity"
 	"github.com/trekking-mobile-app/internal/pkg/paging"
+)
+
+const (
+	createTourPermission = "create_tour"
 )
 
 type Business interface {
@@ -37,9 +44,32 @@ func NewAPI(biz Business) *api {
 // @Param tour body entity.Tour true "Thông tin tour"
 // @Success 200 {object} entity.Tour
 // @Failure 400 {object} map[string]string
-// @Router /tours [post]
+// @Security BearerAuth
+// @Router /api/v1/tours [post]
 func (a *api) CreateTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		userRole, exist := c.Get("userRole")
+		if !exist {
+			responseUnauthorized(c, fmt.Errorf("user role not found in context"))
+			return
+		}
+
+		if userRole.(string) != "HOST" {
+			responseUnauthorized(c, fmt.Errorf("user is not authorized to perform this action"))
+			return
+		}
+
+		userPermissions, exist := c.Get("userPermissions")
+		if !exist {
+			responseUnauthorized(c, fmt.Errorf("user permissions not found in context"))
+			return
+		}
+
+		if !utils.CheckUserPermission(createTourPermission, userPermissions.([]string)) {
+			responseForbidden(c, fmt.Errorf("user does not have permission to create tour"))
+			return
+		}
+
 		data := new(entity.Tour)
 		if err := c.ShouldBindJSON(&data); err != nil {
 			responseError(c, err)
@@ -64,10 +94,10 @@ func (a *api) CreateTourHdl() gin.HandlerFunc {
 // @Accept json
 // @Produce json
 // @Param page query int false "Trang hiện tại"
-// @Param limit query int false "Số lượng mỗi trang"
+// @Param size query int false "Số lượng mỗi trang"
 // @Success 200 {array} entity.Tour
 // @Failure 400 {object} map[string]string
-// @Router /tours [get]
+// @Router /api/v1/tours [get]
 func (a *api) ListTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		listTours, err := a.biz.ListTours(c, paging.GetQueryPaging(c))
@@ -90,7 +120,7 @@ func (a *api) ListTourHdl() gin.HandlerFunc {
 // @Param id path string true "Tour ID"
 // @Success 200 {object} entity.Tour
 // @Failure 400 {object} map[string]string
-// @Router /tours/{id} [get]
+// @Router /api/v1/tours/{id} [get]
 func (a *api) GetTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tourId := c.Param("id")
@@ -119,7 +149,8 @@ func (a *api) GetTourHdl() gin.HandlerFunc {
 // @Param tour body entity.TourPatchData true "Dữ liệu cần cập nhật"
 // @Success 200 {object} map[string]string
 // @Failure 400 {object} map[string]string
-// @Router /tours/{id} [patch]
+// @Security BearerAuth
+// @Router /api/v1/tours/{id} [patch]
 func (a *api) UpdateTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tourId := c.Param("id")
@@ -154,7 +185,8 @@ func (a *api) UpdateTourHdl() gin.HandlerFunc {
 // @Param id path string true "Tour ID"
 // @Success 200 {object} map[string]string
 // @Failure 400 {object} map[string]string
-// @Router /tours/{id} [delete]
+// @Security BearerAuth
+// @Router /api/v1/tours/{id} [delete]
 func (a *api) DeleteTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tourID := c.Param("id")

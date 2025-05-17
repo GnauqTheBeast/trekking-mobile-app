@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/tours": {
+        "/api/v1/tours": {
             "get": {
                 "description": "Lấy danh sách tour theo phân trang",
                 "consumes": [
@@ -38,7 +38,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Số lượng mỗi trang",
-                        "name": "limit",
+                        "name": "size",
                         "in": "query"
                     }
                 ],
@@ -64,6 +64,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "API tạo tour du lịch mới",
                 "consumes": [
                     "application/json"
@@ -105,7 +110,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/tours/{id}": {
+        "/api/v1/tours/{id}": {
             "get": {
                 "description": "Lấy chi tiết tour theo ID",
                 "consumes": [
@@ -146,6 +151,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Xóa tour theo ID",
                 "consumes": [
                     "application/json"
@@ -188,6 +198,11 @@ const docTemplate = `{
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Cập nhật tour theo ID",
                 "consumes": [
                     "application/json"
@@ -363,17 +378,24 @@ const docTemplate = `{
                 "TourStatusArchived"
             ]
         }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "1.0",
 	Host:             "",
-	BasePath:         "",
+	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "Tour API",
+	Description:      "API cho hệ thống booking tour",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

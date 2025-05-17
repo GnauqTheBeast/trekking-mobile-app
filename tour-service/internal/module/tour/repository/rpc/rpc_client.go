@@ -6,15 +6,15 @@ import (
 	"github.com/trekking-mobile-app/proto/pb"
 )
 
-type RpcClient struct {
+type AuthRpcClient struct {
 	client pb.AuthServiceClient
 }
 
-func NewClient(client pb.AuthServiceClient) *RpcClient {
-	return &RpcClient{client: client}
+func NewClient(client pb.AuthServiceClient) *AuthRpcClient {
+	return &AuthRpcClient{client: client}
 }
 
-func (c *RpcClient) Validate(ctx context.Context, jwtToken string) (int, string, []string, error) {
+func (c *AuthRpcClient) Validate(ctx context.Context, jwtToken string) (int, string, []string, error) {
 	validated, err := c.client.Validate(ctx, &pb.ValidateRequest{
 		Token: jwtToken,
 	})

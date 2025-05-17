@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	redisKeyPagingListTour        = "v1_paging_tour_%d_%d_%s_%s" // v1_paging_tour_<limit>_<offset>_<sort_order>_<filter>
+	redisKeyPagingListTour        = "v1_paging_tour_%d_%d" // v1_paging_tour_<limit>_<offset>
 	redisKeyPagingListTourPattern = "v1_paging_tour_*"
 
 	redisKeyTourDetail        = "v1_tour_detail_%s" // v1_tour_<tour_id>
@@ -19,7 +19,7 @@ const (
 )
 
 func redisPagingListTour(paging *paging.Paging) string {
-	return fmt.Sprintf(redisKeyPagingListTour, paging.Limit, paging.Offset, paging.SortOrder, paging.Filter)
+	return fmt.Sprintf(redisKeyPagingListTour, paging.Limit, paging.Offset)
 }
 
 func redisTourDetail(tourId string) string {

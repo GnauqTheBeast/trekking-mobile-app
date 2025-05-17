@@ -17,5 +17,8 @@ namespace PaymentService.Application.Interfaces
         // Booking payment methods
         Task<Payment> CreatePaymentFromBookingAsync(Guid bookingId);
         Task<Payment> ProcessPaymentAsync(Guid paymentId);
+
+        // Get user id by payment id
+        Task<Guid> GetUserIdByPaymentIdAsync(Guid paymentId);
     }
 } 

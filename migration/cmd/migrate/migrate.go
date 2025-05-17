@@ -3,7 +3,6 @@ package migrate
 import (
 	"database/sql"
 	"fmt"
-	"os"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -56,7 +55,7 @@ func NewCommand() *cli.Command {
 }
 
 func start(c *cli.Context) error {
-	db, err := sql.Open(os.Getenv(envDBConnection), os.Getenv(envDBDataSourceName))
+	db, err := sql.Open("postgres", "postgres://postgres:postgres@localhost:2912/trekking-app?sslmode=disable")
 	if err != nil {
 		return err
 	}

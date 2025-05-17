@@ -231,5 +231,16 @@ namespace PaymentService.Application.Services
 
             return payment;
         }
+
+        public async Task<Guid> GetUserIdByPaymentIdAsync(Guid paymentId)
+        {
+            var payment = await _paymentRepository.GetByIdAsync(paymentId);
+            if (payment == null)
+                throw new InvalidOperationException("Payment not found");
+            var booking = await _bookingRepository.GetByIdAsync(payment.BookingId);
+            if (booking == null)
+                throw new InvalidOperationException("Booking not found");
+            return booking.UserId;
+        }
     }
 } 

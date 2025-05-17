@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using Newtonsoft.Json;
 using PaymentService.Core.Models;
+using PaymentService.Api.Models;
 
 namespace PaymentService.Api.Services
 {
@@ -21,12 +22,23 @@ namespace PaymentService.Api.Services
             _logger = logger;
         }
 
-        public async Task PublishPaymentSuccessAsync(Payment payment)
+        public async Task PublishPaymentSuccessAsync(Payment payment, Guid userId)
         {
             try
             {
                 var subscriber = _redis.GetSubscriber();
-                var message = JsonConvert.SerializeObject(payment);
+                var message = JsonConvert.SerializeObject(new PaymentNotification
+                {
+                    Id = payment.Id,
+                    BookingId = payment.BookingId,
+                    Total = payment.Total,
+                    Method = payment.Method,
+                    Type = payment.Type,
+                    Status = payment.Status,
+                    CreatedAt = payment.CreatedAt,
+                    UpdatedAt = payment.UpdatedAt,
+                    UserId = userId
+                });
                 await subscriber.PublishAsync(PaymentSuccessTopic, message);
                 _logger.LogInformation($"Published payment success message for payment {payment.Id}");
             }

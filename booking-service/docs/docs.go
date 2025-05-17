@@ -15,8 +15,13 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/bookings": {
+        "/api/v1/booking/create": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Gửi yêu cầu đặt tour",
                 "consumes": [
                     "application/json"
@@ -58,8 +63,46 @@ const docTemplate = `{
                 }
             }
         },
-        "/bookings/{id}": {
+        "/api/v1/booking/ping-notification": {
             "get": {
+                "description": "Send a ping message to notification service via Redis",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Notification"
+                ],
+                "summary": "Ping notification service",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/booking/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Truy vấn chi tiết booking theo ID",
                 "consumes": [
                     "application/json"
@@ -108,8 +151,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/bookings/{id}/cancel": {
+        "/api/v1/booking/{id}/cancel": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Hủy booking theo ID",
                 "consumes": [
                     "application/json"
@@ -161,19 +209,87 @@ const docTemplate = `{
     },
     "definitions": {
         "entity.Booking": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2025-05-11T15:04:05Z"
+                },
+                "expired_at": {
+                    "type": "string",
+                    "example": "2025-06-30T15:04:05Z"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174000"
+                },
+                "porter_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174003"
+                },
+                "quantity": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "status": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entity.BookingStatus"
+                        }
+                    ],
+                    "example": "PENDING"
+                },
+                "total_price": {
+                    "type": "integer",
+                    "example": 1500000
+                },
+                "tour_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174002"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2025-05-12T10:00:00Z"
+                },
+                "user_id": {
+                    "type": "string",
+                    "example": "123e4567-e89b-12d3-a456-426614174001"
+                }
+            }
+        },
+        "entity.BookingStatus": {
+            "type": "string",
+            "enum": [
+                "EXPIRED",
+                "PENDING",
+                "CANCEL",
+                "SUCCESS"
+            ],
+            "x-enum-varnames": [
+                "BookingStatusExpired",
+                "BookingStatusPending",
+                "BookingStatusCancel",
+                "BookingStatusSuccess"
+            ]
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "1.0",
 	Host:             "",
-	BasePath:         "",
+	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "Booking API",
+	Description:      "API cho hệ thống booking tour",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

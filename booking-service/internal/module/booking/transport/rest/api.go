@@ -3,11 +3,18 @@ package rest
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
+
+	"github.com/trekking-mobile-app/internal/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/trekking-mobile-app/internal/module/booking/entity"
+)
+
+const (
+	createBookingPermission = "create_booking"
 )
 
 type Business interface {
@@ -36,9 +43,27 @@ func NewAPI(biz Business) *api {
 // @Param booking body entity.Booking true "Thông tin booking"
 // @Success 202 {object} entity.Booking
 // @Failure 400 {object} map[string]string
-// @Router /bookings [post]
+// @Security BearerAuth
+// @Router /api/v1/booking/create [post]
 func (a *api) CreateBookingHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		_, exist := c.Get("userRole")
+		if !exist {
+			responseUnauthorized(c, fmt.Errorf("user role not found in context"))
+			return
+		}
+
+		userPermissions, exist := c.Get("userPermissions")
+		if !exist {
+			responseUnauthorized(c, fmt.Errorf("user permissions not found in context"))
+			return
+		}
+
+		if !utils.CheckUserPermission(createBookingPermission, userPermissions.([]string)) {
+			responseForbidden(c, fmt.Errorf("user does not have permission to create tour"))
+			return
+		}
+
 		data := new(entity.Booking)
 		data.Id = uuid.New()
 		if err := c.ShouldBindJSON(&data); err != nil {
@@ -67,7 +92,8 @@ func (a *api) CreateBookingHdl() gin.HandlerFunc {
 // @Success 200 {object} entity.Booking
 // @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
-// @Router /bookings/{id} [get]
+// @Security BearerAuth
+// @Router /api/v1/booking/{id} [get]
 func (a *api) GetBookingByIdHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		bookingId := c.Param("id")
@@ -103,9 +129,27 @@ func (a *api) GetBookingByIdHdl() gin.HandlerFunc {
 // @Success 200 {object} entity.Booking
 // @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
-// @Router /bookings/{id}/cancel [post]
+// @Security BearerAuth
+// @Router /api/v1/booking/{id}/cancel [post]
 func (a *api) CancelBookingHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		_, exist := c.Get("userRole")
+		if !exist {
+			responseUnauthorized(c, fmt.Errorf("user role not found in context"))
+			return
+		}
+
+		userPermissions, exist := c.Get("userPermissions")
+		if !exist {
+			responseUnauthorized(c, fmt.Errorf("user permissions not found in context"))
+			return
+		}
+
+		if !utils.CheckUserPermission(createBookingPermission, userPermissions.([]string)) {
+			responseForbidden(c, fmt.Errorf("user does not have permission to create tour"))
+			return
+		}
+
 		bookingId := c.Param("id")
 		if bookingId == "" {
 			responseError(c, errors.New("bookingId id required"))
@@ -134,10 +178,9 @@ func (a *api) CancelBookingHdl() gin.HandlerFunc {
 // @Tags         Notification
 // @Accept       json
 // @Produce      json
-// @Param        ping  body     Ping  true  "Ping message"
 // @Success      200   {object} map[string]interface{}
 // @Failure      400   {object} map[string]string
-// @Router       /notification/ping [post]
+// @Router /api/v1/booking/ping-notification [get]
 func (a *api) PingNotificationServiceHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		err := a.biz.PingNotificationService(c)

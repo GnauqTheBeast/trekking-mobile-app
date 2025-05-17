@@ -38,11 +38,16 @@ func (repo *repository) GetBookingById(ctx context.Context, bookingID string) (*
 		return nil, err
 	}
 
+	var porterIdPtr *uuid.UUID
+	if result.PorterID.Valid {
+		porterIdPtr = &result.PorterID.UUID
+	}
+
 	return &entity.Booking{
 		Id:         result.ID,
 		UserId:     result.UserID,
 		TourId:     result.TourID,
-		PorterId:   result.PorterID,
+		PorterId:   porterIdPtr,
 		Quantity:   int(result.Quantity),
 		TotalPrice: result.TotalPrice,
 		CreatedAt:  result.CreatedAt,
@@ -51,23 +56,33 @@ func (repo *repository) GetBookingById(ctx context.Context, bookingID string) (*
 }
 
 func (repo *repository) InsertNewBooking(ctx context.Context, booking *entity.Booking) (*entity.Booking, error) {
+	porterID := uuid.NullUUID{}
+	if booking.PorterId != nil {
+		porterID = uuid.NullUUID{UUID: *booking.PorterId, Valid: true}
+	}
+
 	newBooking, err := repo.queries.CreateBooking(ctx, &sqlc.CreateBookingParams{
 		ID:         booking.Id,
 		UserID:     booking.UserId,
 		TourID:     booking.TourId,
-		PorterID:   booking.PorterId,
-		TotalPrice: booking.TotalPrice,
+		PorterID:   porterID,
 		Quantity:   int32(booking.Quantity),
+		TotalPrice: booking.TotalPrice,
 	})
 	if err != nil {
 		return nil, err
+	}
+
+	var porterIdPtr *uuid.UUID
+	if newBooking.PorterID.Valid {
+		porterIdPtr = &newBooking.PorterID.UUID
 	}
 
 	return &entity.Booking{
 		Id:         newBooking.ID,
 		UserId:     newBooking.UserID,
 		TourId:     newBooking.TourID,
-		PorterId:   newBooking.PorterID,
+		PorterId:   porterIdPtr,
 		Quantity:   int(newBooking.Quantity),
 		TotalPrice: newBooking.TotalPrice,
 		CreatedAt:  newBooking.CreatedAt,
@@ -86,11 +101,16 @@ func (repo *repository) UpdateBookingStatus(ctx context.Context, bookingId uuid.
 		return nil, err
 	}
 
+	var porterIdPtr *uuid.UUID
+	if booking.PorterID.Valid {
+		porterIdPtr = &booking.PorterID.UUID
+	}
+
 	return &entity.Booking{
 		Id:         booking.ID,
 		UserId:     booking.UserID,
 		TourId:     booking.TourID,
-		PorterId:   booking.PorterID,
+		PorterId:   porterIdPtr,
 		Quantity:   int(booking.Quantity),
 		Status:     entity.BookingStatus(booking.Status),
 		TotalPrice: booking.TotalPrice,

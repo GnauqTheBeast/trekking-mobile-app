@@ -1,10 +1,14 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "API cho hệ thống booking tour",
+        "title": "Tour API",
+        "contact": {},
+        "version": "1.0"
     },
+    "basePath": "/api/v1",
     "paths": {
-        "/tours": {
+        "/api/v1/tours": {
             "get": {
                 "description": "Lấy danh sách tour theo phân trang",
                 "consumes": [
@@ -27,7 +31,7 @@
                     {
                         "type": "integer",
                         "description": "Số lượng mỗi trang",
-                        "name": "limit",
+                        "name": "size",
                         "in": "query"
                     }
                 ],
@@ -53,6 +57,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "API tạo tour du lịch mới",
                 "consumes": [
                     "application/json"
@@ -94,7 +103,7 @@
                 }
             }
         },
-        "/tours/{id}": {
+        "/api/v1/tours/{id}": {
             "get": {
                 "description": "Lấy chi tiết tour theo ID",
                 "consumes": [
@@ -135,6 +144,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Xóa tour theo ID",
                 "consumes": [
                     "application/json"
@@ -177,6 +191,11 @@
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Cập nhật tour theo ID",
                 "consumes": [
                     "application/json"
@@ -351,6 +370,13 @@
                 "TourStatusPublished",
                 "TourStatusArchived"
             ]
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }
