@@ -58,8 +58,25 @@ const AccountScreen: React.FC = () => {
   };
 
   const handlePressMenuItem = (title: string) => {
-    if(title === 'My profile') navigation.navigate('MyProfileScreen')
-    else console.log(title)
+    switch(title) {
+      case 'My profile':
+        navigation.navigate('MyProfileScreen');
+        break;
+      case 'Rewards & Wallet':
+        // Show wallet options
+        break;
+      case 'Nạp tiền':
+        navigation.navigate('WalletDeposit');
+        break;
+      case 'Rút tiền':
+        navigation.navigate('WalletWithdrawal');
+        break;
+      case 'Lịch sử giao dịch':
+        navigation.navigate('WalletHistory');
+        break;
+      default:
+        console.log(title);
+    }
   }
 
   const MenuItem = ({ icon, size, title, showArrow = true }: { icon: string, size: number, title: string, showArrow?: boolean }) => (
@@ -124,6 +141,13 @@ const AccountScreen: React.FC = () => {
             <View style={styles.menuContainer}>
                 <MenuItem icon="account" size={28} title="My profile" />
                 <MenuItem icon="credit-card-outline" size={26} title="Rewards & Wallet" />
+                {isLoggedIn && (
+                  <>
+                    <MenuItem icon="cash-plus" size={26} title="Nạp tiền" />
+                    <MenuItem icon="cash-minus" size={26} title="Rút tiền" />
+                    <MenuItem icon="history" size={26} title="Lịch sử giao dịch" />
+                  </>
+                )}
                 <MenuItem icon="star-box" size={28} title="My reviews" />
                 <MenuItem icon="bell" size={26} title="Notifications" />
                 <MenuItem icon="help-circle" size={26} title="Help" />
