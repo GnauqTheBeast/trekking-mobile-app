@@ -32,16 +32,33 @@ const LoginScreen: React.FC = () => {
       return;
     }
     try {
-      const response = await axios.post('http://10.0.2.2:3001/auth/login', {
-        email,
-        password,
-      });
-      console.log(response)
-      const token = response.data?.token;
-      const user = response.data?.user;
+      // Mock login data
+      const mockUser = {
+        id: '1',
+        email: email,
+        fullName: 'Nguyễn Văn A',
+        phone: '0123456789',
+        avatar: 'https://example.com/avatar.jpg',
+        isVerified: true,
+        walletBalance: 5000000,
+        bankAccounts: [
+          {
+            id: '1',
+            bankName: 'Vietcombank',
+            accountNumber: '1234567890',
+            accountHolder: 'NGUYEN VAN A'
+          },
+          {
+            id: '2',
+            bankName: 'Techcombank',
+            accountNumber: '0987654321',
+            accountHolder: 'NGUYEN VAN A'
+          }
+        ]
+      };
 
-      await AsyncStorage.setItem('token', token);
-      await AsyncStorage.setItem('user', JSON.stringify(user))
+      await AsyncStorage.setItem('token', 'mock-token');
+      await AsyncStorage.setItem('user', JSON.stringify(mockUser));
 
       Alert.alert('Thành công', 'Đăng nhập thành công!');
 
@@ -50,8 +67,7 @@ const LoginScreen: React.FC = () => {
         params: {screen: 'HomeScreen'}
       });
     } catch (error: any) {
-      // Xử lý lỗi từ API
-      const errorMessage = error.response?.data?.message || 'Đăng nhập thất bại. Vui lòng thử lại.';
+      const errorMessage = 'Đăng nhập thất bại. Vui lòng thử lại.';
       Alert.alert('Lỗi', errorMessage);
     }
   };
