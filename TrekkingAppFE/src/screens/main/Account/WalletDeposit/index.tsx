@@ -74,7 +74,7 @@ const WalletDeposit = () => {
             
             <View style={styles.qrContainer}>
               <Image
-                source={require('../../../../assets/images/vietcombank-qr.png')}
+                source={require('../../../../assets/images/qr-code.png')}
                 style={styles.qrCode}
                 resizeMode="contain"
               />
