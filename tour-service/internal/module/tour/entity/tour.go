@@ -41,6 +41,13 @@ type TourPatchData struct {
 	Status      TourStatus `json:"status,omitempty" binding:"omitempty,oneof=draft published archived"`
 	Price       int        `json:"price" binding:"required,gt=0"`
 	Slot        int        `json:"slot" binding:"required"`
+	Level       string     `json:"level" binding:"required"`
+	Distance    int        `json:"distance" binding:"required"`
+	Elevation   int        `json:"elevation" binding:"required"`
+	Duration    string     `json:"duration" binding:"required"`
+	Location    string     `json:"location" binding:"required"`
+	Images      string     `json:"images" binding:"required"`
+	Rate        string     `json:"rate" binding:"required"`
 	TimeStart   time.Time  `json:"start" binding:"required"`
 	TimeEnd     time.Time  `json:"end" binding:"required"`
 }
