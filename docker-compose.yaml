@@ -59,7 +59,7 @@ services:
     container_name: app_payment_service
     build:
       context: ./payment-service
-      dockerfile: PaymentService.Api/Dockerfile
+      dockerfile: Dockerfile
     networks:
       - app
     ports:

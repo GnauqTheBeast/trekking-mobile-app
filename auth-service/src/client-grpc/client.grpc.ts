@@ -10,7 +10,7 @@ export const ClientGrpcModule = ClientsModule.register([
         options: {
             package: USER_PACKAGE_NAME,
             protoPath: join(__dirname, '../../src/proto/user.proto'),
-            url: 'user-service:50052'
+            url: '0.0.0.0:50052'
         }
     },
 ])

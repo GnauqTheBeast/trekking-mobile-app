@@ -1,5 +1,5 @@
 import { IsDate, IsEmail, IsOptional, IsString } from "class-validator";
-import { CreateRequest, CheckLoginRequest } from "../interface/user.interface";
+import { CreateRequest, CheckLoginRequest } from "../../../interface-proto/user.interface";
 
 export class CreateRequestDto implements CreateRequest {
     @IsEmail()
@@ -44,8 +44,17 @@ export class UpdateRequestDto {
 }
 
 export class ChangePasswordRequestDto {
+
     @IsString()
     oldPassword: string;
+
+    @IsString()
+    newPassword: string
+}
+
+export class ResetPasswordRequestDto {
+    @IsEmail()
+    email: string
 
     @IsString()
     newPassword: string

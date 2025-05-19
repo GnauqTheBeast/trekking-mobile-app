@@ -26,6 +26,12 @@ export class User {
     @Column({ type: 'date', nullable: true })
     dob: Date;
 
+    @Column({type: 'varchar'})
+    gender: string
+
+    @Column({type: 'text'})
+    image: string
+
     @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
     createdAt: Date;
 

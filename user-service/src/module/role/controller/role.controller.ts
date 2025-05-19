@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Inject, Param, Post, Put } from '@nestjs/common';
 import { RoleService } from '../service/role.service';
-import { GetRoleIdReponse, GetRoleIdRequest, GetRoleNameRequest, ROLE_SERVICE_NAME, RoleServiceController, RoleServiceControllerMethods, getRoleNameReponse } from '../interface/role.interface';
+import { GetRoleIdReponse, GetRoleIdRequest, GetRoleNameRequest, ROLE_SERVICE_NAME, RoleServiceController, RoleServiceControllerMethods, getRoleNameReponse } from '../../../interface-proto/role.interface';
 import { GrpcMethod } from '@nestjs/microservices';
 import { CreateRequest, ResponseDataDto, ResponseDto, UpdateRequest } from '../dto/role.dto';
 

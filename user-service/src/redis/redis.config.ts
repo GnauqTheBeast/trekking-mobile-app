@@ -8,8 +8,8 @@ export class RedisConfig implements OnModuleInit, OnModuleDestroy {
   constructor(){
     this.client = createClient({
       socket: {
-        host: 'redis',
-        port: 6379
+        host: 'localhost',
+        port: 6380
       },
     });
   }

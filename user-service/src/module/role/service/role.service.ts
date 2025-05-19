@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from '../entities/role.entity';
 import { Repository } from 'typeorm';
-import { GetRoleIdReponse, GetRoleIdRequest, GetRoleNameRequest, getRoleNameReponse } from '../interface/role.interface';
+import { GetRoleIdReponse, GetRoleIdRequest, GetRoleNameRequest, getRoleNameReponse } from '../../../interface-proto/role.interface';
 import { RpcException } from '@nestjs/microservices';
 import { CreateRequest, ResponseDataDto, ResponseDto, UpdateRequest } from '../dto/role.dto';
 

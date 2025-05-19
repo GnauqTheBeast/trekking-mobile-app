@@ -1,8 +1,8 @@
-import { Body, Controller, Delete, Get, Inject, Param, Put } from '@nestjs/common';
-import { CheckExistByEmailRequest, CheckExistByEmailResponse, CheckLoginResponse, GetByIdRequest, GetByIdResponse, USER_SERVICE_NAME, UserServiceControllerMethods } from '../interface/user.interface';
+import { Body, Controller, Delete, Get, Inject, Param, Post, Put } from '@nestjs/common';
+import { CheckExistByEmailRequest, CheckExistByEmailResponse, CheckLoginResponse, GetByIdRequest, GetByIdResponse, USER_SERVICE_NAME, UserServiceControllerMethods } from '../../../interface-proto/user.interface';
 import { UserService } from '../service/user.service';
 import { GrpcMethod } from '@nestjs/microservices';
-import { CheckLoginRequestDto, CreateRequestDto, ResponseDataDto, ResponseDto } from '../dto/user.dto';
+import { ChangePasswordRequestDto, CheckLoginRequestDto, CreateRequestDto, ResetPasswordRequestDto, ResponseDataDto, ResponseDto } from '../dto/user.dto';
 import { User } from '../entities/user.entity';
 
 @Controller('user')
@@ -59,5 +59,21 @@ export class UserController {
     ): Promise<ResponseDto> {
         return await this.userService.delete(id);
     }
+
+    @Post('change-password/:userId')
+    async changePassword(
+        @Param('userId') id: string,
+        @Body() request: ChangePasswordRequestDto
+    ) {
+        return await this.userService.changePassword(id, request);
+    }
+
+    @Post('reset-password')
+    async resetPassword(
+        @Body() request: ResetPasswordRequestDto
+    ): Promise<ResponseDto>{
+        return await this.userService.resetPassword(request);
+    }
+
 
 }
