@@ -43,9 +43,11 @@ func NewWSHandler(biz Business) *WS {
 }
 
 func (w *WS) WsHandler(c *gin.Context) {
-	token := c.GetHeader("Authorization")
+	token := c.Query("token")
 	if token == "" {
-		token = c.Query("token")
+		fmt.Println("token is empty")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "no token provided"})
+		return
 	}
 
 	userId, err := utils.ValidateToken(token)
