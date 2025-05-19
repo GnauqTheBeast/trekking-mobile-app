@@ -29,6 +29,6 @@ func startRouteV1(group *gin.RouterGroup) {
 	{
 		noti.GET("/ping", api.PingHealthCheckHdl())
 		noti.GET("/:userId", api.GetUserNotificationsHdl())
-		noti.POST("/:notificationId", api.ReadNotificationHdl())
+		noti.PUT("/:notificationId/read", api.ReadNotificationHdl())
 	}
 }
