@@ -10,6 +10,7 @@ import (
 type Repository interface {
 	GetUserNotifications(ctx context.Context, userId uuid.UUID) ([]*entity.Notification, error)
 	InsertNotification(ctx context.Context, notification *entity.Notification) (*entity.Notification, error)
+	UpdateNotification(ctx context.Context, notificationId string) error
 }
 
 type business struct {
@@ -32,4 +33,8 @@ func (b *business) GetUserNotifications(ctx context.Context, userId string) ([]*
 		return nil, err
 	}
 	return b.repo.GetUserNotifications(ctx, id)
+}
+
+func (b *business) ReadNotification(ctx context.Context, notificationId string) error {
+	return b.repo.UpdateNotification(ctx, notificationId)
 }

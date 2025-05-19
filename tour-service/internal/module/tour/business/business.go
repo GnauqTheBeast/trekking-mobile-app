@@ -26,6 +26,7 @@ type Repository interface {
 	UpdateTour(ctx context.Context, tourId string, data *entity.TourPatchData) error
 	DeleteTour(ctx context.Context, tourId string) error
 	UpdateTourAvailableSlot(ctx context.Context, tourId string, availableSlot int) (*entity.Tour, error)
+	ListToursByHostId(ctx context.Context, hostId string) ([]*entity.Tour, error)
 }
 
 type business struct {
@@ -48,9 +49,11 @@ func (b *business) CreateNewTour(ctx context.Context, data *entity.Tour) (*entit
 	if data.Name == "" || len(data.Name) < 3 {
 		return nil, fmt.Errorf("%w: title must be at least 3 characters", ErrInvalidTourData)
 	}
+
 	if data.Description == "" || len(data.Description) < 10 {
 		return nil, fmt.Errorf("%w: description must be at least 10 characters", ErrInvalidTourData)
 	}
+
 	if data.Status == "" {
 		data.Status = entity.TourStatusDraft
 	}
@@ -65,6 +68,15 @@ func (b *business) ListTours(ctx context.Context, paging *paging.Paging) ([]*ent
 	tours, err := caching.FetchFromCallback(b.cache, redisPagingListTour(paging), pagingListTourTTL, func() ([]*entity.Tour, error) {
 		return b.repository.ListTours(ctx, paging)
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	return tours, nil
+}
+
+func (b *business) ListToursByHostId(ctx context.Context, hostId string) ([]*entity.Tour, error) {
+	tours, err := b.repository.ListToursByHostId(ctx, hostId)
 	if err != nil {
 		return nil, err
 	}

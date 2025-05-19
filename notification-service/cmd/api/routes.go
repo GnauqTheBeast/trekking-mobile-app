@@ -12,22 +12,26 @@ import (
 type API interface {
 	PingHealthCheckHdl() gin.HandlerFunc
 	GetUserNotificationsHdl() gin.HandlerFunc
-	CreateNotificationHdl() gin.HandlerFunc
+	ReadNotificationHdl() gin.HandlerFunc
 }
 
 func RegisterRoutes(router *gin.Engine, ws *ws.WS) {
 	router.GET("/ws", ws.WsHandler)
-	startRouteV1(router.Group("/api/v1"))
+	startRouteV1(router.Group("/api/v1"), ws)
 }
 
-func startRouteV1(group *gin.RouterGroup) {
+func startRouteV1(group *gin.RouterGroup, ws *ws.WS) {
 	repo := repository.NewPostgresRepo(context.GetSQLClient())
 	biz := business.NewBusiness(repo)
 	api := rest.NewAPI(biz)
 
 	noti := group.Group("/notifications")
 	{
+		noti.GET("mock", func(c *gin.Context) {
+			ws.SendMockNotification()
+		})
 		noti.GET("/ping", api.PingHealthCheckHdl())
 		noti.GET("/:userId", api.GetUserNotificationsHdl())
+		noti.PUT("/:notificationId/read", api.ReadNotificationHdl())
 	}
 }

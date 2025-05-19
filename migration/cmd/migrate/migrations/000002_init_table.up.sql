@@ -7,6 +7,8 @@ CREATE TABLE "user" (
                         "role_id" uuid,
                         "address" text NOT NULL,
                         "dob" date,
+                        "gender" varchar NOT NULL,
+                        "image" varchar,
                         "provider_id" uuid,
                         "created_at" timestamptz NOT NULL DEFAULT (now()),
                         "updated_at" timestamptz NOT NULL DEFAULT (now())
@@ -43,14 +45,27 @@ CREATE TABLE "tour" (
                         "name" varchar NOT NULL,
                         "description" text NOT NULL,
                         "host_id" uuid NOT NULL,
+                        "price" int NOT NULL,
+                        "level" varchar NOT NULL,
+                        "distance" int NOT NULL,
+                        "elevation" int NOT NULL,
+                        "duration" varchar NOT NULL,
+                        "location" varchar NOT NULL,
+                        "images" varchar NOT NULL,
+                        "rate" varchar NOT NULL,
                         "slot" int NOT NULL,
                         "available_slot" int NOT NULL,
-                        "price" int NOT NULL,
                         "status" "TourStatus" NOT NULL,
                         "start_at" timestamptz NOT NULL,
                         "end_at" timestamptz NOT NULL,
                         "created_at" timestamptz NOT NULL DEFAULT (now()),
                         "updated_at" timestamptz NOT NULL DEFAULT (now())
+);
+
+CREATE TABLE "favorite" (
+                        "id" uuid PRIMARY KEY,
+                        "tour_id" uuid NOT NULL,
+                        "user_id" uuid NOT NULL
 );
 
 CREATE TABLE "booking" (
@@ -92,6 +107,7 @@ CREATE TABLE "notification" (
                                 "user_id" uuid NOT NULL,
                                 "name" varchar NOT NULL,
                                 "description" text NOT NULL,
+                                "is_read" boolean NOT NULL,
                                 "created_at" timestamptz NOT NULL DEFAULT (now()),
                                 "updated_at" timestamptz NOT NULL DEFAULT (now())
 );
@@ -118,3 +134,7 @@ ALTER TABLE "payment" ADD FOREIGN KEY ("booking_id") REFERENCES "booking" ("id")
 ALTER TABLE "rating" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("id");
 
 ALTER TABLE "rating" ADD FOREIGN KEY ("booking_id") REFERENCES "booking" ("id");
+
+ALTER TABLE "favorite" ADD FOREIGN KEY ("tour_id") REFERENCES "tour" ("id");
+
+ALTER TABLE "favorite" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("id");

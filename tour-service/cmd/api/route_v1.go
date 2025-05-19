@@ -15,6 +15,7 @@ type API interface {
 	GetTourHdl() gin.HandlerFunc
 	UpdateTourHdl() gin.HandlerFunc
 	DeleteTourHdl() gin.HandlerFunc
+	ListTourByHostIdHdl() gin.HandlerFunc
 }
 
 func startRouteV1(group *gin.RouterGroup) {
@@ -36,5 +37,11 @@ func startRouteV1(group *gin.RouterGroup) {
 			authTours.PATCH("/:id", tourService.UpdateTourHdl())  // /api/v1/tours/:id
 			authTours.DELETE("/:id", tourService.DeleteTourHdl()) // /api/v1/tours/:id
 		}
+	}
+
+	host := group.Group("/:hostId")
+	host.Use(middleware.RequireAuth(authGrpcClient()))
+	{
+		host.GET("/tours", tourService.ListTourByHostIdHdl())
 	}
 }

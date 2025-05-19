@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"context"
+	"time"
 
 	"github.com/trekking-mobile-app/internal/module/tour/entity"
 	"github.com/trekking-mobile-app/proto/pb"
@@ -32,13 +33,22 @@ func (t *TourServiceServer) CheckTourExist(ctx context.Context, req *pb.TourReq)
 	return &pb.TourResp{
 		TourId:        tour.ID.String(),
 		Name:          tour.Name,
-		Slot:          tour.Slot,
-		AvailableSlot: tour.AvailableSlot,
+		Description:   tour.Description,
 		HostId:        tour.HostID.String(),
+		Slot:          int32(tour.Slot),
+		AvailableSlot: int32(tour.AvailableSlot),
 		Status:        string(tour.Status),
-		Price:         tour.Price,
-		StartAt:       tour.TimeStart.String(),
-		EndAt:         tour.TimeEnd.String(),
+		StartAt:       tour.TimeStart.Format(time.RFC3339),
+		EndAt:         tour.TimeEnd.Format(time.RFC3339),
+		Price:         int32(tour.Price),
+		Duration:      tour.Duration,
+		Distance:      int32(tour.Distance),
+		Elevation:     int32(tour.Elevation),
+		Location:      tour.Location,
+		Images:        tour.Images,
+		Rate:          tour.Rate,
+		CreatedAt:     tour.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:     tour.UpdatedAt.Format(time.RFC3339),
 	}, nil
 }
 
@@ -51,12 +61,21 @@ func (t *TourServiceServer) UpdateTourAvailableSlot(ctx context.Context, req *pb
 	return &pb.AvailableSlotResp{
 		TourId:        tour.ID.String(),
 		Name:          tour.Name,
-		Slot:          tour.Slot,
-		AvailableSlot: tour.AvailableSlot,
+		Description:   tour.Description,
 		HostId:        tour.HostID.String(),
+		Slot:          int32(tour.Slot),
+		AvailableSlot: int32(tour.AvailableSlot),
 		Status:        string(tour.Status),
-		Price:         tour.Price,
-		StartAt:       tour.TimeStart.String(),
-		EndAt:         tour.TimeEnd.String(),
+		StartAt:       tour.TimeStart.Format(time.RFC3339),
+		EndAt:         tour.TimeEnd.Format(time.RFC3339),
+		Price:         int32(tour.Price),
+		Duration:      tour.Duration,
+		Distance:      int32(tour.Distance),
+		Elevation:     int32(tour.Elevation),
+		Location:      tour.Location,
+		Images:        tour.Images,
+		Rate:          tour.Rate,
+		CreatedAt:     tour.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:     tour.UpdatedAt.Format(time.RFC3339),
 	}, nil
 }

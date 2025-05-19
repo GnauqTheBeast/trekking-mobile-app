@@ -7,23 +7,35 @@ definitions:
       created_at:
         type: string
       description:
-        minLength: 10
         type: string
-      end:
+      distance:
+        type: integer
+      duration:
+        type: string
+      elevation:
+        type: integer
+      end_at:
         type: string
       host_id:
         type: string
       id:
         type: string
+      images:
+        type: string
+      level:
+        type: string
+      location:
+        type: string
       name:
         maxLength: 255
-        minLength: 3
         type: string
       price:
         type: integer
+      rate:
+        type: string
       slot:
         type: integer
-      start:
+      start_at:
         type: string
       status:
         allOf:
@@ -37,19 +49,25 @@ definitions:
     required:
     - available_slot
     - description
-    - end
+    - distance
+    - duration
+    - elevation
+    - end_at
     - host_id
     - id
+    - images
+    - level
+    - location
     - name
     - price
+    - rate
     - slot
-    - start
+    - start_at
     - status
     type: object
   entity.TourPatchData:
     properties:
       description:
-        minLength: 10
         type: string
       end:
         type: string
@@ -68,7 +86,6 @@ definitions:
         - archived
       title:
         maxLength: 255
-        minLength: 3
         type: string
     required:
     - end
@@ -92,7 +109,7 @@ info:
   title: Tour API
   version: "1.0"
 paths:
-  /api/v1/tours:
+  /tours:
     get:
       consumes:
       - application/json
@@ -153,7 +170,7 @@ paths:
       summary: Tạo tour mới
       tags:
       - Tour
-  /api/v1/tours/{id}:
+  /tours/{id}:
     delete:
       consumes:
       - application/json

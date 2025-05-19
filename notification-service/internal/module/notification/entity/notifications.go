@@ -11,6 +11,7 @@ type Notification struct {
 	UserID      uuid.UUID `json:"user_id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
+	IsRead      bool      `json:"is_read"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
