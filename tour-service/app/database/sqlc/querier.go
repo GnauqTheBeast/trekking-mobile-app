@@ -13,6 +13,7 @@ import (
 type Querier interface {
 	CreateTour(ctx context.Context, arg *CreateTourParams) (*Tour, error)
 	DeleteTour(ctx context.Context, id uuid.UUID) error
+	GetTourByHostId(ctx context.Context, hostID uuid.UUID) ([]*Tour, error)
 	GetTourByID(ctx context.Context, id uuid.UUID) (*Tour, error)
 	ListTours(ctx context.Context, arg *ListToursParams) ([]*Tour, error)
 	UpdateAvailableSlot(ctx context.Context, arg *UpdateAvailableSlotParams) (*Tour, error)

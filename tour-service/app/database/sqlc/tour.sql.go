@@ -113,6 +113,54 @@ func (q *Queries) DeleteTour(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
+const getTourByHostId = `-- name: GetTourByHostId :many
+SELECT id, name, description, host_id, price, level, distance, elevation, duration, location, images, rate, slot, available_slot, status, start_at, end_at, created_at, updated_at FROM tour
+WHERE host_id = $1
+`
+
+func (q *Queries) GetTourByHostId(ctx context.Context, hostID uuid.UUID) ([]*Tour, error) {
+	rows, err := q.db.QueryContext(ctx, getTourByHostId, hostID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*Tour{}
+	for rows.Next() {
+		var i Tour
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.HostID,
+			&i.Price,
+			&i.Level,
+			&i.Distance,
+			&i.Elevation,
+			&i.Duration,
+			&i.Location,
+			&i.Images,
+			&i.Rate,
+			&i.Slot,
+			&i.AvailableSlot,
+			&i.Status,
+			&i.StartAt,
+			&i.EndAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getTourByID = `-- name: GetTourByID :one
 SELECT id, name, description, host_id, price, level, distance, elevation, duration, location, images, rate, slot, available_slot, status, start_at, end_at, created_at, updated_at FROM tour
 WHERE id = $1 LIMIT 1

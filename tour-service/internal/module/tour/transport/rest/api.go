@@ -23,6 +23,7 @@ type Business interface {
 	UpdateTour(ctx context.Context, tourId string, data *entity.TourPatchData) error
 	DeleteTour(ctx context.Context, tourId string) error
 	UpdateTourAvailableSlot(ctx context.Context, tourId string, lockedSlot int) (*entity.Tour, error)
+	ListToursByHostId(ctx context.Context, hostId string) ([]*entity.Tour, error)
 }
 
 type api struct {
@@ -32,6 +33,35 @@ type api struct {
 func NewAPI(biz Business) *api {
 	return &api{
 		biz: biz,
+	}
+}
+
+func (a *api) ListTourByHostIdHdl() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userRole, exist := c.Get("userRole")
+		if !exist {
+			responseUnauthorized(c, fmt.Errorf("user role not found in context"))
+			return
+		}
+
+		if userRole.(string) != "HOST" {
+			responseUnauthorized(c, fmt.Errorf("user is not authorized to perform this action"))
+			return
+		}
+
+		hostId := c.Param("hostId")
+		if hostId == "" {
+			responseErrorWithMessage(c, "invalid host id")
+		}
+
+		listTours, err := a.biz.ListToursByHostId(c, hostId)
+		if err != nil {
+			responseError(c, err)
+			return
+		}
+
+		responseSuccess(c, listTours)
+		return
 	}
 }
 

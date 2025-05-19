@@ -28,6 +28,10 @@ INSERT INTO tour (
 SELECT * FROM tour
 WHERE id = $1 LIMIT 1;
 
+-- name: GetTourByHostId :many
+SELECT * FROM tour
+WHERE host_id = $1;
+
 -- name: ListTours :many
 SELECT * FROM tour
 ORDER BY id

@@ -43,6 +43,24 @@ func (repo *repository) ListTours(ctx context.Context, paging *paging.Paging) ([
 	return result, nil
 }
 
+func (repo *repository) ListToursByHostId(ctx context.Context, hostId string) ([]*entity.Tour, error) {
+	id, err := uuid.Parse(hostId)
+	if err != nil {
+		return nil, err
+	}
+
+	tours, err := repo.queries.GetTourByHostId(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]*entity.Tour, len(tours))
+	for i, t := range tours {
+		result[i] = toEntityTour(t)
+	}
+	return result, nil
+}
+
 func (repo *repository) UpdateTour(ctx context.Context, tourId string, data *entity.TourPatchData) error {
 	if data == nil {
 		return ErrInvalidTourData
