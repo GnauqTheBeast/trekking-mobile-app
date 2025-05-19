@@ -7,6 +7,8 @@ CREATE TABLE "user" (
                         "role_id" uuid,
                         "address" text NOT NULL,
                         "dob" date,
+                        "gender" varchar NOT NULL,
+                        "image" varchar,
                         "provider_id" uuid,
                         "created_at" timestamptz NOT NULL DEFAULT (now()),
                         "updated_at" timestamptz NOT NULL DEFAULT (now())
