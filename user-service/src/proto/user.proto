@@ -51,9 +51,19 @@ message CheckLoginResponse {
     User user = 2;
 }
 
+message ChangeEmailRequest {
+    string id = 1;
+    string newEmail = 2;
+}
+
+message ChangeEmailResponse {
+    bool result = 1;
+}
+
 service UserService {
     rpc Create (CreateRequest) returns (google.protobuf.Empty);
     rpc GetById (GetByIdRequest) returns (GetByIdResponse);
     rpc CheckExistByEmail (CheckExistByEmailRequest) returns (CheckExistByEmailResponse);
     rpc CheckLogin (CheckLoginRequest) returns (CheckLoginResponse);
+    rpc ChangeEmail(ChangeEmailRequest) returns (ChangeEmailResponse);
 }

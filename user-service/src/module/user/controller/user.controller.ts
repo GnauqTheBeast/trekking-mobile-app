@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Inject, Param, Post, Put } from '@nestjs/common';
-import { CheckExistByEmailRequest, CheckExistByEmailResponse, CheckLoginResponse, GetByIdRequest, GetByIdResponse, USER_SERVICE_NAME, UserServiceControllerMethods } from '../../../interface-proto/user.interface';
+import { ChangeEmailRequest, ChangeEmailResponse, CheckExistByEmailRequest, CheckExistByEmailResponse, CheckLoginResponse, GetByIdRequest, GetByIdResponse, USER_SERVICE_NAME, UserServiceControllerMethods } from '../../../interface-proto/user.interface';
 import { UserService } from '../service/user.service';
 import { GrpcMethod } from '@nestjs/microservices';
 import { ChangePasswordRequestDto, CheckLoginRequestDto, CreateRequestDto, ResetPasswordRequestDto, ResponseDataDto, ResponseDto } from '../dto/user.dto';
@@ -30,6 +30,11 @@ export class UserController {
     @GrpcMethod(USER_SERVICE_NAME, 'checkLogin')
     async checkLogin(request: CheckLoginRequestDto): Promise<CheckLoginResponse> {
         return await this.userService.checkLogin(request)
+    }
+
+    @GrpcMethod(USER_SERVICE_NAME, 'changeEmail')
+    async changeEmail(request: ChangeEmailRequest): Promise<ChangeEmailResponse> {
+        return await this.userService.changeEmail(request);
     }
 
 

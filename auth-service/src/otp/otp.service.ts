@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { RedisService } from "src/redis/redis.service";
 
 @Injectable()
@@ -27,7 +27,7 @@ export class OtpService {
 
         const storedOtp = await this.redisService.get<string>(key);
         if(!storedOtp){
-            throw new BadRequestException("Expired OTP. Please try requesting a new OTP.")
+            throw new HttpException("Expired OTP. Please try requesting a new OTP.", HttpStatus.FORBIDDEN)
         }
 
         const attempts = await this.redisService.get<number>(attemptsKey) || 0;
@@ -36,10 +36,10 @@ export class OtpService {
             if(attempts + 1 === 5){
                 await this.redisService.del(key);
                 await this.redisService.del(attemptsKey);
-                throw new BadRequestException("Too many failed OTP attempts. Please try again later.")
+                throw new HttpException("Too many failed OTP attempts. Please try again later.", HttpStatus.FORBIDDEN)
             }
             await this.redisService.set(attemptsKey, attempts + 1, 300);
-            throw new BadRequestException("Invalid OTP. Please try again later.")
+            throw new HttpException("Invalid OTP. Please try again later.", HttpStatus.FORBIDDEN)
         }
 
         await this.redisService.del(key);

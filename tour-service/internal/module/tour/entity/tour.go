@@ -15,7 +15,7 @@ const (
 )
 
 type Tour struct {
-	ID            uuid.UUID  `json:"id" binding:"required"`
+	ID            uuid.UUID  `json:"id"`
 	Name          string     `json:"name" binding:"required,max=255"`
 	Description   string     `json:"description" binding:"required"`
 	HostID        uuid.UUID  `json:"host_id" binding:"required"`

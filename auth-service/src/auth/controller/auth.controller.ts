@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Headers, Post } from "@nestjs/common";
 import { AuthService } from "../service/auth.service";
 import {GrpcMethod} from '@nestjs/microservices'
 import {AUTH_SERVICE_NAME, AuthServiceController, AuthServiceControllerMethods, LoginResponse, RegisterResponse, ValidateResponse } from "../interface/auth.interface";
@@ -41,7 +41,7 @@ export class AuthController implements AuthServiceController {
 
     @Post('forgot-password')
     async forgotPassword(
-        @Body() {email}: {email: string}
+        @Body('email') email: string
     ): Promise<ResponseDto> {
         return this.authService.forgotPassword(email);
     }
@@ -52,6 +52,22 @@ export class AuthController implements AuthServiceController {
     ): Promise<ResponseDto> {
         return this.authService.verifyForgotOtp(email, otp);
     }
+
+    @Post('change-email')
+    async changeEmail(
+        @Body('email') email : string,
+        @Headers('authorization') authHeader: string
+    ): Promise<ResponseDto> {
+        return await this.authService.changeEmail(email, authHeader);
+    }
+
+    @Post('change-email/otp')
+    async verifyChangeEmailOtp(
+        @Body() {email, otp}: {email: string, otp: string}
+    ): Promise<ResponseDto> {
+        return this.authService.verifyChangeEmailOtp(email, otp);
+    }
+
 
     @GrpcMethod(AUTH_SERVICE_NAME, 'validate')
     async validate(

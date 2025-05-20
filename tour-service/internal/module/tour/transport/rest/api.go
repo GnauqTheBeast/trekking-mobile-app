@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/trekking-mobile-app/internal/utils"
-
 	"github.com/gin-gonic/gin"
 	"github.com/trekking-mobile-app/internal/module/tour/entity"
 	"github.com/trekking-mobile-app/internal/pkg/paging"
@@ -38,16 +36,16 @@ func NewAPI(biz Business) *api {
 
 func (a *api) ListTourByHostIdHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userRole, exist := c.Get("userRole")
-		if !exist {
-			responseUnauthorized(c, fmt.Errorf("user role not found in context"))
-			return
-		}
+		// userRole, exist := c.Get("userRole")
+		// if !exist {
+		// 	responseUnauthorized(c, fmt.Errorf("user role not found in context"))
+		// 	return
+		// }
 
-		if userRole.(string) != "HOST" {
-			responseUnauthorized(c, fmt.Errorf("user is not authorized to perform this action"))
-			return
-		}
+		// if userRole.(string) != "HOST" {
+		// 	responseUnauthorized(c, fmt.Errorf("user is not authorized to perform this action"))
+		// 	return
+		// }
 
 		hostId := c.Param("hostId")
 		if hostId == "" {
@@ -78,36 +76,38 @@ func (a *api) ListTourByHostIdHdl() gin.HandlerFunc {
 // @Router /tours [post]
 func (a *api) CreateTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userRole, exist := c.Get("userRole")
-		if !exist {
-			responseUnauthorized(c, fmt.Errorf("user role not found in context"))
-			return
-		}
+		// userRole, exist := c.Get("userRole")
+		// if !exist {
+		// 	responseUnauthorized(c, fmt.Errorf("user role not found in context"))
+		// 	return
+		// }
 
-		if userRole.(string) != "HOST" {
-			responseUnauthorized(c, fmt.Errorf("user is not authorized to perform this action"))
-			return
-		}
+		// if userRole.(string) != "HOST" {
+		// 	responseUnauthorized(c, fmt.Errorf("user is not authorized to perform this action"))
+		// 	return
+		// }
 
-		userPermissions, exist := c.Get("userPermissions")
-		if !exist {
-			responseUnauthorized(c, fmt.Errorf("user permissions not found in context"))
-			return
-		}
+		// userPermissions, exist := c.Get("userPermissions")
+		// if !exist {
+		// 	responseUnauthorized(c, fmt.Errorf("user permissions not found in context"))
+		// 	return
+		// }
 
-		if !utils.CheckUserPermission(createTourPermission, userPermissions.([]string)) {
-			responseForbidden(c, fmt.Errorf("user does not have permission to create tour"))
-			return
-		}
+		// if !utils.CheckUserPermission(createTourPermission, userPermissions.([]string)) {
+		// 	responseForbidden(c, fmt.Errorf("user does not have permission to create tour"))
+		// 	return
+		// }
 
 		data := new(entity.Tour)
 		if err := c.ShouldBindJSON(&data); err != nil {
+			fmt.Println("error", err)
 			responseError(c, err)
 			return
 		}
 
 		createdTour, err := a.biz.CreateNewTour(c, data)
 		if err != nil {
+			fmt.Println("error", err)
 			responseError(c, err)
 			return
 		}

@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
-import { CheckExistByEmailRequest, CheckExistByEmailResponse, CheckLoginResponse, GetByIdRequest, GetByIdResponse } from '../../../interface-proto/user.interface';
+import { ChangeEmailRequest, ChangeEmailResponse, CheckExistByEmailRequest, CheckExistByEmailResponse, CheckLoginResponse, GetByIdRequest, GetByIdResponse } from '../../../interface-proto/user.interface';
 import * as bcrypt from 'bcryptjs';
 import { ChangePasswordRequestDto, CheckLoginRequestDto, CreateRequestDto, ResetPasswordRequestDto, ResponseDataDto, ResponseDto } from '../dto/user.dto';
 import { RoleService } from 'src/module/role/service/role.service';
@@ -108,6 +108,17 @@ export class UserService {
             status: HttpStatus.OK,
             message: "Reset password successfully!"
         }
+    }
+
+    async changeEmail(request: ChangeEmailRequest): Promise<ChangeEmailResponse> {
+        const {id, newEmail} = request;
+        const result = await this.userRepository.update({id}, {email: newEmail})
+        if(result.affected === 0 || !result.affected) {
+            throw new RpcException('Update not successfully!')
+        }
+        return {
+            result: true
+        };
     }
 
     async getById(request: GetByIdRequest): Promise<GetByIdResponse> {
