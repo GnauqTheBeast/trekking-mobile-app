@@ -29,6 +29,12 @@ SET
     is_read = true
 WHERE id = $1;
 
+-- name: MarkNotificationsAsRead :exec
+UPDATE "notification"
+SET is_read = true,
+    updated_at = now()
+WHERE id = ANY($1::uuid[]) AND is_read = false;
+
 -- name: DeleteNotification :exec
 DELETE FROM "notification"
 WHERE id = $1;

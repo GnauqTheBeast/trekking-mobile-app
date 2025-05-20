@@ -13,6 +13,7 @@ type API interface {
 	PingHealthCheckHdl() gin.HandlerFunc
 	GetUserNotificationsHdl() gin.HandlerFunc
 	ReadNotificationHdl() gin.HandlerFunc
+	ReadAllNotificationHdl() gin.HandlerFunc
 }
 
 func RegisterRoutes(router *gin.Engine, ws *ws.WS) {
@@ -33,5 +34,6 @@ func startRouteV1(group *gin.RouterGroup, ws *ws.WS) {
 		noti.GET("/ping", api.PingHealthCheckHdl())
 		noti.GET("/:userId", api.GetUserNotificationsHdl())
 		noti.PUT("/:notificationId/read", api.ReadNotificationHdl())
+		noti.PUT("/read-all", api.ReadAllNotificationHdl())
 	}
 }

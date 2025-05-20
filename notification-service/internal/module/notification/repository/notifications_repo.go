@@ -47,12 +47,12 @@ func (repo *repository) GetUserNotifications(ctx context.Context, userId uuid.UU
 	return notifications, nil
 }
 
-func (repo *repository) UpdateNotification(ctx context.Context, notificationId string) error {
-	id, err := uuid.Parse(notificationId)
-	if err != nil {
-		return err
-	}
-	return repo.queries.ReadNotification(ctx, id)
+func (repo *repository) UpdateNotification(ctx context.Context, notificationId uuid.UUID) error {
+	return repo.queries.ReadNotification(ctx, notificationId)
+}
+
+func (repo *repository) UpdateAllNotifications(ctx context.Context, notificationIds []uuid.UUID) error {
+	return repo.queries.MarkNotificationsAsRead(ctx, notificationIds)
 }
 
 func toNotificationEntity(noti *sqlc.Notification) *entity.Notification {
