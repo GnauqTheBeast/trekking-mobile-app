@@ -16,8 +16,10 @@ message User {
     string dob = 4;
     string address = 5;
     string phoneNumber = 6;
-    Role role = 7;
-    repeated string permissions = 8;
+    string gender = 7;
+    string image = 8;
+    Role role = 9;
+    repeated string permissions = 10;
 }
 
 message CreateRequest {

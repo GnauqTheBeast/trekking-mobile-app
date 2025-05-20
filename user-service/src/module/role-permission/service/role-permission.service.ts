@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { RolePermission } from '../entities/role-permisson.entity';
 import { RedisService } from 'src/redis/redis.service';
 
-import { GetAllPermissionByRoleIdRequest, GetAllPermissionByRoleIdResponse } from '../interface/role-permission.interface';
+import { GetAllPermissionByRoleIdRequest, GetAllPermissionByRoleIdResponse } from '../../../interface-proto/role-permission.interface';
 
 @Injectable()
 export class RolePermissionService {

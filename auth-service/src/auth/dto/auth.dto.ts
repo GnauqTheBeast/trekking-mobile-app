@@ -24,3 +24,7 @@ export class ValidateRequestDto implements ValidateRequest {
     token: string;
 }
 
+export interface ResponseDto{
+    status: number,
+    message: string
+}

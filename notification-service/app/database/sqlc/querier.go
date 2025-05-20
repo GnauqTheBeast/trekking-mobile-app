@@ -15,6 +15,8 @@ type Querier interface {
 	DeleteNotification(ctx context.Context, id uuid.UUID) error
 	GetNotificationByID(ctx context.Context, id uuid.UUID) (*Notification, error)
 	ListNotificationsByUser(ctx context.Context, userID uuid.UUID) ([]*Notification, error)
+	MarkNotificationsAsRead(ctx context.Context, dollar_1 []uuid.UUID) error
+	ReadNotification(ctx context.Context, id uuid.UUID) error
 	UpdateNotification(ctx context.Context, arg *UpdateNotificationParams) (*Notification, error)
 }
 

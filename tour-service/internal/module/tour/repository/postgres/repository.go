@@ -4,8 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"time"
-
 	"github.com/google/uuid"
 	"github.com/trekking-mobile-app/internal/pkg/paging"
 
@@ -23,9 +21,6 @@ type repository struct {
 }
 
 func NewPostgresRepo(db *sqlc.SQLRepository) *repository {
-	if db == nil {
-		panic("db connection is required")
-	}
 	return &repository{
 		queries: sqlc.New(db.Client),
 	}
@@ -42,18 +37,27 @@ func (repo *repository) ListTours(ctx context.Context, paging *paging.Paging) ([
 
 	result := make([]*entity.Tour, len(tours))
 	for i, t := range tours {
-		result[i] = &entity.Tour{
-			ID:            t.ID,
-			Name:          t.Name,
-			Description:   t.Description,
-			Status:        entity.TourStatus(t.Status),
-			Price:         t.Price,
-			Slot:          t.Slot,
-			AvailableSlot: t.AvailableSlot,
-			CreatedAt:     t.CreatedAt,
-		}
+		result[i] = toEntityTour(t)
 	}
 
+	return result, nil
+}
+
+func (repo *repository) ListToursByHostId(ctx context.Context, hostId string) ([]*entity.Tour, error) {
+	id, err := uuid.Parse(hostId)
+	if err != nil {
+		return nil, err
+	}
+
+	tours, err := repo.queries.GetTourByHostId(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]*entity.Tour, len(tours))
+	for i, t := range tours {
+		result[i] = toEntityTour(t)
+	}
 	return result, nil
 }
 
@@ -79,9 +83,16 @@ func (repo *repository) UpdateTour(ctx context.Context, tourId string, data *ent
 		ID:          id,
 		Name:        data.Name,
 		Description: data.Description,
-		Slot:        data.Slot,
-		Price:       data.Price,
+		Slot:        int32(data.Slot),
+		Price:       int32(data.Price),
 		Status:      string(data.Status),
+		Level:       data.Level,
+		Distance:    int32(data.Distance),
+		Elevation:   int32(data.Elevation),
+		Duration:    data.Duration,
+		Location:    data.Location,
+		Images:      data.Images,
+		Rate:        data.Rate,
 		StartAt:     data.TimeStart,
 		EndAt:       data.TimeEnd,
 		UpdatedAt:   tourByID.UpdatedAt,
@@ -114,30 +125,25 @@ func (repo *repository) InsertNewTour(ctx context.Context, data *entity.Tour) (*
 		Name:          data.Name,
 		Description:   data.Description,
 		HostID:        data.HostID,
-		Slot:          data.Slot,
-		AvailableSlot: data.AvailableSlot,
-		Price:         data.Price,
+		Slot:          int32(data.Slot),
+		AvailableSlot: int32(data.AvailableSlot),
+		Price:         int32(data.Price),
 		Status:        string(data.Status),
+		Level:         data.Level,
+		Distance:      int32(data.Distance),
+		Elevation:     int32(data.Elevation),
+		Duration:      data.Duration,
+		Location:      data.Location,
+		Images:        data.Images,
+		Rate:          data.Rate,
 		StartAt:       data.TimeStart,
 		EndAt:         data.TimeEnd,
-		UpdatedAt:     time.Now(),
-		CreatedAt:     time.Now(),
 	})
+	if err != nil {
+		return nil, err
+	}
 
-	return &entity.Tour{
-		ID:            createTour.ID,
-		Name:          createTour.Name,
-		HostID:        createTour.HostID,
-		Description:   createTour.Description,
-		Status:        entity.TourStatus(createTour.Status),
-		Price:         createTour.Price,
-		Slot:          createTour.Slot,
-		AvailableSlot: createTour.AvailableSlot,
-		TimeStart:     createTour.StartAt,
-		TimeEnd:       createTour.EndAt,
-		CreatedAt:     createTour.CreatedAt,
-		UpdatedAt:     createTour.UpdatedAt,
-	}, err
+	return toEntityTour(createTour), nil
 }
 
 func (repo *repository) GetTourById(ctx context.Context, tourId string) (*entity.Tour, error) {
@@ -154,17 +160,7 @@ func (repo *repository) GetTourById(ctx context.Context, tourId string) (*entity
 		return nil, err
 	}
 
-	return &entity.Tour{
-		ID:            tourById.ID,
-		Name:          tourById.Name,
-		Description:   tourById.Description,
-		Status:        entity.TourStatus(tourById.Status),
-		Price:         tourById.Price,
-		Slot:          tourById.Slot,
-		AvailableSlot: tourById.AvailableSlot,
-		CreatedAt:     tourById.CreatedAt,
-		UpdatedAt:     tourById.UpdatedAt,
-	}, nil
+	return toEntityTour(tourById), nil
 }
 
 func (repo *repository) UpdateTourAvailableSlot(ctx context.Context, tourId string, availableSlot int) (*entity.Tour, error) {
@@ -186,17 +182,29 @@ func (repo *repository) UpdateTourAvailableSlot(ctx context.Context, tourId stri
 		return nil, err
 	}
 
+	return toEntityTour(tour), nil
+}
+
+func toEntityTour(t *sqlc.Tour) *entity.Tour {
 	return &entity.Tour{
-		ID:            tour.ID,
-		Name:          tour.Name,
-		Description:   tour.Description,
-		Status:        entity.TourStatus(tour.Status),
-		Slot:          tour.Slot,
-		AvailableSlot: tour.AvailableSlot,
-		Price:         tour.Price,
-		TimeStart:     tour.StartAt,
-		TimeEnd:       tour.EndAt,
-		CreatedAt:     tour.CreatedAt,
-		UpdatedAt:     tour.UpdatedAt,
-	}, nil
+		ID:            t.ID,
+		Name:          t.Name,
+		Description:   t.Description,
+		HostID:        t.HostID,
+		Slot:          int(t.Slot),
+		AvailableSlot: int(t.AvailableSlot),
+		Price:         int(t.Price),
+		Level:         t.Level,
+		Distance:      int(t.Distance),
+		Elevation:     int(t.Elevation),
+		Duration:      t.Duration,
+		Location:      t.Location,
+		Images:        t.Images,
+		Rate:          t.Rate,
+		Status:        entity.TourStatus(t.Status),
+		TimeStart:     t.StartAt,
+		TimeEnd:       t.EndAt,
+		CreatedAt:     t.CreatedAt,
+		UpdatedAt:     t.UpdatedAt,
+	}
 }

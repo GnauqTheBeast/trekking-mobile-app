@@ -2,9 +2,9 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
-import { CheckExistByEmailRequest, CheckExistByEmailResponse, CheckLoginResponse, GetByIdRequest, GetByIdResponse } from '../interface/user.interface';
+import { CheckExistByEmailRequest, CheckExistByEmailResponse, CheckLoginResponse, GetByIdRequest, GetByIdResponse } from '../../../interface-proto/user.interface';
 import * as bcrypt from 'bcryptjs';
-import { ChangePasswordRequestDto, CheckLoginRequestDto, CreateRequestDto, ResponseDataDto, ResponseDto } from '../dto/user.dto';
+import { ChangePasswordRequestDto, CheckLoginRequestDto, CreateRequestDto, ResetPasswordRequestDto, ResponseDataDto, ResponseDto } from '../dto/user.dto';
 import { RoleService } from 'src/module/role/service/role.service';
 import { RpcException } from '@nestjs/microservices';
 import { RolePermissionService } from 'src/module/role-permission/service/role-permission.service';
@@ -52,9 +52,11 @@ export class UserService {
                 id: user!.id,
                 email: user!.email,
                 fullname: user!.name,
-                phoneNumber: user!.phone_number,
+                phoneNumber: user!.phone_number ?? null,
                 dob: user!.dob ? String(user!.dob) : null,
                 address: user!.address,
+                gender: user!.gender ?? null,
+                image: user!.image ?? null,
                 role: user!.role,
                 permissions: permissions
             }
@@ -88,6 +90,26 @@ export class UserService {
         }
     }
 
+    async resetPassword(request: ResetPasswordRequestDto): Promise<ResponseDto> {
+        const {email, newPassword} = request;
+
+        const user = await this.userRepository.findOne({where: {email}});
+        if(!user) throw new HttpException("Invalid email, please try again.", HttpStatus.NOT_FOUND);
+
+        const salt = bcrypt.genSaltSync(10);
+        const hashedNewPassword = bcrypt.hashSync(newPassword, salt);
+
+        const updated = await this.userRepository.update({email}, {password: hashedNewPassword})
+        if(updated.affected === 0 || !updated.affected) {
+            throw new HttpException("Change password unsuccessfully!", HttpStatus.FORBIDDEN)
+        }
+
+        return {
+            status: HttpStatus.OK,
+            message: "Reset password successfully!"
+        }
+    }
+
     async getById(request: GetByIdRequest): Promise<GetByIdResponse> {
 
         const {id} = request;
@@ -110,6 +132,8 @@ export class UserService {
                 phoneNumber: user.phone_number ?? null,
                 dob: user.dob ? String(user.dob) : null,
                 address: user.address ?? null,
+                gender: user.gender ?? null,
+                image: user.gender ?? null,
                 role: user.role,
                 permissions: []
             }

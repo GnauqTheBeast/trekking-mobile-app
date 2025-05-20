@@ -2,6 +2,7 @@ package ws
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -43,10 +44,8 @@ func NewWSHandler(biz Business) *WS {
 }
 
 func (w *WS) WsHandler(c *gin.Context) {
-	token := c.GetHeader("Authorization")
-	if token == "" {
-		token = c.Query("token")
-	}
+	token := c.Query("token")
+	fmt.Println(token)
 
 	userId, err := utils.ValidateToken(token)
 	if err != nil {
@@ -147,5 +146,38 @@ func (ws *WS) consumeMessage(ctx context.Context, pubsub pubsub.PubSub, wg *sync
 			}()
 			go ws.sendToUser(received.UserID, noti)
 		}
+	}
+}
+
+func (ws *WS) SendMockNotification() {
+	userID := "11111111-1111-1111-1111-111111111111"
+
+	ws.mu.RLock()
+	conn, ok := ws.clients[userID]
+	ws.mu.RUnlock()
+
+	if !ok {
+		log.Println("User not connected:", userID)
+		return
+	}
+
+	noti := &entity.Notification{
+		ID:          uuid.New(),
+		UserID:      uuid.MustParse(userID),
+		Name:        "Payment Booking Successfully",
+		Description: "BookingID-XYZ123",
+	}
+
+	data, err := json.Marshal(noti)
+	if err != nil {
+		log.Println("Marshal error:", err)
+		return
+	}
+
+	if err := conn.WriteMessage(websocket.TextMessage, data); err != nil {
+		log.Println("Send error:", err)
+		ws.mu.Lock()
+		delete(ws.clients, userID)
+		ws.mu.Unlock()
 	}
 }

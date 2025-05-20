@@ -23,6 +23,8 @@ export interface User {
   dob: string | null;
   address: string | null;
   phoneNumber: string | null;
+  gender: string | null;
+  image: string | null
   role: Role,
   permissions: string[]
 }

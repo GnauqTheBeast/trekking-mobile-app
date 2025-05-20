@@ -3,6 +3,7 @@ CREATE TABLE "notification" (
             "user_id" uuid NOT NULL,
             "name" varchar NOT NULL,
             "description" text NOT NULL,
+            "is_read" boolean NOT NULL,
             "created_at" timestamptz NOT NULL DEFAULT (now()),
             "updated_at" timestamptz NOT NULL DEFAULT (now())
 );

@@ -1,8 +1,8 @@
-import { BadRequestException, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 
 import { JwtService } from './jwt.service';
 import { LoginResponse, RegisterResponse, ValidateResponse } from '../interface/auth.interface';
-import { LoginRequestDto, RegisterRequestDto, ValidateRequestDto } from '../dto/auth.dto';
+import { LoginRequestDto, RegisterRequestDto, ResponseDto, ValidateRequestDto } from '../dto/auth.dto';
 import { USER_SERVICE_NAME, UserServiceClient } from '../interface/user.interface';
 import { ClientGrpc } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
@@ -92,6 +92,34 @@ export class AuthService {
         await sendOtp(email, otp)
     }
 
+    async forgotPassword(email: string): Promise<ResponseDto> {
+        const data = await firstValueFrom(
+            this.userService.checkExistByEmail({email})
+        )
+        console.log(data)
+        if(!data.result) {
+            throw new HttpException("Email already not exist, please try again", HttpStatus.CONFLICT)
+        }
+
+        const otp = this.otpService.generateOtp();
+        await this.otpService.saveOtp(email, otp);
+        await sendOtp(email, otp)
+
+        return {
+            status: HttpStatus.OK,
+            message: 'Fill Otp!'
+        }
+    }
+
+    async verifyForgotOtp(email: string, otp: string): Promise<ResponseDto> {
+        console.log('Received OTP verification request:', email, otp);
+        await this.otpService.verifyOtp(email, otp);
+        return {
+            status: HttpStatus.OK,
+            message: 'Change password',
+        };
+    }
+
     public async login(
         { email, password }: LoginRequestDto
     ): Promise<LoginResponse>{
@@ -100,12 +128,7 @@ export class AuthService {
             this.userService.checkExistByEmail({ email })
         )
         if(!checkEmailExist.result) {
-            return {
-                status: HttpStatus.NOT_FOUND,
-                message: 'Invalid email or password!',
-                token: null,
-                user: null
-            }
+            throw new NotFoundException('Invalid email or password!');
         }
 
         const data = await firstValueFrom(
@@ -114,15 +137,12 @@ export class AuthService {
 
         const user = data.user;
         if(!user) {
-            return {
-                status: HttpStatus.NOT_ACCEPTABLE,
-                message: 'Invalid email or password!',
-                token: null,
-                user: null
-            }
+            throw new NotAcceptableException('Invalid email or password!');
         }
 
         const token = this.jwtService.generateToken(user);
+
+        console.log(user)
 
         return {
             status: HttpStatus.OK,
@@ -132,9 +152,11 @@ export class AuthService {
                 id: user.id,
                 email: user.email,
                 fullname: user.fullname,
-                phoneNumber: user.phoneNumber,
-                dob: String(user.dob),
-                address: user.address,
+                phoneNumber: user.phoneNumber ?? null,
+                dob: user.dob ? String(user.dob): null,
+                address: user.address ?? null,
+                gender: user.gender ?? null,
+                image: user.image ?? null ,
                 role: user.role,
                 permissions: user.permissions
             }

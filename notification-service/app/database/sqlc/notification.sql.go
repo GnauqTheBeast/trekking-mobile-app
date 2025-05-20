@@ -9,15 +9,15 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 const createNotification = `-- name: CreateNotification :one
 INSERT INTO "notification" (
-    id, user_id, name, description
+    id, user_id, name, description, is_read
 ) VALUES (
-             $1, $2, $3, $4
-         )
-    RETURNING id, user_id, name, description, created_at, updated_at
+ $1, $2, $3, $4, $5
+) RETURNING id, user_id, name, description, is_read, created_at, updated_at
 `
 
 type CreateNotificationParams struct {
@@ -25,6 +25,7 @@ type CreateNotificationParams struct {
 	UserID      uuid.UUID `json:"user_id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
+	IsRead      bool      `json:"is_read"`
 }
 
 func (q *Queries) CreateNotification(ctx context.Context, arg *CreateNotificationParams) (*Notification, error) {
@@ -33,6 +34,7 @@ func (q *Queries) CreateNotification(ctx context.Context, arg *CreateNotificatio
 		arg.UserID,
 		arg.Name,
 		arg.Description,
+		arg.IsRead,
 	)
 	var i Notification
 	err := row.Scan(
@@ -40,6 +42,7 @@ func (q *Queries) CreateNotification(ctx context.Context, arg *CreateNotificatio
 		&i.UserID,
 		&i.Name,
 		&i.Description,
+		&i.IsRead,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -57,7 +60,7 @@ func (q *Queries) DeleteNotification(ctx context.Context, id uuid.UUID) error {
 }
 
 const getNotificationByID = `-- name: GetNotificationByID :one
-SELECT id, user_id, name, description, created_at, updated_at FROM "notification"
+SELECT id, user_id, name, description, is_read, created_at, updated_at FROM "notification"
 WHERE id = $1
 `
 
@@ -69,6 +72,7 @@ func (q *Queries) GetNotificationByID(ctx context.Context, id uuid.UUID) (*Notif
 		&i.UserID,
 		&i.Name,
 		&i.Description,
+		&i.IsRead,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -76,7 +80,7 @@ func (q *Queries) GetNotificationByID(ctx context.Context, id uuid.UUID) (*Notif
 }
 
 const listNotificationsByUser = `-- name: ListNotificationsByUser :many
-SELECT id, user_id, name, description, created_at, updated_at FROM "notification"
+SELECT id, user_id, name, description, is_read, created_at, updated_at FROM "notification"
 WHERE user_id = $1
 ORDER BY created_at DESC
 `
@@ -95,6 +99,7 @@ func (q *Queries) ListNotificationsByUser(ctx context.Context, userID uuid.UUID)
 			&i.UserID,
 			&i.Name,
 			&i.Description,
+			&i.IsRead,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
@@ -111,6 +116,30 @@ func (q *Queries) ListNotificationsByUser(ctx context.Context, userID uuid.UUID)
 	return items, nil
 }
 
+const markNotificationsAsRead = `-- name: MarkNotificationsAsRead :exec
+UPDATE "notification"
+SET is_read = true,
+    updated_at = now()
+WHERE id = ANY($1::uuid[]) AND is_read = false
+`
+
+func (q *Queries) MarkNotificationsAsRead(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, markNotificationsAsRead, pq.Array(dollar_1))
+	return err
+}
+
+const readNotification = `-- name: ReadNotification :exec
+UPDATE "notification"
+SET
+    is_read = true
+WHERE id = $1
+`
+
+func (q *Queries) ReadNotification(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, readNotification, id)
+	return err
+}
+
 const updateNotification = `-- name: UpdateNotification :one
 UPDATE "notification"
 SET
@@ -118,7 +147,7 @@ SET
     description = $3,
     updated_at = now()
 WHERE id = $1
-    RETURNING id, user_id, name, description, created_at, updated_at
+RETURNING id, user_id, name, description, is_read, created_at, updated_at
 `
 
 type UpdateNotificationParams struct {
@@ -135,6 +164,7 @@ func (q *Queries) UpdateNotification(ctx context.Context, arg *UpdateNotificatio
 		&i.UserID,
 		&i.Name,
 		&i.Description,
+		&i.IsRead,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

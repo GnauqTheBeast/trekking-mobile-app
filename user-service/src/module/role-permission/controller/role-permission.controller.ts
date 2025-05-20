@@ -1,5 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { GetAllPermissionByRoleIdRequest, GetAllPermissionByRoleIdResponse, ROLE_PERMISSION_SERVICE_NAME, RolePermissionServiceControllerMethods } from '../interface/role-permission.interface';
+import { GetAllPermissionByRoleIdRequest, GetAllPermissionByRoleIdResponse, ROLE_PERMISSION_SERVICE_NAME, RolePermissionServiceControllerMethods } from '../../../interface-proto/role-permission.interface';
 import { RolePermissionService } from '../service/role-permission.service';
 import { GrpcMethod } from '@nestjs/microservices';
 

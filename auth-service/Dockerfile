@@ -14,5 +14,5 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/src/proto ./src/proto
 RUN npm install -g pnpm
 RUN pnpm install --prod
-EXPOSE 3001 50051
+EXPOSE 3001 50058
 CMD ["node", "dist/main"]
