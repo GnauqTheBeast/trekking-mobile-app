@@ -20,5 +20,7 @@ namespace PaymentService.Application.Interfaces
 
         // Get user id by payment id
         Task<Guid> GetUserIdByPaymentIdAsync(Guid paymentId);
+        
+        Task<Guid> GetPaymentIdByBookingIdAsync(Guid bookingId);
     }
 } 
