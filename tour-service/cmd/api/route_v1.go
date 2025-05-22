@@ -30,7 +30,7 @@ func startRouteV1(group *gin.RouterGroup) {
 
 		// Authenticated routes
 		authTours := tours.Group("")
-		// authTours.Use(middleware.RequireAuth(authGrpcClient()))
+		//authTours.Use(middleware.RequireAuth(authGrpcClient()))
 		{
 			authTours.POST("", tourService.CreateTourHdl())       // /api/v1/tours
 			authTours.PATCH("/:id", tourService.UpdateTourHdl())  // /api/v1/tours/:id
@@ -39,7 +39,7 @@ func startRouteV1(group *gin.RouterGroup) {
 	}
 
 	host := group.Group("/:hostId")
-	// host.Use(middleware.RequireAuth(authGrpcClient()))
+	//host.Use(middleware.RequireAuth(authGrpcClient()))
 	{
 		host.GET("/tours", tourService.ListTourByHostIdHdl())
 	}

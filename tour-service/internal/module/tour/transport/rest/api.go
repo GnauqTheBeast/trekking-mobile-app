@@ -16,7 +16,7 @@ const (
 
 type Business interface {
 	CreateNewTour(ctx context.Context, data *entity.Tour) (*entity.Tour, error)
-	ListTours(ctx context.Context, paging *paging.Paging) ([]*entity.Tour, error)
+	ListTours(ctx context.Context, paging *paging.Paging) (*entity.TourListResponse, error)
 	GetTourDetails(ctx context.Context, tourId string) (*entity.Tour, error)
 	UpdateTour(ctx context.Context, tourId string, data *entity.TourPatchData) error
 	DeleteTour(ctx context.Context, tourId string) error
@@ -36,24 +36,26 @@ func NewAPI(biz Business) *api {
 
 func (a *api) ListTourByHostIdHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// userRole, exist := c.Get("userRole")
-		// if !exist {
-		// 	responseUnauthorized(c, fmt.Errorf("user role not found in context"))
-		// 	return
-		// }
-
-		// if userRole.(string) != "HOST" {
-		// 	responseUnauthorized(c, fmt.Errorf("user is not authorized to perform this action"))
-		// 	return
-		// }
+		//userRole, exist := c.Get("userRole")
+		//if !exist {
+		//	responseUnauthorized(c, fmt.Errorf("user role not found in context"))
+		//	return
+		//}
+		//
+		//if userRole.(string) != "HOST" {
+		//	responseUnauthorized(c, fmt.Errorf("user is not authorized to perform this action"))
+		//	return
+		//}
 
 		hostId := c.Param("hostId")
 		if hostId == "" {
 			responseErrorWithMessage(c, "invalid host id")
+			return
 		}
 
 		listTours, err := a.biz.ListToursByHostId(c, hostId)
 		if err != nil {
+			fmt.Println("err", err)
 			responseError(c, err)
 			return
 		}
@@ -76,38 +78,38 @@ func (a *api) ListTourByHostIdHdl() gin.HandlerFunc {
 // @Router /tours [post]
 func (a *api) CreateTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// userRole, exist := c.Get("userRole")
-		// if !exist {
-		// 	responseUnauthorized(c, fmt.Errorf("user role not found in context"))
-		// 	return
-		// }
-
-		// if userRole.(string) != "HOST" {
-		// 	responseUnauthorized(c, fmt.Errorf("user is not authorized to perform this action"))
-		// 	return
-		// }
-
-		// userPermissions, exist := c.Get("userPermissions")
-		// if !exist {
-		// 	responseUnauthorized(c, fmt.Errorf("user permissions not found in context"))
-		// 	return
-		// }
-
-		// if !utils.CheckUserPermission(createTourPermission, userPermissions.([]string)) {
-		// 	responseForbidden(c, fmt.Errorf("user does not have permission to create tour"))
-		// 	return
-		// }
+		//userRole, exist := c.Get("userRole")
+		//if !exist {
+		//	responseUnauthorized(c, fmt.Errorf("user role not found in context"))
+		//	return
+		//}
+		//
+		//if userRole.(string) != "HOST" {
+		//	responseUnauthorized(c, fmt.Errorf("user is not authorized to perform this action"))
+		//	return
+		//}
+		//
+		//userPermissions, exist := c.Get("userPermissions")
+		//if !exist {
+		//	responseUnauthorized(c, fmt.Errorf("user permissions not found in context"))
+		//	return
+		//}
+		//
+		//if !utils.CheckUserPermission(createTourPermission, userPermissions.([]string)) {
+		//	responseForbidden(c, fmt.Errorf("user does not have permission to create tour"))
+		//	return
+		//}
 
 		data := new(entity.Tour)
 		if err := c.ShouldBindJSON(&data); err != nil {
-			fmt.Println("error", err)
+			fmt.Println("err", err)
 			responseError(c, err)
 			return
 		}
 
 		createdTour, err := a.biz.CreateNewTour(c, data)
 		if err != nil {
-			fmt.Println("error", err)
+			fmt.Println("err biz", err)
 			responseError(c, err)
 			return
 		}
@@ -132,6 +134,7 @@ func (a *api) ListTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		listTours, err := a.biz.ListTours(c, paging.GetQueryPaging(c))
 		if err != nil {
+			fmt.Println(err)
 			responseError(c, err)
 			return
 		}
@@ -191,12 +194,16 @@ func (a *api) UpdateTourHdl() gin.HandlerFunc {
 
 		data := new(entity.TourPatchData)
 		if err := c.ShouldBindJSON(&data); err != nil {
+			fmt.Println("error bind json", err)
 			responseError(c, err)
 			return
 		}
 
+		fmt.Println(data)
+
 		err := a.biz.UpdateTour(c, tourId, data)
 		if err != nil {
+			fmt.Println("error", err)
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}

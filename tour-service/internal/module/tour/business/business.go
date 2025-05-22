@@ -22,7 +22,7 @@ var (
 type Repository interface {
 	InsertNewTour(ctx context.Context, data *entity.Tour) (*entity.Tour, error)
 	GetTourById(ctx context.Context, tourId string) (*entity.Tour, error)
-	ListTours(ctx context.Context, paging *paging.Paging) ([]*entity.Tour, error)
+	ListTours(ctx context.Context, paging *paging.Paging) (*entity.TourListResponse, error)
 	UpdateTour(ctx context.Context, tourId string, data *entity.TourPatchData) error
 	DeleteTour(ctx context.Context, tourId string) error
 	UpdateTourAvailableSlot(ctx context.Context, tourId string, availableSlot int) (*entity.Tour, error)
@@ -54,18 +54,14 @@ func (b *business) CreateNewTour(ctx context.Context, data *entity.Tour) (*entit
 		return nil, fmt.Errorf("%w: description must be at least 10 characters", ErrInvalidTourData)
 	}
 
-	if data.Status == "" {
-		data.Status = entity.TourStatusDraft
-	}
-
 	now := time.Now()
 	data.CreatedAt = now
 
 	return b.repository.InsertNewTour(ctx, data)
 }
 
-func (b *business) ListTours(ctx context.Context, paging *paging.Paging) ([]*entity.Tour, error) {
-	tours, err := caching.FetchFromCallback(b.cache, redisPagingListTour(paging), pagingListTourTTL, func() ([]*entity.Tour, error) {
+func (b *business) ListTours(ctx context.Context, paging *paging.Paging) (*entity.TourListResponse, error) {
+	tours, err := caching.FetchFromCallback(b.cache, redisPagingListTour(paging), pagingListTourTTL, func() (*entity.TourListResponse, error) {
 		return b.repository.ListTours(ctx, paging)
 	})
 	if err != nil {
@@ -86,14 +82,14 @@ func (b *business) ListToursByHostId(ctx context.Context, hostId string) ([]*ent
 
 func (b *business) GetTourDetails(ctx context.Context, tourId string) (*entity.Tour, error) {
 	if tourId == "" {
-		return nil, fmt.Errorf("%w: booking ID is required", ErrInvalidTourData)
+		return nil, fmt.Errorf("%w: tour ID is required", ErrInvalidTourData)
 	}
 
 	tour, err := caching.FetchFromCallback(b.cache, redisTourDetail(tourId), pagingTourDetailTTL, func() (*entity.Tour, error) {
 		return b.repository.GetTourById(ctx, tourId)
 	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to get booking: %w", err)
+		return nil, fmt.Errorf("failed to get tour: %w", err)
 	}
 
 	return tour, nil
@@ -101,31 +97,24 @@ func (b *business) GetTourDetails(ctx context.Context, tourId string) (*entity.T
 
 func (b *business) UpdateTour(ctx context.Context, tourId string, data *entity.TourPatchData) error {
 	if tourId == "" {
-		return fmt.Errorf("%w: booking ID is required", ErrInvalidTourData)
+		return fmt.Errorf("%w: tour ID is required", ErrInvalidTourData)
 	}
 	if data == nil {
 		return ErrInvalidTourData
 	}
 
-	existingTour, err := b.repository.GetTourById(ctx, tourId)
-	if err != nil {
-		return fmt.Errorf("failed to get existing booking: %w", err)
-	}
-
-	if data.Status != "" {
-		if err := validateStatusTransition(existingTour.Status, data.Status); err != nil {
-			return err
-		}
-	}
-
 	if data.Name != "" && len(data.Name) < 3 {
 		return fmt.Errorf("%w: title must be at least 3 characters", ErrInvalidTourData)
 	}
+
 	if data.Description != "" && len(data.Description) < 10 {
 		return fmt.Errorf("%w: description must be at least 10 characters", ErrInvalidTourData)
 	}
 
-	b.cache.Delete(ctx, redisTourDetail(tourId))
+	err := b.cache.Delete(ctx, redisTourDetail(tourId))
+	if err != nil {
+		return err
+	}
 
 	return b.repository.UpdateTour(ctx, tourId, data)
 }
@@ -135,13 +124,9 @@ func (b *business) DeleteTour(ctx context.Context, tourId string) error {
 		return fmt.Errorf("%w: tourById ID is required", ErrInvalidTourData)
 	}
 
-	tourById, err := b.repository.GetTourById(ctx, tourId)
+	_, err := b.repository.GetTourById(ctx, tourId)
 	if err != nil {
 		return fmt.Errorf("failed to get tourById: %w", err)
-	}
-
-	if tourById.Status == entity.TourStatusPublished {
-		return fmt.Errorf("%w: cannot delete published tourById", ErrInvalidStatusTransition)
 	}
 
 	b.cache.Delete(ctx, redisTourDetail(tourId))

@@ -15,9 +15,9 @@ type responseMessage struct {
 // 200 OK
 func responseSuccess(c *gin.Context, data interface{}) {
 	c.JSON(http.StatusOK, responseMessage{
-		Data:       data,
-		StatusCode: http.StatusOK,
 		Message:    http.StatusText(http.StatusOK),
+		StatusCode: http.StatusOK,
+		Data:       data,
 	})
 }
 

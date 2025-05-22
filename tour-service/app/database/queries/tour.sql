@@ -23,6 +23,8 @@ INSERT INTO tour (
              $15, $16, $17
 ) RETURNING *;
 
+-- name: CountTours :one
+SELECT COUNT(*) FROM tour;
 
 -- name: GetTourByID :one
 SELECT * FROM tour

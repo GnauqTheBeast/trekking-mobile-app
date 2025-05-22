@@ -35,6 +35,12 @@ type Tour struct {
 	CreatedAt     time.Time  `json:"created_at"`
 	UpdatedAt     time.Time  `json:"updated_at"`
 }
+
+type TourListResponse struct {
+	Tours   []*Tour `json:"tours"`
+	HasNext bool    `json:"hasNext"`
+}
+
 type TourPatchData struct {
 	Name        string     `json:"name" binding:"omitempty,max=255"`
 	Description string     `json:"description,omitempty" binding:"omitempty"`
