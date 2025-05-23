@@ -57,6 +57,11 @@ func (b *business) CreateNewTour(ctx context.Context, data *entity.Tour) (*entit
 	now := time.Now()
 	data.CreatedAt = now
 
+	err := b.DeleteAllTourListCache(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	return b.repository.InsertNewTour(ctx, data)
 }
 
@@ -130,6 +135,11 @@ func (b *business) DeleteTour(ctx context.Context, tourId string) error {
 	}
 
 	b.cache.Delete(ctx, redisTourDetail(tourId))
+
+	err = b.DeleteAllTourListCache(ctx)
+	if err != nil {
+		return err
+	}
 
 	return b.repository.DeleteTour(ctx, tourId)
 }
