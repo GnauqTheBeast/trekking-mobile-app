@@ -25,8 +25,9 @@ message TourResp {
   string location = 14;
   string images = 15;
   string rate = 16;
-  string created_at = 17;
-  string updated_at = 18;
+  string level = 17;
+  string created_at = 18;
+  string updated_at = 19;
 }
 
 message AvailableSlotReq {
@@ -51,8 +52,9 @@ message AvailableSlotResp {
   string location = 14;
   string images = 15;
   string rate = 16;
-  string created_at = 17;
-  string updated_at = 18;
+  string level = 17;
+  string created_at = 18;
+  string updated_at = 19;
 }
 
 service TourService {
