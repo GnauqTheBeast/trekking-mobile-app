@@ -92,6 +92,45 @@ func (q *Queries) GetBookingByID(ctx context.Context, id uuid.UUID) (*Booking, e
 	return &i, err
 }
 
+const getBookingByUserId = `-- name: GetBookingByUserId :many
+SELECT id, user_id, tour_id, porter_id, status, quantity, total_price, expired_at, created_at, updated_at FROM booking
+WHERE user_id = $1
+`
+
+func (q *Queries) GetBookingByUserId(ctx context.Context, userID uuid.UUID) ([]*Booking, error) {
+	rows, err := q.db.QueryContext(ctx, getBookingByUserId, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*Booking{}
+	for rows.Next() {
+		var i Booking
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.TourID,
+			&i.PorterID,
+			&i.Status,
+			&i.Quantity,
+			&i.TotalPrice,
+			&i.ExpiredAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getBookingForUpdate = `-- name: GetBookingForUpdate :one
 SELECT id, user_id, tour_id, porter_id, status, quantity, total_price, expired_at, created_at, updated_at FROM booking
 WHERE id = $1 LIMIT 1 FOR NO KEY UPDATE

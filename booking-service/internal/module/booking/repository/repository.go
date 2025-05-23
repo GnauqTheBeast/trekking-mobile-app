@@ -38,21 +38,7 @@ func (repo *repository) GetBookingById(ctx context.Context, bookingID string) (*
 		return nil, err
 	}
 
-	var porterIdPtr *uuid.UUID
-	if result.PorterID.Valid {
-		porterIdPtr = &result.PorterID.UUID
-	}
-
-	return &entity.Booking{
-		Id:         result.ID,
-		UserId:     result.UserID,
-		TourId:     result.TourID,
-		PorterId:   porterIdPtr,
-		Quantity:   int(result.Quantity),
-		TotalPrice: result.TotalPrice,
-		CreatedAt:  result.CreatedAt,
-		UpdatedAt:  result.UpdatedAt,
-	}, nil
+	return toEntityBooking(result), nil
 }
 
 func (repo *repository) InsertNewBooking(ctx context.Context, booking *entity.Booking) (*entity.Booking, error) {
@@ -73,22 +59,7 @@ func (repo *repository) InsertNewBooking(ctx context.Context, booking *entity.Bo
 		return nil, err
 	}
 
-	var porterIdPtr *uuid.UUID
-	if newBooking.PorterID.Valid {
-		porterIdPtr = &newBooking.PorterID.UUID
-	}
-
-	return &entity.Booking{
-		Id:         newBooking.ID,
-		UserId:     newBooking.UserID,
-		TourId:     newBooking.TourID,
-		PorterId:   porterIdPtr,
-		Quantity:   int(newBooking.Quantity),
-		TotalPrice: newBooking.TotalPrice,
-		CreatedAt:  newBooking.CreatedAt,
-		UpdatedAt:  newBooking.UpdatedAt,
-		Status:     entity.BookingStatus(newBooking.Status),
-	}, nil
+	return toEntityBooking(newBooking), nil
 }
 
 func (repo *repository) UpdateBookingStatus(ctx context.Context, bookingId uuid.UUID, status entity.BookingStatus) (*entity.Booking, error) {
@@ -101,20 +72,35 @@ func (repo *repository) UpdateBookingStatus(ctx context.Context, bookingId uuid.
 		return nil, err
 	}
 
+	return toEntityBooking(booking), nil
+}
+
+func (repo *repository) GetBookingByUserId(ctx context.Context, userId uuid.UUID) ([]*entity.Booking, error) {
+	bookings, err := repo.queries.GetBookingByUserId(ctx, userId)
+	if err != nil {
+		return nil, err
+	}
+	bookingsEntity := make([]*entity.Booking, 0)
+	for _, booking := range bookings {
+		bookingsEntity = append(bookingsEntity, toEntityBooking(booking))
+	}
+	return bookingsEntity, nil
+}
+
+func toEntityBooking(booking *sqlc.Booking) *entity.Booking {
 	var porterIdPtr *uuid.UUID
 	if booking.PorterID.Valid {
 		porterIdPtr = &booking.PorterID.UUID
 	}
-
 	return &entity.Booking{
 		Id:         booking.ID,
 		UserId:     booking.UserID,
 		TourId:     booking.TourID,
 		PorterId:   porterIdPtr,
 		Quantity:   int(booking.Quantity),
-		Status:     entity.BookingStatus(booking.Status),
 		TotalPrice: booking.TotalPrice,
 		CreatedAt:  booking.CreatedAt,
 		UpdatedAt:  booking.UpdatedAt,
-	}, nil
+		Status:     entity.BookingStatus(booking.Status),
+	}
 }
