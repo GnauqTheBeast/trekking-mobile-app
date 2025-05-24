@@ -6,6 +6,7 @@ import (
 	"github.com/trekking-mobile-app/internal/module/tour/business"
 	"github.com/trekking-mobile-app/internal/module/tour/repository/postgres"
 	"github.com/trekking-mobile-app/internal/module/tour/transport/rest"
+	"github.com/trekking-mobile-app/middleware"
 )
 
 type API interface {
@@ -30,16 +31,16 @@ func startRouteV1(group *gin.RouterGroup) {
 
 		// Authenticated routes
 		authTours := tours.Group("")
-		//authTours.Use(middleware.RequireAuth(authGrpcClient()))
+		authTours.PATCH("/:tourId", tourService.UpdateTourHdl()) // /api/v1/tours/:tourId
+		authTours.DELETE("/:id", tourService.DeleteTourHdl())    // /api/v1/tours/:id
+		authTours.Use(middleware.RequireAuth(authGrpcClient()))
 		{
-			authTours.POST("", tourService.CreateTourHdl())       // /api/v1/tours
-			authTours.PATCH("/:id", tourService.UpdateTourHdl())  // /api/v1/tours/:id
-			authTours.DELETE("/:id", tourService.DeleteTourHdl()) // /api/v1/tours/:id
+			authTours.POST("", tourService.CreateTourHdl()) // /api/v1/tours
 		}
 	}
 
 	host := group.Group("/:hostId")
-	//host.Use(middleware.RequireAuth(authGrpcClient()))
+	// host.Use(middleware.RequireAuth(authGrpcClient()))
 	{
 		host.GET("/tours", tourService.ListTourByHostIdHdl())
 	}

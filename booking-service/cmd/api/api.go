@@ -39,5 +39,5 @@ func start(c *cli.Context) error {
 
 	startRouteV1(router.Group("/api/v1"))
 
-	return router.Run(":8081")
+	return router.Run(":8084")
 }

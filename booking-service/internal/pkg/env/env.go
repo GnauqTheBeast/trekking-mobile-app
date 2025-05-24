@@ -7,7 +7,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-const envPath = "cmd/.env,cmd/.env.local"
+const envPath = ".env,.env.local"
 
 var once = new(sync.Once)
 

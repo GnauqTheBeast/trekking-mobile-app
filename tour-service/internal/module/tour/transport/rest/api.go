@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/trekking-mobile-app/internal/module/tour/entity"
 	"github.com/trekking-mobile-app/internal/pkg/paging"
+	"github.com/trekking-mobile-app/internal/utils"
 )
 
 const (
@@ -78,27 +79,27 @@ func (a *api) ListTourByHostIdHdl() gin.HandlerFunc {
 // @Router /tours [post]
 func (a *api) CreateTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		//userRole, exist := c.Get("userRole")
-		//if !exist {
-		//	responseUnauthorized(c, fmt.Errorf("user role not found in context"))
-		//	return
-		//}
-		//
-		//if userRole.(string) != "HOST" {
-		//	responseUnauthorized(c, fmt.Errorf("user is not authorized to perform this action"))
-		//	return
-		//}
-		//
-		//userPermissions, exist := c.Get("userPermissions")
-		//if !exist {
-		//	responseUnauthorized(c, fmt.Errorf("user permissions not found in context"))
-		//	return
-		//}
-		//
-		//if !utils.CheckUserPermission(createTourPermission, userPermissions.([]string)) {
-		//	responseForbidden(c, fmt.Errorf("user does not have permission to create tour"))
-		//	return
-		//}
+		userRole, exist := c.Get("userRole")
+		if !exist {
+			responseUnauthorized(c, fmt.Errorf("user role not found in context"))
+			return
+		}
+
+		if userRole.(string) != "HOST" {
+			responseUnauthorized(c, fmt.Errorf("user is not authorized to perform this action"))
+			return
+		}
+
+		userPermissions, exist := c.Get("userPermissions")
+		if !exist {
+			responseUnauthorized(c, fmt.Errorf("user permissions not found in context"))
+			return
+		}
+
+		if !utils.CheckUserPermission(createTourPermission, userPermissions.([]string)) {
+			responseForbidden(c, fmt.Errorf("user does not have permission to create tour"))
+			return
+		}
 
 		data := new(entity.Tour)
 		if err := c.ShouldBindJSON(&data); err != nil {
@@ -186,7 +187,8 @@ func (a *api) GetTourHdl() gin.HandlerFunc {
 // @Router /tours/{id} [patch]
 func (a *api) UpdateTourHdl() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tourId := c.Param("id")
+		fmt.Println("edit tour nhe ae")
+		tourId := c.Param("tourId")
 		if tourId == "" {
 			responseErrorWithMessage(c, "tourId is required")
 			return

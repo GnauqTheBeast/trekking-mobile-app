@@ -10,7 +10,7 @@ export const ClientGrpcModule = ClientsModule.register([
         options: {
             package: PB_PACKAGE_NAME,
             protoPath: join(__dirname, '../../src/proto/tour.proto'),
-            url: 'tour-service:50051'
+            url: '0.0.0.0:50051'
         }
     },
 ])

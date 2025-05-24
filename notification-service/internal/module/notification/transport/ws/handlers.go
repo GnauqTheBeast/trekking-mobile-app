@@ -150,7 +150,7 @@ func (ws *WS) consumeMessage(ctx context.Context, pubsub pubsub.PubSub, wg *sync
 }
 
 func (ws *WS) SendMockNotification() {
-	userID := "11111111-1111-1111-1111-111111111111"
+	userID := "07c425bc-dd4c-46d8-af53-3b5987c4c3f6"
 
 	ws.mu.RLock()
 	conn, ok := ws.clients[userID]

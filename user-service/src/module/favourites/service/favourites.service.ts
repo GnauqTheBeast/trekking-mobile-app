@@ -1,18 +1,19 @@
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Favourite } from '../entities/favourites.entity';
+import { Favorite } from '../entities/favourites.entity';
 import { Repository } from 'typeorm';
-import { ResponseDTO } from '../dto/ResponseDTO';
-import { TOUR_SERVICE_NAME, TourServiceClient } from 'src/interface-proto/tour.interface';
+import { FavoriteProps, ResponseDTO } from '../dto/ResponseDTO';
+import { TOUR_SERVICE_NAME, TourResp, TourServiceClient } from 'src/interface-proto/tour.interface';
 import { ClientGrpc } from '@nestjs/microservices';
 import { User } from 'src/module/user/entities/user.entity';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class FavouritesService {
     private tourService: TourServiceClient;
     constructor (
-        @InjectRepository(Favourite)
-        private readonly favouriteRepository: Repository<Favourite>,
+        @InjectRepository(Favorite)
+        private readonly favouriteRepository: Repository<Favorite>,
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
 
@@ -23,14 +24,15 @@ export class FavouritesService {
     }
 
 
-    async getAllByUserId(userId: string): Promise<ResponseDTO<Favourite[]>> {
+    async getAllByUserId(userId: string): Promise<ResponseDTO<FavoriteProps[]>> {
 
         const allFavourites = await this.favouriteRepository.find({
             where: {
                 user: {
                     id: userId
                 }
-            }
+            },
+            relations: ['user']
         })
 
         if(allFavourites.length === 0) {
@@ -41,10 +43,35 @@ export class FavouritesService {
             }
         }
 
+        const favourites: FavoriteProps[] = [];
+        for(const fav of allFavourites) {
+            try {
+                const tour: TourResp = await firstValueFrom(
+                    this.tourService.checkTourExist({ tourId: fav.tour_id })
+                );
+                const {tourId, hostId, ...tmp} = tour;
+                const favTmp: FavoriteProps = {
+                    ...tmp,
+                    id: tourId,
+                    images: JSON.parse(tour.images),
+                    total_slot: tour.slot,
+                    available_slot: tour.availableSlot,
+                    host: {
+                        id: fav.user.id,
+                        name: fav.user.fullname,
+                        image: fav.user.image
+                }}
+                if(tour.status === 'PUBLISHED') favourites.push(favTmp);
+                else await this.favouriteRepository.delete({tour_id: fav.tour_id})
+            } catch (error) {
+                await this.favouriteRepository.delete({ id: fav.id });
+            }
+        }
+
         return {
             status: HttpStatus.OK,
             message: "Favourites",
-            data: allFavourites
+            data: favourites
         }
     }
 
@@ -78,11 +105,7 @@ export class FavouritesService {
     async remove(userId: string, tourId: string): Promise<ResponseDTO<void>> {
         const user = await this.userRepository.findOne({ where: { id: userId } });
         if (!user) {
-            return {
-                status: HttpStatus.NOT_FOUND,
-                message: 'User not found',
-                data: null,
-            };
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND)
         }
 
         const result = await this.favouriteRepository.delete({
@@ -91,11 +114,7 @@ export class FavouritesService {
         });
 
         if (result.affected === 0) {
-            return {
-                status: HttpStatus.NOT_ACCEPTABLE,
-                message: 'Favourite not found or already deleted',
-                data: null,
-            };
+            throw new HttpException('Favourite not found or already deleted', HttpStatus.NOT_ACCEPTABLE)
         }
 
         return {
@@ -103,6 +122,21 @@ export class FavouritesService {
             message: 'Favourite removed successfully',
             data: null,
         };
+    }
+
+    async check(userId: string, tourId: string): Promise<boolean> {
+        const user = await this.userRepository.findOne({ where: { id: userId } });
+        if (!user) {
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND)
+        }
+        const fav = await this.favouriteRepository.findOne({
+            where: {
+                user: {id: user.id},
+                tour_id: tourId
+            }
+        });
+        if(!fav) return false;
+        return true;
     }
 
 }

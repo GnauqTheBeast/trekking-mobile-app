@@ -25,6 +25,15 @@ export interface TourResp {
   startAt: string;
   endAt: string;
   price: number;
+  duration: string;
+  distance: number;
+  elevation: number;
+  location: string;
+  images: string;
+  rate: string;
+  level: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface AvailableSlotReq {
@@ -43,6 +52,15 @@ export interface AvailableSlotResp {
   startAt: string;
   endAt: string;
   price: number;
+  duration: string;
+  distance: number;
+  elevation: number;
+  location: string;
+  images: string;
+  rate: string;
+  level: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export const PB_PACKAGE_NAME = "pb";
