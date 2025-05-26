@@ -3,8 +3,8 @@ import { Cloudinary } from '@cloudinary/url-gen';
 import { auto } from '@cloudinary/url-gen/actions/resize';
 import { autoGravity } from '@cloudinary/url-gen/qualifiers/gravity';
 
-const CLOUDINARY_CLOUD_NAME = 'druvvrozt';
-const CLOUDINARY_UPLOAD_PRESET = 'trekking';
+const CLOUDINARY_CLOUD_NAME = 'your-cloud-name';
+const CLOUDINARY_UPLOAD_PRESET = 'your-upload-preset';
 
 const cld = new Cloudinary({
   cloud: {
