@@ -109,7 +109,7 @@ Tất cả các service đều dùng **PostgresSQL** để lưu trữ dữ liệ
 - **Tính module**: Từng service đảm nhiệm một chức năng riêng (người dùng, tour, đặt tour, thanh toán...).
 - **Khả năng chịu lỗi**: Dùng circuit breaker để tránh lỗi lan rộng nếu một service gặp sự cố.
 - **Xử lý đồng thời**: Cập nhật chỗ còn lại theo thời gian thực, tránh đặt trùng khi nhiều người cùng đặt tour.
-- **Xử lý bất đồng bộ**: Notification, gửi email xác nhận... được xử lý thông qua hàng đợi (RabbitMQ).
+- **Xử lý bất đồng bộ**: Notification, gửi email xác nhận... được xử lý thông qua Message Broker (Redis Queue).
 - **API Gateway tập trung**: Quản lý bảo mật, định tuyến và giám sát hiệu quả toàn hệ thống.
 
 > Kiến trúc này phù hợp với đặc thù đặt tour trekking: nhiều người truy cập cùng lúc, dữ liệu thay đổi liên tục, yêu cầu xử lý nhanh, rõ ràng và tin cậy.
