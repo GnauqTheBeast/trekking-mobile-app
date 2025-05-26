@@ -1,0 +1,253 @@
+swagger: "2.0"
+info:
+  description: ""
+  title: ""
+  contact: {}
+  version: ""
+host: ""
+basePath: ""
+schemes: []
+
+paths:
+  /api/v1/tours:
+    get:
+      description: "Lấy danh sách tour theo phân trang"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - Tour
+      summary: "Danh sách tour"
+      parameters:
+        - name: page
+          in: query
+          description: "Trang hiện tại"
+          type: integer
+        - name: size
+          in: query
+          description: "Số lượng mỗi trang"
+          type: integer
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/entity.Tour"
+        400:
+          description: "Bad Request"
+          schema:
+            type: object
+            additionalProperties:
+              type: string
+
+    post:
+      description: "API tạo tour du lịch mới"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - Tour
+      summary: "Tạo tour mới"
+      parameters:
+        - name: tour
+          in: body
+          description: "Thông tin tour"
+          required: true
+          schema:
+            $ref: "#/definitions/entity.Tour"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/entity.Tour"
+        400:
+          description: "Bad Request"
+          schema:
+            type: object
+            additionalProperties:
+              type: string
+
+  /api/v1/tours/{id}:
+    get:
+      description: "Lấy chi tiết tour theo ID"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - Tour
+      summary: "Lấy thông tin chi tiết tour"
+      parameters:
+        - name: id
+          in: path
+          description: "Tour ID"
+          required: true
+          type: string
+      responses:
+        200:
+          description: "OK"
+          schema:
+            $ref: "#/definitions/entity.Tour"
+        400:
+          description: "Bad Request"
+          schema:
+            type: object
+            additionalProperties:
+              type: string
+
+    delete:
+      description: "Xóa tour theo ID"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - Tour
+      summary: "Xóa tour"
+      parameters:
+        - name: id
+          in: path
+          description: "Tour ID"
+          required: true
+          type: string
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: object
+            additionalProperties:
+              type: string
+        400:
+          description: "Bad Request"
+          schema:
+            type: object
+            additionalProperties:
+              type: string
+
+    patch:
+      description: "Cập nhật tour theo ID"
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - Tour
+      summary: "Cập nhật thông tin tour"
+      parameters:
+        - name: id
+          in: path
+          description: "Tour ID"
+          required: true
+          type: string
+        - name: tour
+          in: body
+          description: "Dữ liệu cần cập nhật"
+          required: true
+          schema:
+            $ref: "#/definitions/entity.TourPatchData"
+      responses:
+        200:
+          description: "OK"
+          schema:
+            type: object
+            additionalProperties:
+              type: string
+        400:
+          description: "Bad Request"
+          schema:
+            type: object
+            additionalProperties:
+              type: string
+
+definitions:
+  entity.Tour:
+    type: object
+    required:
+      - available_slot
+      - description
+      - end
+      - host_id
+      - id
+      - name
+      - price
+      - slot
+      - start
+      - status
+    properties:
+      available_slot:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+        minLength: 10
+      end:
+        type: string
+      host_id:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+        minLength: 3
+        maxLength: 255
+      price:
+        type: integer
+      slot:
+        type: integer
+      start:
+        type: string
+      status:
+        enum:
+          - DRAFT
+          - PUBLISHED
+          - ARCHIVED
+        allOf:
+          - $ref: "#/definitions/entity.TourStatus"
+      updated_at:
+        type: string
+
+  entity.TourPatchData:
+    type: object
+    required:
+      - end
+      - price
+      - slot
+      - start
+    properties:
+      description:
+        type: string
+        minLength: 10
+      end:
+        type: string
+      price:
+        type: integer
+      slot:
+        type: integer
+      start:
+        type: string
+      status:
+        enum:
+          - draft
+          - published
+          - archived
+        allOf:
+          - $ref: "#/definitions/entity.TourStatus"
+      title:
+        type: string
+        minLength: 3
+        maxLength: 255
+
+  entity.TourStatus:
+    type: string
+    enum:
+      - DRAFT
+      - PUBLISHED
+      - ARCHIVED
+    x-enum-varnames:
+      - TourStatusDraft
+      - TourStatusPublished
+      - TourStatusArchived

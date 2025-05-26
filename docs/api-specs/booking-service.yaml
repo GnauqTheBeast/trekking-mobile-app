@@ -1,0 +1,178 @@
+swagger: "2.0"
+schemes: []
+info:
+  description: ""
+  title: ""
+  contact: {}
+  version: ""
+host: ""
+basePath: ""
+paths:
+  /api/v1/booking/create:
+    post:
+      description: Gửi yêu cầu đặt tour
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - Booking
+      summary: Tạo booking mới
+      parameters:
+        - name: booking
+          in: body
+          description: Thông tin booking
+          required: true
+          schema:
+            $ref: "#/definitions/entity.Booking"
+      responses:
+        202:
+          description: Accepted
+          schema:
+            $ref: "#/definitions/entity.Booking"
+        400:
+          description: Bad Request
+          schema:
+            type: object
+            additionalProperties:
+              type: string
+
+  /api/v1/booking/ping-notification:
+    get:
+      description: Send a ping message to notification service via Redis
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - Notification
+      summary: Ping notification service
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            additionalProperties: true
+        400:
+          description: Bad Request
+          schema:
+            type: object
+            additionalProperties:
+              type: string
+
+  /api/v1/booking/{id}:
+    get:
+      description: Truy vấn chi tiết booking theo ID
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - Booking
+      summary: Lấy thông tin booking
+      parameters:
+        - name: id
+          in: path
+          description: Booking ID
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/entity.Booking"
+        400:
+          description: Bad Request
+          schema:
+            type: object
+            additionalProperties:
+              type: string
+        404:
+          description: Not Found
+          schema:
+            type: object
+            additionalProperties:
+              type: string
+
+  /api/v1/booking/{id}/cancel:
+    post:
+      description: Hủy booking theo ID
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      tags:
+        - Booking
+      summary: Hủy booking
+      parameters:
+        - name: id
+          in: path
+          description: Booking ID
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/entity.Booking"
+        400:
+          description: Bad Request
+          schema:
+            type: object
+            additionalProperties:
+              type: string
+        404:
+          description: Not Found
+          schema:
+            type: object
+            additionalProperties:
+              type: string
+
+definitions:
+  entity.Booking:
+    type: object
+    properties:
+      created_at:
+        type: string
+        example: "2025-05-11T15:04:05Z"
+      expired_at:
+        type: string
+        example: "2025-06-30T15:04:05Z"
+      id:
+        type: string
+        example: "123e4567-e89b-12d3-a456-426614174000"
+      porter_id:
+        type: string
+        example: "123e4567-e89b-12d3-a456-426614174003"
+      quantity:
+        type: integer
+        example: 3
+      status:
+        allOf:
+          - $ref: "#/definitions/entity.BookingStatus"
+        example: "PENDING"
+      total_price:
+        type: integer
+        example: 1500000
+      tour_id:
+        type: string
+        example: "123e4567-e89b-12d3-a456-426614174002"
+      updated_at:
+        type: string
+        example: "2025-05-12T10:00:00Z"
+      user_id:
+        type: string
+        example: "123e4567-e89b-12d3-a456-426614174001"
+
+  entity.BookingStatus:
+    type: string
+    enum:
+      - EXPIRED
+      - PENDING
+      - CANCEL
+      - SUCCESS
+    x-enum-varnames:
+      - BookingStatusExpired
+      - BookingStatusPending
+      - BookingStatusCancel
+      - BookingStatusSuccess
