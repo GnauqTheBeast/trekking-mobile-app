@@ -1,0 +1,148 @@
+openapi: 3.0.3
+info:
+  title: User Service API
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+paths:
+  /user/getInfo/{id}:
+    get:
+      summary: Get user information by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User info found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetByIdResponse'
+        '404':
+          description: User not found
+  /user/getAll:
+    get:
+      summary: Get all users
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDataUserArray'
+  /user/update/{id}:
+    put:
+      summary: Update user info by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRequestDto'
+      responses:
+        '200':
+          description: Update result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDto'
+  /user/delete/{id}:
+    delete:
+      summary: Delete user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Delete result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseDto'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        fullname:
+          type: string
+        password:
+          type: string
+        roleName:
+          type: string
+        phoneNumber:
+          type: string
+          nullable: true
+        dob:
+          type: string
+          format: date
+          nullable: true
+        address:
+          type: string
+          nullable: true
+    GetByIdResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/User'
+    ResponseDataUserArray:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    UpdateRequestDto:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        fullname:
+          type: string
+        phoneNumber:
+          type: string
+          nullable: true
+        dob:
+          type: string
+          format: date
+          nullable: true
+        address:
+          type: string
+          nullable: true
+      required:
+        - email
+        - fullname
+    ResponseDto:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
