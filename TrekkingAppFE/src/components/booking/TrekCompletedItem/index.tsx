@@ -31,19 +31,19 @@ const TrekCompletedItem: React.FC<BookingProps> = (booking) => {
     <View style={styles.trekItem}>
       <View style={styles.top}>
         <View style={styles.hostContainer}>
-          <View style={styles.wrapHostAvatar}>
+          {/* <View style={styles.wrapHostAvatar}>
               {booking.trek.host.host_avt !== '' ?
                   <ImageBackground source={{uri: booking.trek.host.host_avt}} style={styles.hostAvt} />
               :
                   <Icon name="account" color='white' size={20} />
               }
           </View>
-          <Text style={styles.hostName}>{booking.trek.host.host_name}</Text>
+          <Text style={styles.hostName}>{booking.trek.host.host_name}</Text> */}
         </View>
         <Text style={styles.statusLabel}>{booking.status}</Text>
       </View>
       <View style={styles.trekInfoContainer}>
-        <Image source={{uri: booking.trek.image[0]}} style={styles.trekImage} />
+        <Image source={{uri: booking.trek.images[0]}} style={styles.trekImage} />
         <View style={styles.trekDetails}>
           <Text style={styles.trekName}>{booking.trek.name}</Text>
           <View style={styles.trekDetailRow}>
@@ -56,7 +56,7 @@ const TrekCompletedItem: React.FC<BookingProps> = (booking) => {
           </View>
           <View style={styles.trekDetailRow}>
             <Calendar width={14} height={14} />
-            <Text style={styles.trekDetailText}>{booking.batch.start_date} - {booking.batch.end_date}</Text>
+            <Text style={styles.trekDetailText}>{booking.trek.start_date} - {booking.trek.end_date}</Text>
           </View>
 
           <Text style={styles.trekPrice}>{solveMoney(booking.trek.price)}đ/person</Text>

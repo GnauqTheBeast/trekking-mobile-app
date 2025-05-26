@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -13,21 +13,22 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from './styles';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../../../navigation/AppNavigator';
+import { RootStackParamList } from '../../../navigation/main/UserAppNavigator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { wsService } from '../../../services/websocket.service';
+import { AuthContext, AuthProvider } from '../../../context/AuthProvider';
+import { AccountStackParamList } from '../../../navigation/main/account/AccountNavigator';
+import { RoleContext } from '../../../context/RoleProvider';
 
-// Fixed user data
-const user = {
-  name: 'Afsar Hossen',
-  email: 'imafsar97@gmail.com',
-  avt_image: null, // Set to null to test icon display, or use a URL like 'https://via.placeholder.com/60'
-};
+type AccountScreenNavigationProp = StackNavigationProp<RootStackParamList>;
+
 
 const AccountScreen: React.FC = () => {
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const rootNavigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const auth = useContext(AuthContext)!;
+  const {user, isLoggedIn, setUser, setToken, setIsLoggedIn} = auth;
+  const role = user?.role.name;
 
   useEffect(() => {
       const fetchUserData = async () => {
@@ -51,28 +52,30 @@ const AccountScreen: React.FC = () => {
   }, []);
 
   const handleLogout = async () => {
-      await AsyncStorage.removeItem('user');
-      await AsyncStorage.removeItem('token');
-      setIsLoggedIn(false);
-      setUser(null);
+    wsService.disconnect();
+    await AsyncStorage.removeItem('user');
+    await AsyncStorage.removeItem('token');
+    setIsLoggedIn(false);
+    setUser(null);
+    setToken(null);
   };
 
   const handlePressMenuItem = (title: string) => {
+    // if (!isLoggedIn) {
+    //   rootNavigation.navigate('LoginScreen');
+    //   return;
+    // }
     switch(title) {
-      case 'My profile':
-        navigation.navigate('MyProfileScreen');
+      case 'Trekking Management':
+        rootNavigation.navigate('TrekStack', {
+          screen: 'TrekList'
+        });
         break;
-      case 'Rewards & Wallet':
-        // Show wallet options
+      case 'Account & Security':
+        rootNavigation.navigate('AccountSecurityStack', {screen: 'AccountSecurityScreen'});
         break;
-      case 'Nạp tiền':
-        navigation.navigate('WalletDeposit');
-        break;
-      case 'Rút tiền':
-        navigation.navigate('WalletWithdrawal');
-        break;
-      case 'Lịch sử giao dịch':
-        navigation.navigate('WalletHistory');
+      case 'My Wallet':
+        rootNavigation.navigate('WalletStack', {screen: 'MyWalletScreen'})
         break;
       default:
         console.log(title);
@@ -83,6 +86,7 @@ const AccountScreen: React.FC = () => {
     <TouchableOpacity
       style={styles.menuItem}
       onPress={() => handlePressMenuItem(title)}
+      disabled={!isLoggedIn}
     >
       <View style={styles.menuItemLeft}>
         <Icon name={icon} size={size} color="#FF8E4F" />
@@ -97,13 +101,13 @@ const AccountScreen: React.FC = () => {
         <StatusBar barStyle="light-content"/>
         <View style={styles.content}>
             <View style={styles.header}>
-                {isLoggedIn ?
+                {isLoggedIn && user ?
                 <>
                     <View style={styles.profileImageContainer}>
                         <View style={styles.profileImage}>
-                        {user.avt_image ? (
+                        {user.image ? (
                             <Image
-                            source={{ uri: user.avt_image }}
+                            source={{ uri: user.image }}
                             style={{ width: '100%', height: '100%', borderRadius: 30 }}
                             />
                         ) : (
@@ -122,13 +126,13 @@ const AccountScreen: React.FC = () => {
                     <View style={styles.authContainer}>
                         <TouchableOpacity
                             style={styles.authTextContainer}
-                            onPress={() => navigation.navigate('LoginScreen')}
+                            onPress={() => rootNavigation.navigate('LoginScreen')}
                         >
                             <Text style={styles.authText}>Login</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.authTextContainer}
-                            onPress={() => navigation.navigate('SignUpScreen')}
+                            onPress={() => rootNavigation.navigate('SignUpScreen')}
                         >
                             <Text style={styles.authText}>Register</Text>
                         </TouchableOpacity>
@@ -137,17 +141,12 @@ const AccountScreen: React.FC = () => {
             }
             </View>
 
-        {/* Menu Items */}
             <View style={styles.menuContainer}>
-                <MenuItem icon="account" size={28} title="My profile" />
-                <MenuItem icon="credit-card-outline" size={26} title="Rewards & Wallet" />
-                {isLoggedIn && (
-                  <>
-                    <MenuItem icon="cash-plus" size={26} title="Nạp tiền" />
-                    <MenuItem icon="cash-minus" size={26} title="Rút tiền" />
-                    <MenuItem icon="history" size={26} title="Lịch sử giao dịch" />
-                  </>
+                {role === 'HOST' && (
+                  <MenuItem icon="map-marker-path" size={26} title="Trekking Management" />
                 )}
+                <MenuItem icon="account" size={28} title="Account & Security" />
+                <MenuItem icon="credit-card-outline" size={26} title="My Wallet" />
                 <MenuItem icon="star-box" size={28} title="My reviews" />
                 <MenuItem icon="bell" size={26} title="Notifications" />
                 <MenuItem icon="help-circle" size={26} title="Help" />

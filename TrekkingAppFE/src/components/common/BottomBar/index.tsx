@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { StackActions } from '@react-navigation/native';
 import HomeIcon from '../../../assets/icons/taskbar/home.svg';
 import HomeOutlineIcon from '../../../assets/icons/taskbar/home-outline.svg';
 import BookingIcon from '../../../assets/icons/taskbar/suitcase.svg';
@@ -33,26 +32,6 @@ const tabScreens = {
 
 const BottomBar: React.FC<BottomTabBarProps> = ({ state, navigation }) => {
 
-  // {
-  //   index: 0,
-  //   key: "tab-2TiGWUhaMKVdq29F9dGlM",
-  //   preloadedRouteKeys: [],
-  //   routeNames: [
-  //     "HomeStack",
-  //     "BookingStack",
-  //     "SaveStack",
-  //     "NotificationStack",
-  //     "AccountStack"
-  //   ],
-  //   routes: [
-  //     {
-  //       key: "HomeStack-M9CtbgQjx5BAqe-G3QZ82",
-  //       name: "HomeStack",
-  //       params: {
-  //         screen: "HomeScreen"
-  //       },
-
-
   const focusedStack = state?.routes[state.index]?.name;
 
   const firstScreenInStack = tabScreens[focusedStack as keyof typeof tabScreens]
@@ -62,10 +41,6 @@ const BottomBar: React.FC<BottomTabBarProps> = ({ state, navigation }) => {
     currentStackState && typeof currentStackState.index === 'number'
       ? currentStackState.routes?.[currentStackState.index]?.name
       : firstScreenInStack;
-
-  // console.log("current stack:", focusedStack)
-  // console.log("first screen: ", firstScreenInStack)
-  // console.log("Current screen:", currentScreenInStack)
 
   const handleOnPress = useCallback(
     (stack: string) => {

@@ -1,0 +1,107 @@
+import { StyleSheet } from "react-native";
+
+const styles = StyleSheet.create({
+    container: {
+        width: '100%',
+        alignItems: 'center',
+        backgroundColor: 'white',
+        borderRadius: 15,
+        borderColor: '#E2E2E2',
+        borderWidth: 1,
+        paddingBottom: 3
+    },
+    wrapper: {
+        height: 140,
+        width: '100%',
+        borderRadius: 15,
+        overflow: 'hidden',
+    },
+    image: {
+        resizeMode: "cover",
+        height: '100%',
+        width: '100%',
+        alignItems: 'center'
+    },
+    containerLevelAndSave: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '90%',
+        marginTop: 5
+    },
+    levelContainer: {
+        borderRadius: 10,
+        paddingHorizontal: 10,
+        paddingVertical: 1.5,
+    },
+    levelText: {
+        color: 'white',
+        fontFamily: 'OpenSans-SemiBold',
+        fontSize: 13
+    },
+    content: {
+        width: '100%',
+        paddingHorizontal: 10,
+        paddingTop: 8,
+        paddingBottom: 16
+    },
+    nameText: {
+        color: '#2A5848',
+        fontFamily: 'OpenSans-Bold',
+        fontSize: 16,
+    },
+    commonContainer: {
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    commonText: {
+        fontFamily: 'OpenSans-Medium',
+        fontSize: 13,
+        marginLeft: 5
+    },
+    priceText: {
+        color: '#FF8E4F',
+        fontFamily: 'OpenSans-Bold',
+        fontSize: 20,
+        position: 'absolute',
+        bottom: 0,
+        right: 10,
+    },
+    wrapHostAvatar: {
+        backgroundColor: '#2A5848',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 24,
+        height: 24,
+        borderRadius: 50,
+        overflow: 'hidden',
+        position: 'absolute',
+        top: 10,
+        right: 10
+    },
+    hostAvt: {
+        height: '100%',
+        width: '100%',
+        resizeMode: 'cover'
+    },
+    hostName: {
+        fontFamily: 'OpenSans-Medium',
+        fontSize: 11,
+        position: 'absolute',
+        top: 40,
+        right: 10
+    },
+    actionButtons: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
+    actionButton: {
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 6,
+    },
+})
+
+export default styles;

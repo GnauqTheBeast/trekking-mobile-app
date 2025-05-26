@@ -10,12 +10,19 @@ const styles = StyleSheet.create({
     },
     body: {
         flex: 1,
-        backgroundColor: 'red'
+        backgroundColor: 'white',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+
     },
     imageItem: {
         width: width,
         height: height / 2,
         resizeMode: "cover",
+    },
+    upBody: {
+        width: width,
+        height: height / 2,
     },
     content: {
         flex: 1,
@@ -52,6 +59,25 @@ const styles = StyleSheet.create({
         width: 30,
         backgroundColor: "white",
         borderRadius: 3,
+    },
+    levelContainer: {
+        borderRadius: 4,
+        paddingHorizontal: 16,
+        paddingVertical: 2,
+        backgroundColor: 'white',
+        position: 'absolute',
+        right: 20,
+        top: 310
+    },
+    levelText: {
+        color: 'white',
+        fontFamily: 'OpenSans-Bold',
+        fontSize: 13
+    },
+    saveContainer: {
+        position: 'absolute',
+        right: 16,
+        top: 50
     },
     nameTrek: {
         fontFamily: 'OpenSans-Bold',
@@ -104,22 +130,30 @@ const styles = StyleSheet.create({
         fontSize: 12
     },
     hostContainer: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        gap: 16,
         backgroundColor: '#E1F2DC',
         borderRadius: 10,
         marginTop: 10,
-        paddingHorizontal: 10,
-        paddingVertical: 6
+        paddingHorizontal: 16,
+        paddingVertical: 10
     },
     hostNameContainer: {
         flexDirection: 'row',
         gap: 10
     },
+    hostName: {
+        fontFamily: 'OpenSans-SemiBold',
+        fontSize: 16
+    },
     wrapHostAvatar: {
         backgroundColor: '#2A5848',
         justifyContent: 'center',
         alignItems: 'center',
-        width: 20,
-        height: 20,
+        width: 28,
+        height: 28,
         borderRadius: 50,
         overflow: 'hidden',
     },
@@ -133,9 +167,9 @@ const styles = StyleSheet.create({
         borderColor: '#FF8E4F',
         borderRadius: 5,
         fontFamily: 'OpenSans-Bold',
-        fontSize: 11,
-        paddingHorizontal: 8,
-        paddingVertical: 1,
+        fontSize: 13,
+        paddingHorizontal: 12,
+        paddingVertical: 2,
         color: '#FF8E4F'
     },
     commonTrekInfo: {
@@ -147,24 +181,6 @@ const styles = StyleSheet.create({
     availableContainer: {
         marginTop: 10
     },
-    batchContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 8
-    },
-    infoBatch: {
-        backgroundColor: 'rgba(142, 142, 142, 0.2)',
-        // color: '#8E8E8E',
-        borderRadius: 8,
-        paddingHorizontal: 6,
-        paddingVertical: 5,
-        fontFamily: 'OpenSans-SemiBold',
-        fontSize: 13
-    },
-    selectedBatch: {
-        color: '#FF5341',
-        backgroundColor: 'rgba(255, 83, 65, 0.3)',
-    },
     bookContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -174,7 +190,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingBottom: 25,
         paddingTop: 10,
-        zIndex: 1000
+        zIndex: 1000,
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        borderTopColor: '#f2f2f2',
+        borderTopWidth: 1
     },
     priceText: {
         color: '#2A5848',
@@ -190,8 +212,46 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 6,
         borderRadius: 5
-    }
-
+    },
+    dateContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginVertical: 16,
+        backgroundColor: '#F2F2F2',
+        borderRadius: 12,
+        padding: 12,
+    },
+    dateCard: {
+        flex: 1,
+        alignItems: 'center',
+    },
+    dateHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 6,
+    },
+    dateLabel: {
+        fontSize: 11,
+        fontFamily: 'OpenSans-Medium',
+        marginLeft: 4,
+    },
+    dateValue: {
+        fontSize: 14,
+        fontFamily: 'OpenSans-Bold',
+        color: '#2A5848',
+        marginBottom: 2,
+    },
+    dateShort: {
+        fontSize: 12,
+        fontFamily: 'OpenSans-Regular',
+        color: '#8E8E8E',
+    },
+    dateArrow: {
+        marginHorizontal: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 })
 
 export default styles;

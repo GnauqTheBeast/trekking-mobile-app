@@ -43,7 +43,8 @@ const styles = StyleSheet.create({
     content: {
         width: '100%',
         paddingHorizontal: 10,
-        paddingVertical: 5
+        paddingTop: 8,
+        paddingBottom: 16
     },
     nameText: {
         color: '#2A5848',
@@ -62,7 +63,7 @@ const styles = StyleSheet.create({
     priceText: {
         color: '#FF8E4F',
         fontFamily: 'OpenSans-Bold',
-        fontSize: 18,
+        fontSize: 20,
         position: 'absolute',
         bottom: 5,
         right: 15,

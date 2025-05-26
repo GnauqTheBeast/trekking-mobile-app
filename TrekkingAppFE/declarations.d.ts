@@ -7,6 +7,3 @@ declare module "*.svg" {
 
 declare module 'react-native-read-more-text'
 
-// declare module 'react-native-push-notification'
-
-// declare module 'react-native-uuid'

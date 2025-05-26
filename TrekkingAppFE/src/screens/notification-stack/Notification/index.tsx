@@ -21,14 +21,12 @@ import styles from './styles';
 import NotificationCenter from '../../../components/notification/NotificationCenter';
 import InAppNotification from '../../../components/notification/InAppNotification';
 import { NotificationData } from '../../../types/notification';
+import { AuthContext } from '../../../context/AuthProvider';
 
 const NotificationsScreen: React.FC = () => {
-    const navigation = useNavigation();
-    //   const { user } = useContext(AuthContext);
-    const user = {
-        id: "1"
-    }
-    const userId = user?.id;
+  const navigation = useNavigation();
+  const auth = useContext(AuthContext);
+  const user = auth?.user;
 
   const [isReadingAll, setIsReadingAll] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
@@ -43,15 +41,16 @@ const NotificationsScreen: React.FC = () => {
 
   // Load notification counts
   useEffect(() => {
-    if (userId) {
+    if (user) {
       loadNotificationCounts();
     }
-  }, [userId]);
+  }, [user]);
 
   const loadNotificationCounts = async () => {
-    if (!userId) return;
+    if (!user) return;
 
     try {
+      const userId = user.id
       const notifications = await fetchUserNotifications(userId);
       setNotificationCount(notifications.length);
 
@@ -66,13 +65,24 @@ const NotificationsScreen: React.FC = () => {
 
   // Handle marking all as read
   const handleMarkAllAsRead = async () => {
-    if (!userId || isReadingAll) return;
+    if (!user || isReadingAll) return;
 
     setIsReadingAll(true);
     try {
-      await markAllNotificationsAsRead(userId);
+      const userId = user.id;
 
-      // Show success notification
+      const notifications = await fetchUserNotifications(userId);
+
+      const unreadNotifications = notifications.filter(
+        (notification: NotificationData) => !notification.isRead
+      );
+
+      const unreadIds = unreadNotifications.map((n: any) => n.id);
+
+      if (unreadIds.length > 0) {
+        await markAllNotificationsAsRead(unreadIds);
+      }
+
       setInAppNotification({
         visible: true,
         title: 'Thành công',
@@ -99,10 +109,11 @@ const NotificationsScreen: React.FC = () => {
 
   // Handle clearing all notifications
   const handleClearAll = async () => {
-    if (!userId || isClearing) return;
+    if (!user || isClearing) return;
 
     setIsClearing(true);
     try {
+      const userId = user.id;
       await clearAllNotifications(userId);
 
       // Show success notification
@@ -178,7 +189,7 @@ const NotificationsScreen: React.FC = () => {
           </TouchableOpacity>
         <NotificationCenter
           navigation={navigation}
-          userId={userId || ''}
+          userId={user ? user.id : ''}
           onUpdate={handleNotificationsUpdate}
         />
         <View>

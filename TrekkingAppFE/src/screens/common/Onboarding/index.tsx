@@ -4,7 +4,7 @@ import LinearGradient from "react-native-linear-gradient";
 import styles from "./styles";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../../../navigation/AppNavigator";
+import { RootStackParamList } from "../../../navigation/main/UserAppNavigator";
 
 const OnBoardingScreen: React.FC = () => {
 

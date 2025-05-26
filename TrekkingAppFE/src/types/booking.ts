@@ -1,14 +1,13 @@
-import { BatchProps } from "./batch";
 import { PaymentProps } from "./payment";
-import { TrekProps } from "./trek";
+import { TrekHostProps, TrekProps } from "./trek";
 
 export interface BookingProps {
-    id: string;
-    trek: TrekProps;
-    batch: BatchProps;
+    id?: string;
+    porter_id: string;
+    trek: Omit<TrekHostProps, 'description' | 'status' | 'rate'>;
     payment?: PaymentProps;
-    status: string;
+    status: 'PENDING' | 'CONFIRMED' | 'CANCELLED';
     total_person: number;
     total_amount: number;
-    book_at?: string;
+    created_at: string;
 }
