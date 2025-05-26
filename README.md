@@ -1,211 +1,9 @@
-# Use Case: Đặt tour leo núi
+# Book Trekking Tour
 
 ### Thành viên: 
 - Vũ Ngọc Sơn - B21DCCN654
 - Nguyễn Ngọc Quang - B21DCCN630 
 - Nguyễn Anh Đức - B21DCCN245
-
-
----
-
-## 📁 Cấu trúc thư mục 
-
-```
-mid-project-630245654/
-├── docs/
-│   ├── api-specs/
-│   │   ├── auth-service.yaml
-│   │   ├── booking-service.yaml
-│   │   ├── notification-service.yaml
-│   │   ├── payment-service.yaml
-│   │   ├── tour-service.yaml
-│   │   └── user-service.yaml
-│   ├── architecture.md
-│   ├── analysis-and-design.md
-│   └── assets/
-│       ├── architecture.png
-│       └── schema.png
-│
-├── services/
-│   ├── auth-service/
-│   │   ├── src/
-│   │   │   ├── auth/
-│   │   │   │   ├── controller/
-│   │   │   │   │   └── auth.controller.ts
-│   │   │   │   ├── dto/
-│   │   │   │   │   └── auth.dto.ts
-│   │   │   │   ├── interface/
-│   │   │   │   │   ├── auth.interface.ts
-│   │   │   │   │   └── user.interface.ts
-│   │   │   │   └── service/
-│   │   │   │       ├── auth.service.ts
-│   │   │   │       └── jwt.service.ts
-│   │   │   ├── client-grpc/
-│   │   │   │   └── client.grpc.ts
-│   │   │   ├── otp/
-│   │   │   │   └── otp.service.ts
-│   │   │   ├── proto/
-│   │   │   │   ├── auth.proto
-│   │   │   │   └── user.proto
-│   │   │   ├── redis/
-│   │   │   │   ├── redis.config.ts
-│   │   │   │   ├── redis.module.ts
-│   │   │   │   └── redis.service.ts
-│   │   │   ├── util/
-│   │   │   │   └── mail.util.ts
-│   │   │   ├── app.module.ts
-│   │   │   └── main.ts
-│   │   ├── Dockerfile
-│   │   └── README.md
-│   │
-│   ├── booking-service/
-│   │   ├── src/
-│   │   │   ├── app/
-│   │   │   │   ├── database/
-│   │   │   │   │   ├── migrations/
-│   │   │   │   │   │   └── 000001_init_schema.sql
-│   │   │   │   │   ├── queries/
-│   │   │   │   │   │   └── booking.sql
-│   │   │   │   │   ├── redis/
-│   │   │   │   │   │   └── redis.go
-│   │   │   │   │   └── sqlc/
-│   │   │   │   │       ├── booking.sql.go
-│   │   │   │   │       ├── db.go
-│   │   │   │   │       ├── models.go
-│   │   │   │   │       └── querier.go
-│   │   │   ├── cmd/
-│   │   │   │   ├── api/
-│   │   │   │   │   ├── api.go
-│   │   │   │   │   ├── grpc_client.go
-│   │   │   │   │   └── route_v1.go
-│   │   │   │   └── main.go
-│   │   │   ├── internal/
-│   │   │   │   ├── context/
-│   │   │   │   │   └── context.go
-│   │   │   │   ├── dependencies/
-│   │   │   │   │   └── dependencies.go
-│   │   │   │   ├── module/
-│   │   │   │   │   └── booking/
-│   │   │   │   │       ├── business/
-│   │   │   │   │       │   └── business.go
-│   │   │   │   │       ├── entity/
-│   │   │   │   │       │   └── booking.go
-│   │   │   │   │       ├── repository/
-│   │   │   │   │       │   ├── repository.go
-│   │   │   │   │       │   └── rpc/
-│   │   │   │   │       │       ├── auth_repository.go
-│   │   │   │   │       │       └── tour_repository.go
-│   │   │   │   │       └── transport/
-│   │   │   │   │           └── rest/
-│   │   │   │   │               ├── api.go
-│   │   │   │   │               └── response_message.go
-│   │   │   │   ├── pkg/
-│   │   │   │   │   ├── env/
-│   │   │   │   │   │   └── env.go
-│   │   │   │   │   ├── jwt/
-│   │   │   │   │   │   └── jwt.go
-│   │   │   │   │   ├── paging/
-│   │   │   │   │   │   └── paging.go
-│   │   │   │   │   └── pubsub/
-│   │   │   │   │       ├── interfaces.go
-│   │   │   │   │       └── redis/
-│   │   │   │   │           ├── main.go
-│   │   │   │   │           └── subscriber.go
-│   │   │   │   ├── types/
-│   │   │   │   │   └── pubsub.go
-│   │   │   │   └── utils/
-│   │   │   │       └── utils.go
-│   │   │   ├── middleware/
-│   │   │   ├── proto/
-│   │   │   └── docs/
-│   │   │       ├── docs.go
-│   │   │       ├── swagger.json
-│   │   │       └── swagger.yaml
-│   │   ├── Dockerfile
-│   │   └── README.md
-│   │
-│   ├── tour-service/
-│   │   ├── src/
-│   │   │   ├── app/
-│   │   │   │   ├── database/
-│   │   │   │   ├── repository/
-│   │   │   │   └── service/
-│   │   │   ├── cmd/
-│   │   │   ├── internal/
-│   │   │   ├── middleware/
-│   │   │   └── proto/
-│   │   ├── Dockerfile
-│   │   └── README.md
-│   │
-│   ├── payment-service/
-│   │   ├── src/
-│   │   │   ├── PaymentService.Api/
-│   │   │   │   ├── Controllers/
-│   │   │   │   ├── Models/
-│   │   │   │   ├── Services/
-│   │   │   │   └── Program.cs
-│   │   │   ├── PaymentService.Core/
-│   │   │   └── PaymentService.Infrastructure/
-│   │   ├── Dockerfile
-│   │   └── README.md
-│   │
-│   ├── notification-service/
-│   │   ├── src/
-│   │   │   ├── app/
-│   │   │   │   ├── database/
-│   │   │   │   ├── repository/
-│   │   │   │   └── service/
-│   │   │   ├── cmd/
-│   │   │   ├── internal/
-│   │   │   ├── middleware/
-│   │   │   └── proto/
-│   │   ├── Dockerfile
-│   │   └── README.md
-│   │
-│   └── user-service/
-│       ├── src/
-│       │   ├── user/
-│       │   │   ├── controller/
-│       │   │   ├── dto/
-│       │   │   ├── entity/
-│       │   │   ├── interface/
-│       │   │   └── service/
-│       │   ├── proto/
-│       │   ├── app.module.ts
-│       │   └── main.ts
-│       ├── Dockerfile
-│       └── README.md
-│
-├── gateway/
-│   ├── src/
-│   │   ├── ApiGateWay/
-│   │   │   ├── Controllers/
-│   │   │   │   └── PaymentController.cs
-│   │   │   ├── Protos/
-│   │   │   │   └── payment.proto
-│   │   │   ├── Services/
-│   │   │   │   └── PaymentServiceClient.cs
-│   │   │   ├── Program.cs
-│   │   │   └── appsettings.json
-│   │   └── OcelotGateway/
-│   │       ├── ocelot.json
-│   │       └── Program.cs
-│   ├── Dockerfile
-│   └── README.md
-│
-├── webserver/
-│   ├── nginx.conf
-│   └── Dockerfile
-│
-├── scripts/
-│   └── init.sh
-│
-├── .env.example
-├── docker-compose.yml
-└── README.md
-
-
-```
 
 ---
 
@@ -227,7 +25,6 @@ mid-project-630245654/
   - Cache layer
   - Message broker (pub/sub)
   - Lưu trữ OTP và session
-  - Rate limiting
 
 ### 3. Giao tiếp & API
 - **REST API**: Giao tiếp với client
@@ -257,9 +54,10 @@ mid-project-630245654/
 - **Logging Middleware**: Ghi log request/response
 
 ### 7. Công cụ phát triển
-- **SQLC**: Tạo code cho database operations (Go)
+- **SQLC**: code gen cho database operations (Go)
 - **Nodemailer**: Gửi email OTP
 - **Protocol Buffers Compiler**: Tạo code gRPC
+- **Cloudinary**: Cloud lưu trữ ảnh
 
 ### 8. Các thư viện chính
 - **NestJS**:
@@ -267,9 +65,7 @@ mid-project-630245654/
   - @nestjs/microservices
   - @nestjs/jwt
 - **Go**:
-  - grpc
   - gin
-  - gorm
   - sqlc
 - **.NET**:
   - Ocelot
@@ -379,13 +175,13 @@ mid-project-630245654/
 1. **Clone this repository**
 
    ```bash
-   git clone https://github.com/jnp2018/mid-project-630245654.git
-   cd mid-project-630245654
+   git clone https://github.com/GnauqTheBeast/trekking-mobile-app
+   cd trekking-mobile-app
    ```
 2. **Run with Docker Compose**
 
    ```bash
-   docker-compose up --build
+   docker compose up --build
    ```
 3. **Run with Kubernetes**
 
@@ -629,9 +425,3 @@ Tất cả các API đều trả về lỗi theo format:
 }
 ```
 
-### Lưu ý
-1. Token JWT có thời hạn 1 giờ
-2. Đơn đặt tour có thời hạn 15 phút
-3. Cần xác thực qua OTP khi đăng ký
-4. Thanh toán phải được hoàn tất trong thời hạn đặt tour
-5. Thông báo real-time được gửi qua WebSocket
