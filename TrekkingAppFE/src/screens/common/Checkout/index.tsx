@@ -1,42 +1,33 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Image, ImageBackground, Alert } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Image, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from './styles';
 import ReturnButton from '../../../components/common/ReturnButton';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { RootStackParamList } from '../../../navigation/AppNavigator';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { RootStackParamList } from '../../../navigation/main/UserAppNavigator';
 import Calendar from '../../../assets/icons/common/calendar.svg';
 import Person from '../../../assets/icons/common/person-orange.svg';
+import { AuthContext } from '../../../context/AuthProvider';
+import { LoadingSpinner } from '../../../components/LoadingSpinner';
+import { bookingService } from '../../../services/booking.service';
+import { paymentService } from '../../../services/payment.service';
+import { StackNavigationProp } from '@react-navigation/stack';
 
-const CheckoutScreen: React.FC = () => {
-  const route = useRoute<RouteProp<RootStackParamList, 'CheckoutScreen'>>();
-  const { booking } = route.params;
-  const navigation = useNavigation();
-
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('banking');
-  const [walletBalance, setWalletBalance] = useState(500000);
-
-  // Handle Confirm Payment
-  const handleConfirmPayment = () => {
-    if (selectedPaymentMethod === 'wallet' && walletBalance < booking.total_amount) {
-      Alert.alert(
-        'Insufficient Balance',
-        'Your wallet balance is not enough. Please top up your wallet.',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'Top Up',
-            onPress: () => navigation.navigate('TopUpScreen'),
-          },
-        ]
-      );
-    } else {
-      Alert.alert('Success', 'Payment confirmed!');
+const formatDate = (dateInput: string | Date): string => {
+    const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
+    if (isNaN(date.getTime())) {
+        return 'Invalid date';
     }
-  };
+    return date.toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+}
 
-  const solveMoney = (money: number): string => {
+const solveMoney = (money: number): string => {
     let result: string = '';
     while(money > 1000) {
         let tmp = money % 1000;
@@ -45,6 +36,71 @@ const CheckoutScreen: React.FC = () => {
     }
     result = money.toString() + result;
     return result;
+}
+
+const CheckoutScreen: React.FC = () => {
+  const route = useRoute<RouteProp<RootStackParamList, 'CheckoutScreen'>>();
+  const { booking } = route.params;
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
+  console.log('Booking object:', JSON.stringify(booking, null, 2));
+
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('banking');
+  // const [walletBalance, setWalletBalance] = useState(500000);
+  const [loading, setLoading] = useState(false);
+
+  // Handle Confirm Payment
+  const handleConfirmPayment = async () => {
+    // if (selectedPaymentMethod === 'wallet' && walletBalance < booking.total_amount) {
+    //   Alert.alert(
+    //     'Insufficient Balance',
+    //     'Your wallet balance is not enough. Please top up your wallet.',
+    //     [
+    //       { text: 'Cancel', style: 'cancel' },
+    //       {
+    //         text: 'Top Up',
+    //         onPress: () => navigation.navigate('TopUpScreen' as never)
+    //       },
+    //     ]
+    //   );
+    //   return;
+    // }
+
+    try {
+      setLoading(true);
+
+      console.log("Booking Id: ", booking.id)
+      const response = await paymentService.processPayment(booking.id || '');
+
+      if (response) {
+        Alert.alert(
+          'Success',
+          'Process payment successfully!',
+          [
+            {
+              text: 'OK',
+              onPress: () => navigation.navigate('MainStack',
+                {
+                  screen: 'HomeStack',
+                  params: {screen: 'HomeScreen'}
+                }
+              )
+            }
+          ]
+        );
+      }
+    } catch (error: any) {
+      Alert.alert(
+        'Error',
+        error.response?.data?.message || 'Something went wrong. Please try again.'
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <LoadingSpinner />;
   }
 
   return (
@@ -57,26 +113,16 @@ const CheckoutScreen: React.FC = () => {
       <ScrollView style={{ backgroundColor: '#f2f2f2' }}>
         <View style={styles.summaryCard}>
           <View style={styles.summaryTop}>
-            <Image source={{ uri: booking.trek.image[0] }} style={styles.trekImage} />
+            <Image source={{ uri: booking.trek.images.length > 0 ? booking.trek.images[0] : '' }} style={styles.trekImage} />
             <View style={styles.trekInfo}>
               <Text style={styles.trekName}>{booking.trek.name}</Text>
-              <View style={styles.hostRow}>
-                <View style={styles.wrapHostAvatar}>
-                  {booking.trek.host.host_avt ? (
-                    <ImageBackground source={{ uri: booking.trek.host.host_avt }} style={styles.hostAvt} />
-                  ) : (
-                    <Icon name="account" color="white" size={16} />
-                  )}
-                </View>
-                <Text style={styles.hostText}>{booking.trek.host.host_name}</Text>
-              </View>
 
               <View style={styles.batchContainer}>
                 <View style={styles.dateContainer}>
                   <Text style={styles.dateLabel}>Date start</Text>
                   <View style={styles.dateValuesRow}>
                     <Calendar width={14} height={14} />
-                    <Text style={styles.dateValue}>{booking.batch.start_date} 2025</Text>
+                    <Text style={styles.dateValue}>{formatDate(String(booking.trek.startAt))}</Text>
                   </View>
                 </View>
 
@@ -86,7 +132,7 @@ const CheckoutScreen: React.FC = () => {
                   <Text style={styles.dateLabel}>Date end</Text>
                   <View style={styles.dateValuesRow}>
                     <Calendar width={14} height={14} />
-                    <Text style={styles.dateValue}>{booking.batch.end_date} 2025</Text>
+                    <Text style={styles.dateValue}>{formatDate(String(booking.trek.endAt))}</Text>
                   </View>
                 </View>
               </View>
@@ -125,7 +171,7 @@ const CheckoutScreen: React.FC = () => {
               </View>
             </View>
             <Text style={styles.methodName}>
-              Wallet (Balance: {solveMoney(walletBalance)}đ)
+              Wallet
             </Text>
             <View style={styles.flex} />
           </TouchableOpacity>

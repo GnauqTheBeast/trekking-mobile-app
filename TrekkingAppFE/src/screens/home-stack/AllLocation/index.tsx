@@ -5,7 +5,7 @@ import { StatusBar, View, Text, FlatList, ImageBackground, TouchableOpacity } fr
 import styles from "./styles";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { HomeStackParamList } from "../../../navigation/main/HomeNavigator";
+import { HomeStackParamList } from "../../../navigation/main/home/HomeNavigator";
 
 const AllLocationScreen: React.FC = () => {
 

@@ -1,9 +1,10 @@
 import { Body, Controller, Delete, Get, Inject, Param, Post, Put } from '@nestjs/common';
-import { CheckExistByEmailRequest, CheckExistByEmailResponse, CheckLoginResponse, GetByIdRequest, GetByIdResponse, USER_SERVICE_NAME, UserServiceControllerMethods } from '../../../interface-proto/user.interface';
+import { ChangeEmailRequest, ChangeEmailResponse, CheckExistByEmailRequest, CheckExistByEmailResponse, CheckLoginResponse, GetByIdRequest, GetByIdResponse, USER_SERVICE_NAME, UserServiceControllerMethods } from '../../../interface-proto/user.interface';
 import { UserService } from '../service/user.service';
 import { GrpcMethod } from '@nestjs/microservices';
 import { ChangePasswordRequestDto, CheckLoginRequestDto, CreateRequestDto, ResetPasswordRequestDto, ResponseDataDto, ResponseDto } from '../dto/user.dto';
 import { User } from '../entities/user.entity';
+import { Host } from 'src/module/favourites/dto/ResponseDTO';
 
 @Controller('user')
 @UserServiceControllerMethods()
@@ -32,12 +33,24 @@ export class UserController {
         return await this.userService.checkLogin(request)
     }
 
+    @GrpcMethod(USER_SERVICE_NAME, 'changeEmail')
+    async changeEmail(request: ChangeEmailRequest): Promise<ChangeEmailResponse> {
+        return await this.userService.changeEmail(request);
+    }
+
 
     @Get('getInfo/:id')
     async getUserInfomation(
         @Param() id: string
     ): Promise<GetByIdResponse> {
         return await this.userService.getById({id});
+    }
+
+    @Get('getHost/:id')
+    async getHostById(
+        @Param('id') id: string
+    ): Promise<Host> {
+        return await this.userService.getHostById(id);
     }
 
     @Get('getAll')

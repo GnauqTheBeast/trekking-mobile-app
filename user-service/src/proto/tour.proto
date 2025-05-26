@@ -19,6 +19,15 @@ message TourResp {
   string start_at = 8;
   string end_at = 9;
   int32 price = 10;
+  string duration = 11;
+  int32 distance = 12;
+  int32 elevation = 13;
+  string location = 14;
+  string images = 15;
+  string rate = 16;
+  string level = 17;
+  string created_at = 18;
+  string updated_at = 19;
 }
 
 message AvailableSlotReq {
@@ -37,6 +46,15 @@ message AvailableSlotResp {
   string start_at = 8;
   string end_at = 9;
   int32 price = 10;
+  string duration = 11;
+  int32 distance = 12;
+  int32 elevation = 13;
+  string location = 14;
+  string images = 15;
+  string rate = 16;
+  string level = 17;
+  string created_at = 18;
+  string updated_at = 19;
 }
 
 service TourService {

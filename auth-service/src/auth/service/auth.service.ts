@@ -112,13 +112,73 @@ export class AuthService {
     }
 
     async verifyForgotOtp(email: string, otp: string): Promise<ResponseDto> {
-        console.log('Received OTP verification request:', email, otp);
         await this.otpService.verifyOtp(email, otp);
         return {
             status: HttpStatus.OK,
-            message: 'Change password',
+            message: 'Reset password',
         };
     }
+
+    async changeEmail(email: string, authHeader: string): Promise<ResponseDto> {
+
+        const token = authHeader.split(' ')[1];
+        console.log(token)
+
+        const decoded: { [key: string]: any } | string = await this.jwtService.verifyToken(token);
+        console.log(decoded)
+
+        if (!decoded || typeof decoded === 'string') {
+            throw new HttpException('Invalid or expired token', HttpStatus.FORBIDDEN);
+        }
+        const id = decoded.id;
+        console.log(id);
+
+        const data = await firstValueFrom(
+            this.userService.checkExistByEmail({email})
+        )
+        if(data.result) {
+            throw new HttpException("Email already exist, please try again", HttpStatus.CONFLICT)
+        }
+
+        const otp = this.otpService.generateOtp();
+        await this.otpService.saveOtp(email, otp);
+        await sendOtp(email, otp)
+
+        const key = `user:id:${email}`;
+        await this.redisService.set(key, {id}, 300)
+
+        return {
+            status: HttpStatus.OK,
+            message: 'Fill Otp!'
+        }
+    }
+
+    async verifyChangeEmailOtp(email: string, otp: string): Promise<ResponseDto> {
+        await this.otpService.verifyOtp(email, otp);
+
+        const key = `user:id:${email}`;
+        const value = await this.redisService.get<{id: string}>(key);
+        const id = value?.id;
+
+        if (!id) {
+            throw new BadRequestException('User data not found. Please register again.');
+        }
+
+        await firstValueFrom(
+            this.userService.changeEmail({
+                id,
+                newEmail: email
+            })
+        );
+
+        await this.redisService.del(key);
+
+        return {
+            status: HttpStatus.CREATED,
+            message: 'Email update successfully!',
+        };
+    }
+
 
     public async login(
         { email, password }: LoginRequestDto

@@ -1,8 +1,8 @@
 import { User } from "src/module/user/entities/user.entity";
 import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity('favourites')
-export class Favourite {
+@Entity('favorite')
+export class Favorite {
     @PrimaryGeneratedColumn('uuid')
     id: string
 

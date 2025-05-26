@@ -2,17 +2,15 @@ import React from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   SafeAreaView,
   TouchableOpacity,
   Image,
   StatusBar,
   ScrollView,
-  ImageBackground
 } from 'react-native';
 import styles from './styles';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { BookingStackParamList } from '../../../navigation/main/BookingNavigator';
+import { BookingStackParamList } from '../../../navigation/main/booking/BookingNavigator';
 import ReturnButton from '../../../components/common/ReturnButton';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Calendar from '../../../assets/icons/common/calendar.svg';
@@ -30,10 +28,26 @@ const solveMoney = (money: number): string => {
     return result;
 }
 
-const BookingDetail:React.FC = () => {
+const formatDate = (dateInput: string | Date): string => {
+    const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
+    if (isNaN(date.getTime())) {
+        return 'Invalid date';
+    }
+    return date.toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+}
 
+const BookingDetail:React.FC = () => {
     const route = useRoute<RouteProp<BookingStackParamList, 'BookingDetailScreen'>>();
     const {booking} = route.params;
+
+    console.log('Created at type:', typeof booking.created_at);
+    console.log('Created at value:', booking.created_at);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -47,18 +61,8 @@ const BookingDetail:React.FC = () => {
             <ScrollView style={styles.scrollView}>
 
                 <View style={styles.summaryCard}>
-                    <View style={styles.hostRow}>
-                        <View style={styles.wrapHostAvatar}>
-                            {booking.trek.host.host_avt ? (
-                                <ImageBackground source={{ uri: booking.trek.host.host_avt }} style={styles.hostAvt} />
-                            ) : (
-                                <Icon name="account" color="white" size={16} />
-                            )}
-                        </View>
-                        <Text style={styles.hostText}>{booking.trek.host.host_name}</Text>
-                    </View>
                     <View style={styles.summaryContent}>
-                        <Image source={{ uri: booking.trek.image[0] }} style={styles.trekImage} />
+                        <Image source={{ uri: booking.trek.images[0] }} style={styles.trekImage} />
                         <View style={styles.trekInfo}>
                         <Text style={styles.trekName}>{booking.trek.name}</Text>
                         <View style={styles.trekDetailRow}>
@@ -75,7 +79,7 @@ const BookingDetail:React.FC = () => {
                                 <Text style={styles.dateLabel}>Date start</Text>
                                 <View style={styles.dateValuesRow}>
                                     <Calendar width={12} height={12} />
-                                    <Text style={styles.dateValue}>{booking.batch.start_date}</Text>
+                                    <Text style={styles.dateValue}>{booking.trek.start_date}</Text>
                                 </View>
                             </View>
 
@@ -85,8 +89,8 @@ const BookingDetail:React.FC = () => {
                                 <Text style={styles.dateLabel}>Date end</Text>
                                 <View style={styles.dateValuesRow}>
                                     <Calendar width={12} height={12} />
-                                    <Text style={styles.dateValue}>{booking.batch.end_date}</Text>
-                                </View>
+                                    <Text style={styles.dateValue}>{booking.trek.end_date}</Text>
+                                </View> 
                             </View>
                         </View>
                         <View style={styles.personsRow}>
@@ -146,7 +150,7 @@ const BookingDetail:React.FC = () => {
 
                     <View style={styles.paymentRow}>
                         <Text style={styles.paymentLabel}>Book at</Text>
-                        <Text style={styles.paymentValue}>{booking.book_at}</Text>
+                        <Text style={styles.paymentValue}>{formatDate(booking.created_at)}</Text>
                     </View>
                 </View>
 

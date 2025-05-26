@@ -4,46 +4,37 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import SaveIcon from '../../../assets/icons/common/heart.svg';
 import SaveOutlineIcon from '../../../assets/icons/common/heart-outline.svg';
 import styles from "./styles";
-import { TrekProps } from "../../../types/trek";
 
 interface PopularTrekProps {
-    name: string,
-    location: string,
-    duration: string,
-    rate: number,
-    booked: number,
-    price: number,
-    level: string
-    image: string,
-    host_avt: string
+    id: string;
+    name: string;
+    location: string;
+    duration: string;
+    rate: number;
+    booked: number;
+    price: number;
+    level: string;
+    images: string[];
+}
+
+const getLevelColor = (level: string): string => {
+    switch(level.toLowerCase()) {
+        case 'easy':
+            return '#4CAF50';
+        case 'moderate':
+            return '#FF9800';
+        case 'hard':
+            return '#F44336';
+        default:
+            return '#4CAF50';
+    }
 }
 
 const solvePrice = (price: number): string => {
-    let result: string = '';
-    while(price > 1000) {
-        let tmp = price % 1000;
-        result = '.' + tmp.toString().padStart(3, '0') + result;
-        price = Math.floor(price / 1000);
-    }
-    result = price.toString() + result;
-    return result;
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
-const getLevelColor = (level: string) => {
-    switch (level.toLowerCase()) {
-        case "easy":
-            return "#0E871C";
-        case "moderate":
-            return "#E47507";
-        case "hard":
-            return "#E40505";
-        default:
-            return "#FFFFFF";
-    }
-};
-
-
-const PopularTrekInHome: React.FC<TrekProps> = (props) => {
+const PopularTrekInHome: React.FC<PopularTrekProps> = (props) => {
 
     const [isSave, setIsSave] = useState(false);
 
@@ -54,7 +45,8 @@ const PopularTrekInHome: React.FC<TrekProps> = (props) => {
     return (
         <View style={styles.container}>
             <View style={styles.wrapper}>
-                <ImageBackground source={{uri: props.image[0]}} style={styles.image}>
+            {props.images && props.images.length > 0 ? (
+                <ImageBackground source={{uri: props.images[0]}} style={styles.image}>
                     <View style={styles.containerLevelAndSave}>
                         <View style={[styles.levelContainer, {backgroundColor: getLevelColor(props.level)}]}>
                             <Text style={styles.levelText}>{props.level}</Text>
@@ -67,6 +59,11 @@ const PopularTrekInHome: React.FC<TrekProps> = (props) => {
                         </TouchableOpacity>
                     </View>
                 </ImageBackground>
+            ) : (
+                <View style={[styles.image, { backgroundColor: '#E5E5E5', justifyContent: 'center', alignItems: 'center' }]}>
+                    <Icon name="image-off" size={40} color="#999" />
+                </View>
+            )}
             </View>
             <View style={styles.content}>
                 <Text style={styles.nameText}>{props.name}</Text>
@@ -84,17 +81,8 @@ const PopularTrekInHome: React.FC<TrekProps> = (props) => {
                 </View>
                 <Text style={[styles.commonText, {marginLeft: 2}]}>{props.booked} booked</Text>
                 <Text style={styles.priceText}>{solvePrice(props.price)}đ</Text>
-                <View style={styles.wrapHostAvatar}>
-                    {props.host.host_avt !== '' ?
-                        <ImageBackground source={{uri: props.host.host_avt}} style={styles.hostAvt} />
-                    :
-                        <Icon name="account" color='white' size={26} />
-                    }
-                </View>
             </View>
         </View>
-
-
     );
 }
 

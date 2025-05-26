@@ -21,6 +21,7 @@ type Business interface {
 	RequestBooking(ctx context.Context, booking *entity.Booking) (*entity.Booking, error)
 	GetBookingByID(ctx context.Context, bookingId string) (*entity.Booking, error)
 	CancelBooking(ctx context.Context, bookingId string) (*entity.Booking, error)
+	GetBookingByUserId(ctx context.Context, userId string) ([]*entity.Booking, error)
 	PingNotificationService(ctx context.Context) error
 }
 
@@ -189,5 +190,25 @@ func (a *api) PingNotificationServiceHdl() gin.HandlerFunc {
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"status": "pong", "message": "pong"})
+		return
+	}
+}
+
+func (a *api) GetBookingByUserIdHdl() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userId := c.Param("userId")
+		if userId == "" {
+			responseError(c, errors.New("userId id required"))
+			return
+		}
+
+		bookings, err := a.biz.GetBookingByUserId(c, userId)
+		if err != nil {
+			responseError(c, err)
+			return
+		}
+
+		responseSuccess(c, bookings)
+		return
 	}
 }

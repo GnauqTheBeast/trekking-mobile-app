@@ -2,12 +2,14 @@ import React from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
+import { color } from "@rneui/base";
 
 interface ReturnButtonProps {
-    top?: number
+    top?: number,
+    color?: string
 }
 
-const ReturnButton: React.FC<ReturnButtonProps> = ({top}) => {
+const ReturnButton: React.FC<ReturnButtonProps> = ({top, color}) => {
     const navigation = useNavigation();
 
     return (
@@ -18,7 +20,7 @@ const ReturnButton: React.FC<ReturnButtonProps> = ({top}) => {
             <FontAwesome
                 name="chevron-left"
                 size={22}
-                color="#2A5848" />
+                color={color ? color : "#2A5848"} />
         </TouchableOpacity>
     );
 };

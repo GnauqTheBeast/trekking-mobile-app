@@ -7,15 +7,15 @@ export class User {
     id: string;
 
     @Column({ type: 'varchar', length: 255 })
-    name: string;
+    fullname: string;
 
     @Index({ unique: true })
     @Column({ type: 'varchar', length: 255 })
     email: string;
 
     @Index({ unique: true })
-    @Column({ type: 'varchar', length: 15, nullable: true })
-    phone_number: string;
+    @Column({ type: 'varchar', length: 15, nullable: true, name: 'phone_number' })
+    phoneNumber: string;
 
     @Column({ type: 'varchar', length: 255 })
     password: string;

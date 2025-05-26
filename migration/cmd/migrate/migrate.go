@@ -55,7 +55,7 @@ func NewCommand() *cli.Command {
 }
 
 func start(c *cli.Context) error {
-	db, err := sql.Open("postgres", "postgres://postgres:postgres@localhost:2911/trekking-app?sslmode=disable")
+	db, err := sql.Open("postgres", "postgres://postgres:postgres@localhost:2912/trekking-app?sslmode=disable")
 	if err != nil {
 		return err
 	}

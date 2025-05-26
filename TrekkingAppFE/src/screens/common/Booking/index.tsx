@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ImageBackground, ScrollView, Image, SafeAreaView, StatusBar } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ImageBackground, ScrollView, Image, SafeAreaView, StatusBar, Alert } from 'react-native';
 import styles from "./styles";
 import ReturnButton from '../../../components/common/ReturnButton';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { RootStackParamList } from '../../../navigation/AppNavigator';
+import { RootStackParamList } from '../../../navigation/main/UserAppNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { BookingProps } from '../../../types/booking';
+import { bookingService } from '../../../services/booking.service';
+import { AuthContext } from '../../../context/AuthProvider';
+import { LoadingSpinner } from '../../../components/LoadingSpinner';
 
 
 const solveMoney = (money: number): string => {
@@ -21,67 +24,97 @@ const solveMoney = (money: number): string => {
 }
 
 const BookingScreen:React.FC = () => {
-
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamList, 'BookingScreen'>>();
-  const {trek, batchId} = route.params;
+  const {trek} = route.params;
+  const auth = useContext(AuthContext);
+  const user = auth?.user
+  const id = auth!.user!.id;
+  const token = auth!.token;
 
-  const [fullname, setFullname] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('');
 
-  const [selectedBatchId, setSelectedBatchId] = useState(batchId);
-  const selectedBatch = trek.available_batches.find(batch => batch.id === selectedBatchId);
+  const [fullname, setFullname] = useState(user?.fullname);
+  const [email, setEmail] = useState(user?.email);
+  const [phone, setPhone] = useState(user?.phoneNumber || '');
+  const [address, setAddress] = useState(user?.address || '');
+  const [loading, setLoading] = useState(false);
 
-  const availableSlots = selectedBatch ? selectedBatch.total_slot - selectedBatch.booked : 0;
   const [participants, setParticipants] = useState(1);
 
   const incrementParticipants = () => {
-    if (participants < availableSlots) {
-      setParticipants(participants + 1);
+    if (participants < trek.available_slot) {
+      const newValue = participants + 1;
+      setParticipants(newValue);
     }
   };
 
   const decrementParticipants = () => {
     if (participants > 1) {
-      setParticipants(participants - 1);
+      const newValue = participants - 1;
+      console.log('Setting new value:', newValue);
+      setParticipants(newValue);
     }
   };
 
   const totalPrice = participants * trek.price;
 
   const booking: BookingProps = {
-    id: "naksfndj",
     trek: {
-      id: trek.id,
-      name: trek.name,
-      location: trek.location,
-      duration: trek.duration,
-      price: trek.price,
-      level: trek.level,
-      host: {
-        id: trek.host.id,
-        host_name: trek.host.host_name,
-        host_avt: trek.host.host_avt,
-      },
-      image: trek.image,
-      available_batches: trek.available_batches
+      ...trek
     },
-    batch: {
-      id: selectedBatch?.id ?? "0",
-      start_date: selectedBatch?.start_date ?? '',
-      end_date: selectedBatch?.end_date ?? '',
-      total_slot: selectedBatch?.total_slot ?? 0,
-      booked: selectedBatch?.booked ?? 0,
-    },
+    porter_id: 'c5c3b007-3342-45aa-8012-78c03d7ec0e1',
     total_amount: totalPrice,
     total_person: participants,
-    status: ""
+    status: "PENDING",
+    created_at: new Date().toISOString()
   }
 
-  const handlePressBooking = () => {
-    navigation.navigate('CheckoutScreen', {booking})
+  console.log('🚀 [BookingScreen] booking:', booking);
+
+  const handlePressBooking = async () => {
+    try {
+      setLoading(true);
+      const bookingData = {
+        user_id: id,
+        tour_id: trek.id,
+        porter_id: 'c5c3b007-3342-45aa-8012-78c03d7ec0e1',
+        quantity: participants,
+        total_price: totalPrice,
+        status: "PENDING"
+      };
+      console.log("User Id: ", id)
+
+      console.log("Token: ", token)
+      const response = await bookingService.createBooking(bookingData, token || '');
+
+      if (response.data) {
+        const bookingForNavigation = {
+          ...booking,
+          id: response.data.id,
+          trek: {
+            ...booking.trek,
+            start_date: String(booking.trek.startAt),
+            end_date: String(booking.trek.endAt)
+          },
+          created_at: new Date().toISOString()
+        };
+
+        navigation.navigate('CheckoutScreen', {
+          booking: bookingForNavigation
+        });
+      }
+    } catch (error: any) {
+      Alert.alert(
+        'Error',
+        error.response?.data?.message || 'Something went wrong. Please try again.'
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (loading) {
+    return <LoadingSpinner />;
   }
 
   return (
@@ -100,20 +133,27 @@ const BookingScreen:React.FC = () => {
       >
         <View style={styles.trekCard}>
           <View style={styles.trekHeader}>
-              <View style={styles.wrapHostAvatar}>
-                  {trek.host.host_avt ?
-                      <ImageBackground source={{uri: trek.host.host_avt}} style={styles.hostAvt} />
-                  :
-                      <Icon name="account" color='white' size={20} />
-                  }
+            <View style={styles.wrapHostAvatar}>
+                {trek.host.image ?
+                    <ImageBackground source={{uri: trek.host.image}} style={styles.hostAvt} />
+                :
+                    <Icon name="account" color='white' size={20} />
+                }
               </View>
-            <Text style={styles.businessName}>{trek.host.host_name}</Text>
+            <Text style={styles.businessName}>{trek.host.name}</Text>
           </View>
           <View style={styles.trekContent}>
-            <Image
-              source={{ uri: trek.image[0]}}
-              style={styles.trekImage}
-            />
+            {trek.images && trek.images.length > 0 ? (
+              <Image
+                source={{ uri: trek.images[0] }}
+                style={styles.trekImage}
+              />
+            ) : (
+              <View style={[styles.trekImage, { backgroundColor: '#E5E5E5', justifyContent: 'center', alignItems: 'center' }]}>
+                <Icon name="image-off" size={40} color="#999" />
+              </View>
+            )}
+
             <View style={styles.trekInfo}>
               <Text style={styles.trekName}>{trek.name}</Text>
               <View style={styles.commonRow}>
@@ -129,40 +169,25 @@ const BookingScreen:React.FC = () => {
           </View>
         </View>
 
-        {/* Available Batches */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Available batches</Text>
-            <View style={styles.batchesContent}>
-              {trek.available_batches.map((batch, index) => (
-                  <TouchableOpacity onPress={() => setSelectedBatchId(batch.id)} key={index}>
-                  <Text style={[
-                      styles.infoBatch,
-                      selectedBatchId === batch.id && styles.selectedBatch
-                  ]}>
-                      {batch.start_date} - {batch.end_date} ({batch.booked}/{batch.total_slot})
-                  </Text>
-              </TouchableOpacity>
-              ))}
-            </View>
-        </View>
-
         {/* Amount */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Amount</Text>
-          <Text style={styles.availableSlots}>Available slot: {availableSlots}</Text>
+          <Text style={styles.availableSlots}>Available slot: {trek.available_slot}</Text>
           <View style={styles.participantsRow}>
             <Text style={styles.participantsLabel}>Participants:</Text>
             <View style={styles.counterContainer}>
               <TouchableOpacity
                 style={styles.counterButton}
-                onPress={decrementParticipants}
+                onPress={() => decrementParticipants()}
+                activeOpacity={0.7}
               >
                 <Icon name="minus" color='white' size={13} />
               </TouchableOpacity>
               <Text style={styles.counterValue}>{participants}</Text>
               <TouchableOpacity
                 style={styles.counterButton}
-                onPress={incrementParticipants}
+                onPress={() => incrementParticipants()}
+                activeOpacity={0.7}
               >
                 <Icon name="plus" color='white' size={13} />
               </TouchableOpacity>
@@ -175,28 +200,28 @@ const BookingScreen:React.FC = () => {
           <Text style={styles.sectionTitle}>Contact Information</Text>
           <TextInput
             placeholder="Fullname"
-            onChange={() => setFullname(fullname)}
+            onChangeText={setFullname}
             value={fullname}
             style={styles.input}
           />
           <TextInput
             placeholder="Email"
             value={email}
-            onChange={() => setEmail(email)}
+            onChangeText={setEmail}
             style={styles.input}
             keyboardType="email-address"
           />
           <TextInput
             placeholder="Phone"
             value={phone}
-            onChange={() => setPhone(phone)}
+            onChangeText={setPhone}
             style={styles.input}
             keyboardType="phone-pad"
           />
           <TextInput
             placeholder="Address"
             value={address}
-            onChange={() => setAddress(address)}
+            onChangeText={setAddress}
             style={styles.input}
           />
         </View>

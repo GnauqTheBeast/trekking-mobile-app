@@ -2,12 +2,13 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
-import { CheckExistByEmailRequest, CheckExistByEmailResponse, CheckLoginResponse, GetByIdRequest, GetByIdResponse } from '../../../interface-proto/user.interface';
+import { ChangeEmailRequest, ChangeEmailResponse, CheckExistByEmailRequest, CheckExistByEmailResponse, CheckLoginResponse, GetByIdRequest, GetByIdResponse } from '../../../interface-proto/user.interface';
 import * as bcrypt from 'bcryptjs';
 import { ChangePasswordRequestDto, CheckLoginRequestDto, CreateRequestDto, ResetPasswordRequestDto, ResponseDataDto, ResponseDto } from '../dto/user.dto';
 import { RoleService } from 'src/module/role/service/role.service';
 import { RpcException } from '@nestjs/microservices';
 import { RolePermissionService } from 'src/module/role-permission/service/role-permission.service';
+import { Host } from 'src/module/favourites/dto/ResponseDTO';
 
 @Injectable()
 export class UserService {
@@ -51,8 +52,8 @@ export class UserService {
             user: {
                 id: user!.id,
                 email: user!.email,
-                fullname: user!.name,
-                phoneNumber: user!.phone_number ?? null,
+                fullname: user!.fullname,
+                phoneNumber: user!.phoneNumber ?? null,
                 dob: user!.dob ? String(user!.dob) : null,
                 address: user!.address,
                 gender: user!.gender ?? null,
@@ -110,6 +111,17 @@ export class UserService {
         }
     }
 
+    async changeEmail(request: ChangeEmailRequest): Promise<ChangeEmailResponse> {
+        const {id, newEmail} = request;
+        const result = await this.userRepository.update({id}, {email: newEmail})
+        if(result.affected === 0 || !result.affected) {
+            throw new RpcException('Update not successfully!')
+        }
+        return {
+            result: true
+        };
+    }
+
     async getById(request: GetByIdRequest): Promise<GetByIdResponse> {
 
         const {id} = request;
@@ -127,9 +139,9 @@ export class UserService {
         return {
             user: {
                 id: user.id,
-                fullname: user.name,
+                fullname: user.fullname,
                 email: user.email,
-                phoneNumber: user.phone_number ?? null,
+                phoneNumber: user.phoneNumber ?? null,
                 dob: user.dob ? String(user.dob) : null,
                 address: user.address ?? null,
                 gender: user.gender ?? null,
@@ -137,6 +149,27 @@ export class UserService {
                 role: user.role,
                 permissions: []
             }
+        }
+    }
+
+
+    async getHostById(id: string): Promise<Host> {
+
+        const user = await this.userRepository.findOne({
+            where: {id},
+            relations: ['role']
+        })
+
+        if(!user) throw new RpcException({
+            status: HttpStatus.NOT_FOUND,
+            message: "User not found"
+        })
+
+        return {
+            id: user.id,
+            name: user.fullname,
+            image: user.image ?? null,
+
         }
     }
 
@@ -169,7 +202,7 @@ export class UserService {
 
         const user = this.userRepository.create({
             email: email,
-            name: fullname,
+            fullname: fullname,
             password: hashedPassword,
             role: role
         });
@@ -178,6 +211,7 @@ export class UserService {
     }
 
     async update(id: string, request: Partial<User>): Promise<ResponseDto> {
+        console.log(id)
         const result = await this.userRepository.update(id, request)
         if(result.affected === 0 || !result.affected) {
             throw new HttpException('Update unsuccesfully!', HttpStatus.FORBIDDEN)

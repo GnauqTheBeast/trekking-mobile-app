@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { ImageBackground, Text, View, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import SaveIcon from '../../../assets/icons/common/heart.svg';
@@ -6,8 +6,11 @@ import SaveOutlineIcon from '../../../assets/icons/common/heart-outline.svg';
 import styles from "./styles";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { RootStackParamList } from "../../../navigation/AppNavigator";
-import { TrekProps } from "../../../types/trek";
+import { RootStackParamList } from "../../../navigation/main/UserAppNavigator";
+import { TrekHostProps, TrekProps } from "../../../types/trek";
+import { addTourInFavorite, removeTourFromFavorite } from "../../../services/favorites.service";
+import { AuthContext } from "../../../context/AuthProvider";
+import { solveImageUrl } from "../../../utils/image.util";
 
 const solvePrice = (price: number): string => {
     let result: string = '';
@@ -29,17 +32,21 @@ const getLevelColor = (level: string) => {
         case "hard":
             return "#E40505";
         default:
-            return "#FFFFFF";
+            return "#000000";
     }
 };
 
 
-const TrekInSave: React.FC<TrekProps> = (trek) => {
+const TrekInSave: React.FC<TrekHostProps> = (trek) => {
+    const auth = useContext(AuthContext);
+    const userId = auth!.user!.id;
 
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const [isSave, setIsSave] = useState(true);
 
-    const handlePressUnSave = () => {
+    const handlePressSave = async() => {
+        if(isSave) await removeTourFromFavorite(userId, trek.id)
+        else await addTourInFavorite(userId, trek.id);
         setIsSave(!isSave)
     }
 
@@ -47,15 +54,16 @@ const TrekInSave: React.FC<TrekProps> = (trek) => {
         navigation.navigate('TrekDetailScreen', {trek: trek} )
     }
 
+
     return (
         <TouchableOpacity key={trek.id} onPress={handlePressTrek} style={styles.container}>
             <View style={styles.wrapper}>
-                <ImageBackground source={{uri: trek.image[0]}} style={styles.image}>
+                <ImageBackground source={{uri: trek.images[0]}} style={styles.image}>
                     <View style={styles.containerLevelAndSave}>
-                        <View style={[styles.levelContainer, {backgroundColor: getLevelColor(trek.level)}]}>
-                            <Text style={styles.levelText}>{trek.level}</Text>
+                        <View style={[styles.levelContainer, {backgroundColor: getLevelColor(trek.level || "HARD")}]}>
+                            <Text style={styles.levelText}>{trek.level || "HARD"}</Text>
                         </View>
-                        <TouchableOpacity onPress={handlePressUnSave}>
+                        <TouchableOpacity onPress={handlePressSave}>
                             {isSave ?
                                 <SaveIcon width={28} height={28} />
                             :
@@ -78,16 +86,15 @@ const TrekInSave: React.FC<TrekProps> = (trek) => {
                     <Icon name="star" color='#FFD700'/>
                     <Text style={styles.commonText}>{trek.rate}</Text>
                 </View>
-                <Text style={[styles.commonText, {marginLeft: 2}]}>{trek.booked} booked</Text>
                 <Text style={styles.priceText}>{solvePrice(trek.price)}đ</Text>
                 <View style={styles.wrapHostAvatar}>
-                    {trek.host.host_avt !== '' ?
-                        <ImageBackground source={{uri: trek.host.host_avt}} style={styles.hostAvt} />
+                    {trek.host.image ?
+                        <ImageBackground source={{uri: trek.host.image}} style={styles.hostAvt} />
                     :
                         <Icon name="account" color='white' size={22} />
                     }
                 </View>
-                <Text style={styles.hostName}>{trek.host.host_name}</Text>
+                <Text style={styles.hostName}>{trek.host.name}</Text>
             </View>
         </TouchableOpacity>
 

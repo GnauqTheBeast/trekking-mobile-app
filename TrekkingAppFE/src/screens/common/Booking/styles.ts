@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   trekHeader: {
-    paddingVertical: 8,
+    paddingVertical: 10,
     paddingHorizontal: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',

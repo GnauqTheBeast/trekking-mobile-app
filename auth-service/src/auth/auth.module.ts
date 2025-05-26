@@ -14,7 +14,7 @@ import { RedisConfig } from 'src/redis/redis.config';
         ClientGrpcModule,
         JwtModule.register({
             secret: 'dev',
-            signOptions: {expiresIn: '1h'}
+            signOptions: {expiresIn: '30d'}
         }),
         RedisModule
     ],

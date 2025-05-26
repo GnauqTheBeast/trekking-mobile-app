@@ -14,6 +14,7 @@ type API interface {
 	GetBookingByIdHdl() gin.HandlerFunc
 	CancelBookingHdl() gin.HandlerFunc
 	PingNotificationServiceHdl() gin.HandlerFunc
+	GetBookingByUserIdHdl() gin.HandlerFunc
 }
 
 func startRouteV1(group *gin.RouterGroup) {
@@ -32,9 +33,10 @@ func startRouteV1(group *gin.RouterGroup) {
 		authBooking := booking.Group("")
 		authBooking.Use(middleware.RequireAuth(authGrpcClient())) // comment for developing
 		{
-			authBooking.POST("/create", bookingService.CreateBookingHdl())     // /api/v1/booking/create
-			authBooking.GET("/:id", bookingService.GetBookingByIdHdl())        // /api/v1/booking/:id
-			authBooking.POST("/:id/cancel", bookingService.CancelBookingHdl()) // /api/v1/booking/:id
+			authBooking.POST("/create", bookingService.CreateBookingHdl())           // /api/v1/booking/create
+			authBooking.GET("/:id", bookingService.GetBookingByIdHdl())              // /api/v1/booking/:id
+			authBooking.POST("/:id/cancel", bookingService.CancelBookingHdl())       // /api/v1/booking/:id
+			authBooking.GET("/user/:userId", bookingService.GetBookingByUserIdHdl()) // /api/v1/booking/user/:userId
 		}
 	}
 }

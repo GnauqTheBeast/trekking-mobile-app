@@ -1,0 +1,184 @@
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  SafeAreaView,
+  StatusBar,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import styles from './styles';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../../../../navigation/main/UserAppNavigator';
+import CustomAlert from '../../../../components/common/Alert';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import ReturnButton from '../../../../components/common/ReturnButton';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthContext } from '../../../../context/AuthProvider';
+
+const validatePassword = (password: string): boolean => {
+    const regex = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{9,}$/;
+    return regex.test(password);
+};
+
+const ChangePasswordScreen: React.FC = () => {
+    const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+    const auth = useContext(AuthContext);
+    const id = auth?.user?.id;
+
+    const [oldPassword, setOldPassword] = useState<string>("");
+    const [newPassword, setNewPassword] = useState<string>("");
+    const [confirmPassword, setConfirmPassword] = useState<string>("");
+    const [showOldPassword, setShowOldPassword] = useState<boolean>(false);
+    const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
+
+    const [alertVisible, setAlertVisible] = useState(false);
+    const [message, setMessage] = useState("");
+
+    const [loading, setLoading] = useState(false);
+
+    const isPasswordValid = useMemo(() => validatePassword(newPassword), [newPassword]);
+    const isMatchPassword = newPassword === confirmPassword;
+    const isButtonEnabled = newPassword !== '' && confirmPassword !== '' && oldPassword !== '';
+
+
+    const handleNextPress = async() => {
+
+        if(!isPasswordValid) {
+            setMessage("Password must be longer than 8 characters, contain at least one uppercase letter and one special character")
+            setAlertVisible(true)
+            return
+        }
+
+        if(!isMatchPassword) {
+            setMessage("Passwords do not match, please check again.")
+            setAlertVisible(true)
+            return
+        }
+
+        if (newPassword === oldPassword) {
+            setMessage("New password cannot be the same as the old password.");
+            setAlertVisible(true);
+            return;
+        }
+
+        setLoading(true);
+        let timeoutId: NodeJS.Timeout;
+
+        timeoutId = setTimeout(() => {
+            setLoading(false);
+            setMessage("Login failed. Please try again.");
+            setAlertVisible(true);
+        }, 10000);
+
+        try {
+
+            await axios.post(`http://10.0.2.2:3002/user/change-password/${id}`, {
+                oldPassword,
+                newPassword
+            })
+
+            setLoading(false);
+            clearTimeout(timeoutId);
+
+            await AsyncStorage.removeItem('user');
+            await AsyncStorage.removeItem('token');
+
+            Alert.alert("Success", "Password changed successfully, please log in again.")
+            navigation.navigate('MainStack', {
+                screen: 'AccountStack',
+                params: {screen: 'AccountScreen'}
+            })
+        }
+        catch (error: any){
+            if(error.response) {
+                const errorMessage = error.response?.data?.message;
+                setMessage(errorMessage)
+                setAlertVisible(true);
+                setLoading(false);
+                clearTimeout(timeoutId)
+            }
+        }
+    }
+
+
+    return (
+        <View style={styles.container}>
+            <StatusBar barStyle="dark-content" />
+            <View style={styles.header}>
+                <ReturnButton />
+                <Text style={styles.headerTitle}>Change Password</Text>
+            </View>
+
+            <View style={styles.contentContainer}>
+                <View style={styles.passwordContainer}>
+                    <TextInput
+                        style={styles.passwordInput}
+                        placeholder="Old password"
+                        value={oldPassword}
+                        onChangeText={setOldPassword}
+                        secureTextEntry={!showOldPassword}
+                    />
+                    <TouchableOpacity onPress={() => setShowOldPassword(!showOldPassword)}>
+                        <Icon name={showOldPassword ? 'eye-off' : 'eye'} size={22} color="#3C3E3B" />
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.passwordContainer}>
+                    <TextInput
+                        style={styles.passwordInput}
+                        placeholder="New password"
+                        value={newPassword}
+                        onChangeText={setNewPassword}
+                        secureTextEntry={!showNewPassword}
+                    />
+                    <TouchableOpacity onPress={() => setShowNewPassword(!showNewPassword)}>
+                        <Icon name={showNewPassword ? 'eye-off' : 'eye'} size={22} color="#3C3E3B" />
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.passwordContainer}>
+                    <TextInput
+                        style={styles.passwordInput}
+                        placeholder="Confirm password"
+                        value={confirmPassword}
+                        onChangeText={setConfirmPassword}
+                        secureTextEntry={!showNewPassword}
+                    />
+                    <TouchableOpacity onPress={() => setShowNewPassword(!showNewPassword)}>
+                        <Icon name={showNewPassword ? 'eye-off' : 'eye'} size={22} color="#3C3E3B" />
+                    </TouchableOpacity>
+                </View>
+                <TouchableOpacity
+                    onPress={handleNextPress}
+                    style={[styles.buttonContainer, isButtonEnabled && {backgroundColor: '#FF8E4F', opacity: 1}]}
+                >
+                    {loading ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                    ) : (
+                    <Text
+                        style={[styles.buttonText, isButtonEnabled && {color: 'white'}]}
+                    >
+                        Confirm
+                    </Text>
+                    )}
+                </TouchableOpacity>
+            </View>
+
+            <CustomAlert
+                visible={alertVisible}
+                message={message}
+                onClose={() => setAlertVisible(false)}
+            />
+
+
+        </View>
+    );
+};
+
+
+
+export default ChangePasswordScreen;

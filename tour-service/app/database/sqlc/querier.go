@@ -11,6 +11,7 @@ import (
 )
 
 type Querier interface {
+	CountTours(ctx context.Context) (int64, error)
 	CreateTour(ctx context.Context, arg *CreateTourParams) (*Tour, error)
 	DeleteTour(ctx context.Context, id uuid.UUID) error
 	GetTourByHostId(ctx context.Context, hostID uuid.UUID) ([]*Tour, error)

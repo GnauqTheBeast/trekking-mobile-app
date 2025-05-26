@@ -17,6 +17,7 @@ type Repository interface {
 	InsertNewBooking(ctx context.Context, booking *entity.Booking) (*entity.Booking, error)
 	GetBookingById(ctx context.Context, bookingID string) (*entity.Booking, error)
 	UpdateBookingStatus(ctx context.Context, bookingId uuid.UUID, status entity.BookingStatus) (*entity.Booking, error)
+	GetBookingByUserId(ctx context.Context, userId uuid.UUID) ([]*entity.Booking, error)
 }
 
 type TourRepository interface {
@@ -163,6 +164,14 @@ func (b *business) PingNotificationService(ctx context.Context) error {
 			Message: "pong",
 		},
 	})
+}
+
+func (b *business) GetBookingByUserId(ctx context.Context, userId string) ([]*entity.Booking, error) {
+	id, err := uuid.Parse(userId)
+	if err != nil {
+		return nil, err
+	}
+	return b.repository.GetBookingByUserId(ctx, id)
 }
 
 func IsValidBookingStatus(s entity.BookingStatus) bool {

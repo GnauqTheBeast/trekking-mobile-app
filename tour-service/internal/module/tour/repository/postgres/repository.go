@@ -26,7 +26,7 @@ func NewPostgresRepo(db *sqlc.SQLRepository) *repository {
 	}
 }
 
-func (repo *repository) ListTours(ctx context.Context, paging *paging.Paging) ([]*entity.Tour, error) {
+func (repo *repository) ListTours(ctx context.Context, paging *paging.Paging) (*entity.TourListResponse, error) {
 	tours, err := repo.queries.ListTours(ctx, &sqlc.ListToursParams{
 		Limit:  int32(paging.Limit),
 		Offset: int32(paging.Offset),
@@ -40,7 +40,17 @@ func (repo *repository) ListTours(ctx context.Context, paging *paging.Paging) ([
 		result[i] = toEntityTour(t)
 	}
 
-	return result, nil
+	totalCount, err := repo.queries.CountTours(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	hasNext := int64(paging.Offset)+int64(paging.Limit) < totalCount
+
+	return &entity.TourListResponse{
+		Tours:   result,
+		HasNext: hasNext,
+	}, nil
 }
 
 func (repo *repository) ListToursByHostId(ctx context.Context, hostId string) ([]*entity.Tour, error) {

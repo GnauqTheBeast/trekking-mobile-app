@@ -243,14 +243,15 @@ namespace PaymentService.Api.Controllers
             }
         }
 
-        [HttpPost("process/{paymentId}")]
+        [HttpPost("process/{bookingId}")]
         [ProducesResponseType(typeof(Payment), 200)]
         [ProducesResponseType(typeof(ErrorResponse), 404)]
         [ProducesResponseType(typeof(ErrorResponse), 500)]
-        public async Task<ActionResult<Payment>> ProcessPayment(Guid paymentId)
+        public async Task<ActionResult<Payment>> ProcessPayment(Guid bookingId)
         {
             try
             {
+                var paymentId = await _paymentService.GetPaymentIdByBookingIdAsync(bookingId);
                 var payment = await _paymentService.ProcessPaymentAsync(paymentId);
                 var userId = await _paymentService.GetUserIdByPaymentIdAsync(paymentId);
                 // Publish success message to Redis
